@@ -4,12 +4,6 @@ image: images/5.jpg
 template: docs
 ---
 
-<div class="important">
-
-<strong>Note:</strong> This tool is still in development (read: I'm a lazy developer, and I've not even started it, but I'm fairly clear on what is needed here for a basic 'to market' version).
-
-</div>
-
 Now that you understand each of the areas and the key measurements, how do you know how *you* are doing? How do you know what your focus areas are and what growth looks like?
 
 ## Measure
@@ -17,7 +11,7 @@ Now that you understand each of the areas and the key measurements, how do you k
 The simple aim here is to get to a point where you have an understanding of your current state across all areas.  
 
 ### Self
-Against all the key skills above, the aim is to measure ourselves on a scale of 0-10.  
+Against all the key skills listed in the guide, the aim is to measure ourselves on a scale of 0-10.  
 * 0   = I have no skills or awareness of this area
 * 10 = I am a recognised expert in this area, and I do not feel I could improve
 
