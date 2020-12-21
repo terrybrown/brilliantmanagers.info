@@ -1,11 +1,10 @@
 root_docs_path: /the-guide
 sections:
-  - what-is-management
   - self
   - team
   - strategy
   - communications
   - domain-expertise
   - measurement
+  - what-is-management
   - faq
-  - community
