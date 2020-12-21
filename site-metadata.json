@@ -28,7 +28,7 @@
         }
     },
     "header": {
-        "title": "Libris",
+        "title": "Brilliant Managers",
         "logo_img": "images/logo.svg",
         "has_nav": true,
         "nav_links": [
@@ -39,8 +39,14 @@
                 "has_subnav": false
             },
             {
-                "label": "Docs",
-                "url": "/docs",
+                "label": "The Guide",
+                "url": "/the-guide",
+                "style": "link",
+                "has_subnav": false
+            },
+            {
+                "label": "The Tool",
+                "url": "/the-tool",
                 "style": "link",
                 "has_subnav": false
             },
@@ -51,32 +57,14 @@
                 "has_subnav": false
             },
             {
-                "label": "Sample Pages",
-                "url": "#",
-                "style": "link",
-                "has_subnav": true,
-                "subnav_links": [
-                    {
-                        "label": "Overview",
-                        "url": "/overview",
-                        "style": "link"
-                    },
-                    {
-                        "label": "Showcase",
-                        "url": "/showcase",
-                        "style": "link"
-                    }
-                ]
-            },
-            {
-                "label": "Style Guide",
-                "url": "/style-guide",
+                "label": "Resources",
+                "url": "/resources",
                 "style": "link",
                 "has_subnav": false
             },
             {
                 "label": "GitHub",
-                "url": "https://github.com/",
+                "url": "https://github.com/terrybrown/brilliantmanagers.info",
                 "style": "primary",
                 "has_subnav": false
             }
@@ -88,26 +76,26 @@
         "social_links": [
             {
                 "label": "Twitter",
-                "url": "https://twitter.com/",
+                "url": "https://twitter.com/terry_brown",
                 "style": "icon",
                 "icon_class": "fa-twitter",
                 "new_window": true
             },
             {
                 "label": "LinkedIn",
-                "url": "https://www.linkedin.com/",
+                "url": "https://www.linkedin.com/in/terrybrownuk/",
                 "style": "icon",
                 "icon_class": "fa-linkedin",
                 "new_window": true
             },
             {
                 "label": "GitHub",
-                "url": "https://github.com/",
+                "url": "https://github.com/terrybrown/",
                 "style": "icon",
                 "icon_class": "fa-github",
                 "new_window": true
             }
         ]
     },
-    "title": "Stackbit Libris Theme"
+    "title": "Brilliant Managers"
 }

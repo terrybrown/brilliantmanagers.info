@@ -1,9 +1,11 @@
-root_docs_path: /docs
+root_docs_path: /the-guide
 sections:
-  - about
-  - getting-started
-  - ui-components
-  - manage-content
-  - tools
+  - what-is-management
+  - self
+  - team
+  - strategy
+  - communications
+  - domain-expertise
+  - measurement
   - faq
   - community

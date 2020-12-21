@@ -13,7 +13,11 @@ export default class Header extends React.Component {
                 <div className="site-header-inside">
                   <div className="site-branding">
                     {_.get(this.props, 'pageContext.site.siteMetadata.header.logo_img', null) ? (
-                    <p className="site-logo"><Link to={withPrefix(_.get(this.props, 'pageContext.site.siteMetadata.header.url', null) || '/')}><img src={withPrefix(_.get(this.props, 'pageContext.site.siteMetadata.header.logo_img', null))} alt={_.get(this.props, 'pageContext.site.siteMetadata.header.title', null)} /></Link></p>
+                    <p className="site-logo">
+                      <Link to={withPrefix(_.get(this.props, 'pageContext.site.siteMetadata.header.url', null) || '/')}>
+                        Brilliant Managers
+                      </Link>
+                    </p>
                     ) : 
                     <p className="site-title"><Link to={withPrefix(_.get(this.props, 'pageContext.site.siteMetadata.header.url', null) || '/')}>{_.get(this.props, 'pageContext.site.siteMetadata.header.title', null)}</Link></p>
                     }
