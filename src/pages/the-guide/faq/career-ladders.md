@@ -1,5 +1,6 @@
 ---
 title: Progression Ladders - Real vs. Typical
+weight: 2
 template: docs
 ---
 

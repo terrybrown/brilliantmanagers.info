@@ -1,5 +1,6 @@
 ---
 title: What is management?
+weight: 1
 template: docs
 ---
 

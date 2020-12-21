@@ -6,8 +6,11 @@ template: page
 
 <div class="important">
 
-<strong>Note:</strong> This tool is still in development (read: I'm a lazy developer, and I've not even started it, but I'm fairly clear on what is needed here for a basic 'to market' version).
+<strong>Note:</strong> This tool is still in development (read: I'm a lazy developer, I aim to build out a fully functioning tool to support this site - as it stands, it's a shared google spreadsheet.).
 
 </div>
 
-See the [docs](/docs/the-tool) for a full description of the tool until it is available.
+<div class="note">
+
+####To complete your own manager scorecard, take a copy of and use <a href="https://docs.google.com/spreadsheets/d/1CDalSItIni0PWWcrwXzMG-CAOWzjP-1FYPdRCbswcoo/edit?usp=sharing" target="_blank">the google sheet</a> to record your own scores and have them lead into your own plans around Personal Development.
+</div>

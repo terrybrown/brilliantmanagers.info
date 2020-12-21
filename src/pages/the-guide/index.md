@@ -9,7 +9,9 @@ Often as an individual contributor (IC) in our field, we progressed through our 
 
 ***
 
-The aim of this guide is to provide a framework for discussion and reflection around management, be it people considering a role, people new to the role, or people seasoned in it. It focusses on a number of areas:
+The aim of this guide is to provide a framework for discussion and reflection around management, be it people considering a role, people new to the role, or people seasoned in it. It will then provide [a tool](/the-tool) to allow an individual to score (ideally with the support of a manager) to understand themselves and their growth areas.
+
+It focusses on a number of areas:
 
 * Self
 * Team
@@ -20,3 +22,10 @@ The aim of this guide is to provide a framework for discussion and reflection ar
 We will expand upon each of these in this guide, but this should provide a blueprint to help focus discussion in on opportunities for growth within a person when looking at management as a role.
 
 We will talk about how best to evaluate yourself in these areas, but we would encourage this to form the basis of discussion with your current manager, your peers, and perhaps the overall organisational context to really aid the reflection process.
+
+*** 
+
+<div class="note">
+
+####To complete your own manager scorecard, use [the tool](/the-tool) available on this site to record your own scores and have them lead into your own plans around Personal Development.
+</div>
