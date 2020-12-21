@@ -15,7 +15,13 @@ Against all the key skills listed in the guide, the aim is to measure ourselves 
 * 0   = I have no skills or awareness of this area
 * 10 = I am a recognised expert in this area, and I do not feel I could improve
 
-#### Some examples:
+### Scoring - a fully completed scorecard
+
+Below is an example of a scoring for a new manager, and this naturally feeds in to provide the graphs above.  The [tool](/the-tool) will handle all of this, but don't let the delay of that put you off - you can easily do this in a spreadsheet and created a radar chart based upon it.
+
+<img src="/images/management-example-table.png">
+
+#### Some specific examples:
 
 * If you feel that your empathy is incredibly strong, if people comment upon it, and you are known for being an empathetic person, you are likely to score yourself highly (8 or above).  
 * If you struggle with challenge and conflict, really don’t bring your voice to meetings when you have any opposing points, and go along with the status quo even when you do not agree, you are likely to score yourself low (3 or below)
