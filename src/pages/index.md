@@ -17,7 +17,7 @@ sections:
     grid_items:
       - title: The Guide
         content: >-
-          If you're here to learn, start here.
+          If you're here to understand yourself as a manager, start here.
         actions:
           - label: Get Started
             url: /the-guide
