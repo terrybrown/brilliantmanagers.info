@@ -32,7 +32,7 @@ Below is an example of a scoring for a new manager, and this naturally feeds in 
 * If you struggle with challenge and conflict, really don’t bring your voice to meetings when you have any opposing points, and go along with the status quo even when you do not agree, you are likely to score yourself low (3 or below)
 * If you feel you ‘get by’ when it comes to strategy and vision creation, that you have perhaps engaged with it, but don’t feel confident that you could create a strong outcome yourself on this, you are likely to score yourself in the middle at  around a 5 or 6.
 
-### Views from Others
+### Gather Views from Others
 To get the most out of this exercise, you would also include other measurements - in particular:
 
 * **Current organisational and context requirements** - it may be that in your current role, public speaking is not a requirement, or driving culture is not required as there is a well established culture within the org that is expected to be championed by all.  In these situations, understanding those requirements that are local to this role will help you identify very specific gaps.  This should be considered optional, and doesn’t preclude you measuring yourself effectively, but it can generate useful conversation if it is in place. 
