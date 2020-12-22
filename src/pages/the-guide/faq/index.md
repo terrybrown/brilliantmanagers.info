@@ -26,7 +26,7 @@ Have a quick read of [the guide](/the-guide), in particular the '[start here](/t
 **6. How long does it take to complete?**<br>
 I've run through it now with a few people, and it tends to take about 30minutes pre-read to understand the various categories, then 30mins from yourself and your manager for scoring, then a 30min chat at the end.  So all told, about an hour and a half invested.  
 
-**7. What is the outcome of this?**<br>
+**7. What is the outcome of going through this exercise?**<br>
 At the end of going through this, you should have a copy of the spreadsheet with a more thorough understanding of yourself, your strengths and growth opportunities, and have that correlated at least with your manager, but perhaps also with an organisational view.  This should give you one or two areas to focus your growth activities on.
 
 **8. I need to improve SKILL X - how do I go about it?**<br>
