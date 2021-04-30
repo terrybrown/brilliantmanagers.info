@@ -1,8 +1,7 @@
 ---
 title: Strategy
 excerpt: >-
-  Libris is a Unibit theme created for project documentations. You can use it
-  for your project.
+  Your impact as you engage in management is possible to be far more wider reaching than it was as an individual contributor.  Management is less about the operational and more about the tactical and strategic, more about creating the culture than adhering to it.
 template: docs
 ---
 

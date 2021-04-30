@@ -1,8 +1,7 @@
 ---
 title: Self
 excerpt: >-
-  Libris is a Unibit theme created for project documentations. You can use it
-  for your project.
+  All change and growth starts with self, and there are a number of skills and traits of effective managers that would be considered personal or ‘self’.
 template: docs
 ---
 
