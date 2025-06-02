@@ -7,6 +7,16 @@ template: docs
 
 All change and growth starts with self, and there are a number of skills and traits of effective managers that would be considered personal or ‘self’.
 
+<details>
+
+  <summary>Time and Task Management</summary>
+
+  ### Time and Task Management
+
+  the difference between chaotically shuffling your diary and always having perpetual todos and having a clean inbox, protected time, and space to reflect and think.  Effective skills in this area make the difference between a manager that juggles priorities, and one who solves for the biggest issues with a laser focus.
+
+</details>
+
 * **Time and Task Management** - the difference between chaotically shuffling your diary and always having perpetual todos and having a clean inbox, protected time, and space to reflect and think.  Effective skills in this area make the difference between a manager that juggles priorities, and one who solves for the biggest issues with a laser focus.
 * **Empathy and Compassion** - perhaps two of the most important skills in any managers toolbox.  You cannot effectively manage people or engage in conversations with stakeholders if you are not strong in these areas.  Those strongest in these skills will always consider situations from others’ perspectives, and will be masters of stepping into the shoes of those they talk to.
 * **Growth Mindset** - you didn’t start as a manager, and you clearly did well in the roles you have had up until the point of management.  Being a manager is a lifelong learning pathway, and a growth mindset is crucial.  You have moved from being an expert in your domain as an individual contributor to a role that has its basis in human psychology, culture, learning, leadership, strategy - and these all require study and understanding.  The best managers will have demonstrable and objective measure of improvement in their skills.
