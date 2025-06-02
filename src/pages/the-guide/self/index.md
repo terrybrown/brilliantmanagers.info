@@ -119,6 +119,230 @@ All change and growth starts with self, and there are a number of skills and tra
   * Practice saying "I don't know, but I'll figure it out" instead of pretending to know everything
 </details>
 
+<details>
+  <summary>Emotional Intelligence</summary>
+
+  #### Definition
+  The ability to recognize, understand, and manage your own emotions while effectively reading and responding to others' emotional states. This includes self-awareness, self-regulation, empathy, and social skills in professional contexts.
+
+  #### Why It Matters
+  Studies show that 90% of top performers have high emotional intelligence. As a manager, your emotional state affects your entire team's performance and wellbeing. EQ is the foundation for building trust, navigating conflict, and creating psychological safety.
+
+  #### This Is Strong When:
+  You notice your emotional triggers before they impact your behavior
+  You can stay calm and thoughtful during stressful or heated situations
+  You accurately read the room and adjust your approach accordingly
+  Team members feel comfortable expressing concerns or disagreement with you
+  You give feedback without letting personal frustration cloud your message
+  You recognize when someone is struggling and respond with appropriate support
+  You can separate your emotions from business decisions
+
+  #### Warning Signs:
+  * You often react impulsively in challenging situations
+  * Team members seem to "walk on eggshells" around you
+  * You regularly misread people's motivations or emotional states
+  * Feedback sessions become emotional or defensive
+  * You take business challenges or disagreements personally
+  * People stop bringing you bad news or difficult issues
+  * You struggle to understand why team dynamics aren't working
+
+  #### Pathways to Improvement:
+  * Practice the "STOP" technique: Stop, Take a breath, Observe, Proceed mindfully
+  * Read "Emotional Intelligence 2.0" by Bradberry & Greaves for practical assessments
+  * Keep an emotion journal for a week - note triggers and patterns
+  * Ask trusted colleagues for feedback on your emotional responses
+  * Practice active listening - focus entirely on understanding before responding
+  * Take a mindfulness or meditation course to build self-awareness
+  * Work with an executive coach who can provide real-time feedback
+ 
+</details>
+
+<details>
+  <summary>Leadership Styles</summary>
+
+  #### Definition
+  Understanding and flexibly applying different approaches to leading people based on the situation, team needs, and individual personalities. This includes knowing when to be directive, supportive, collaborative, or hands-off.
+
+  #### Why It Matters
+  Research shows that leaders who adapt their style to different situations achieve 30% better results than those who use only one approach. Different people and circumstances require different leadership approaches for optimal outcomes.
+
+  #### This Is Strong When:
+  * You consciously choose your leadership approach based on the situation and person
+  * You can be directive when needed without being micromanaging
+  * You delegate effectively by matching tasks to people's development levels
+  * You know when to step back and let your team take ownership
+  * Different team members would describe your leadership style differently (appropriately)
+  * You can switch between coaching, supporting, and directing as circumstances change
+  * Your team feels both supported and challenged at appropriate times
+
+  #### Warning Signs:
+  * You use the same approach with everyone regardless of their experience or the situation
+  * Team members either feel micromanaged or completely unsupported
+  * You struggle to delegate because you're either too hands-on or too hands-off
+  * People seem confused about what level of autonomy they have
+  * Your natural style doesn't match what your team needs most
+  * You avoid leadership situations that don't feel comfortable or natural
+  * Team performance suffers because your approach doesn't fit the circumstances
+
+  #### Pathways to Improvement:
+  * Learn the Situational Leadership model by Blanchard and Hersey
+  * Assess each team member's competence and commitment level for different tasks
+  * Practice asking "What kind of support do you need from me on this?"
+  * Read "The One Minute Manager" series for practical leadership techniques
+  * Observe other successful leaders and note how they adapt their style
+  * Get feedback from your team about when they need more or less direction
+  * Experiment with stepping back in low-risk situations to build your comfort with delegation
+</details>
+
+<details>
+  <summary>Self Awareness</summary>
+
+  #### Definition
+  Understanding your own strengths, weaknesses, values, motivations, and impact on others. This includes knowing your communication style, triggers, biases, and how others perceive you.
+
+  #### Why It Matters
+  Self-aware leaders are more effective because they can leverage their strengths, manage their weaknesses, and adjust their behavior based on its impact on others. Teams trust leaders who understand themselves and admit their limitations.
+
+  #### This Is Strong When:
+  * You can accurately describe your strengths and areas for improvement
+  * You notice your impact on others and adjust accordingly
+  * You're aware of your biases and actively work to counteract them
+  * You seek feedback regularly and aren't defensive when receiving it
+  * You know your values and make decisions aligned with them
+  * You understand your communication style and adapt it for different audiences
+  * You recognize your triggers and manage your responses
+
+  #### Warning Signs:
+  * You're often surprised by how others react to your behavior
+  * You have blind spots about your weaknesses that others clearly see
+  * Feedback about your leadership style feels inaccurate or unfair to you
+  * You make decisions that seem inconsistent with your stated values
+  * Your team doesn't know what to expect from you in different situations
+  * You repeat the same mistakes without recognizing patterns
+  * You assume others think and communicate the same way you do
+
+  #### Pathways to Improvement:
+  * Take assessments like StrengthsFinder, DISC, or Myers-Briggs and discuss results with others
+  * Ask trusted colleagues for honest feedback about your leadership style
+  * Keep a leadership journal noting situations where you were effective or ineffective
+  * Practice mindfulness to increase awareness of your thoughts and reactions
+  * Read "What Got You Here Won't Get You There" by Marshall Goldsmith
+  * Work with an executive coach who can provide objective perspective
+  * Ask your team directly: "What should I start, stop, or continue doing?"
+</details>
+
+<details>
+  <summary>Cross-functional Skillset</summary>
+
+  #### Definition
+  Understanding and developing capabilities beyond your core domain expertise, including knowledge of other business functions, technical skills, and the ability to work effectively across different disciplines.
+
+  #### Why It Matters
+  Modern organizations require leaders who can bridge different functions and speak multiple "business languages." Cross-functional knowledge helps you make better decisions, collaborate more effectively, and advance in your career.
+
+  #### This Is Strong When:
+  * You can have meaningful conversations with colleagues from different functions
+  * You understand how your team's work impacts other parts of the business
+  * You can translate between technical and business perspectives effectively
+  * You're invited to participate in cross-functional projects and initiatives
+  * You can identify opportunities that span multiple disciplines
+  * Your team benefits from your broader perspective when making decisions
+  * You can coach team members on skills outside your primary expertise
+
+  #### Warning Signs:
+  * You only understand your narrow functional area
+  * Cross-functional meetings feel confusing or irrelevant to you
+  * You struggle to explain your team's work to non-technical stakeholders
+  * You can't identify how other departments' decisions affect your team
+  * Your career progression is limited by lack of broader business knowledge
+  * You avoid projects that require working outside your comfort zone
+  * Your team operates in a silo without understanding broader context
+
+  #### Pathways to Improvement:
+  * Shadow colleagues in other functions to understand their work
+  * Read business publications to stay current on trends outside your field
+  * Volunteer for cross-functional projects and task forces
+  * Take courses in areas like finance, marketing, or operations
+  * Ask other department heads to explain their priorities and challenges
+  * Learn the basics of adjacent technical skills relevant to your work
+  * Find a mentor from a different function who can broaden your perspective
+
+</details>
+
+<details>
+  <summary>Resilience</summary>
+
+  #### Definition
+  The ability to bounce back from setbacks, adapt to change, and maintain a positive attitude in the face of challenges. This includes managing stress effectively and maintaining focus on long-term goals.
+
+  #### Why It Matters
+  Resilient leaders create resilient teams. In an era of constant change and uncertainty, your ability to stay steady and focused during difficult times directly impacts your team's performance and wellbeing.
+
+  #### This Is Strong When:
+  * You remain calm and solution-focused during crises
+  * Setbacks motivate you to find alternative approaches rather than giving up
+  * Your team looks to you for stability during uncertain times
+  * You bounce back quickly from failures or disappointments
+  * You help others process challenges and find paths forward
+  * You maintain perspective and can see beyond immediate problems
+  * You take care of your own wellbeing so you can support others
+
+  #### Warning Signs:
+  * You become overwhelmed or paralyzed when facing significant challenges
+  * Your stress and anxiety spread to your team
+  * You avoid difficult situations rather than confronting them
+  * Setbacks lead to blame, negativity, or giving up
+  * You burn out from trying to handle everything alone
+  * Your team doesn't feel supported during tough times
+  * You struggle to see opportunities or solutions when things go wrong
+
+  #### Pathways to Improvement:
+  * Develop stress management techniques like exercise, meditation, or hobbies
+  * Read "Option B" by Sheryl Sandberg for building resilience after setbacks
+  * Practice reframing challenges as opportunities to grow and learn
+  * Build a support network of colleagues, mentors, or coaches
+  * Learn to recognize early signs of stress and take preventive action
+  * Develop problem-solving frameworks you can apply consistently during crises
+  * Take care of your physical health as a foundation for mental resilience
+</details>
+
+<details>
+  <summary>Vulnerability and Courage</summary>
+
+  #### Definition
+  The willingness to show up authentically, admit mistakes, ask for help, and have difficult conversations even when the outcome is uncertain. This includes taking calculated risks and standing up for what's right.
+
+  #### Why It Matters
+  Brené Brown's research shows that vulnerable leaders create more innovative, engaged teams. Courage and vulnerability model the behavior you want to see and create psychological safety for others to take risks and be honest.
+
+  #### This Is Strong When:
+  * You admit when you don't know something or have made a mistake
+  * You ask for help when you need it rather than struggling alone
+  * You share appropriate personal stories and challenges with your team
+  * You have difficult conversations even when they're uncomfortable
+  * You stand up for your team and your values even when it's politically risky
+  * You take calculated risks on new ideas or approaches
+  * Your team feels safe to be vulnerable and authentic with you
+
+  #### Warning Signs:
+  * You feel like you have to have all the answers and appear perfect
+  * You avoid difficult conversations or controversial topics
+  * Your team doesn't bring you problems because they're afraid you'll be upset
+  * You say what you think people want to hear rather than what you believe
+  * You don't take risks because you're afraid of failure or criticism
+  * You hide your own struggles and challenges from others
+  * People describe you as "intimidating" or "unapproachable"
+
+  #### Pathways to Improvement:
+  * Read "Dare to Lead" by Brené Brown for research-backed approaches to vulnerable leadership
+  * Practice saying "I don't know" or "I was wrong" in low-stakes situations
+  * Share a appropriate personal challenge or learning experience with your team
+  * Start difficult conversations with "This might be uncomfortable, but..."
+  * Ask for help on something small to practice showing vulnerability
+  * Take one calculated risk per month on a new idea or approach
+  * Find a trusted mentor or peer group where you can practice being vulnerable
+</details>
+
 ## OR
 
 * **Time and Task Management** - the difference between chaotically shuffling your diary and always having perpetual todos and having a clean inbox, protected time, and space to reflect and think.  Effective skills in this area make the difference between a manager that juggles priorities, and one who solves for the biggest issues with a laser focus.
