@@ -16,8 +16,8 @@ All change and growth starts with self, and there are a number of skills and tra
 
   #### Why It Matters
   Managers who excel at time management are 25% more productive and create 40% less stress for their teams. Your time management directly models behavior for your team and affects your ability to be present for important conversations and decisions.
-  This Is Strong When:
 
+  #### This Is Strong When:
   * You consistently arrive prepared for meetings and rarely run late
   * You block calendar time for important but non-urgent work like strategic thinking
   * You delegate effectively rather than trying to do everything yourself
@@ -27,7 +27,6 @@ All change and growth starts with self, and there are a number of skills and tra
   * You maintain boundaries that allow for rest and personal time
 
   #### Warning Signs:
-
   * You're constantly in reactive mode, jumping from crisis to crisis
   * Meetings run over and you're always rushing to the next commitment
   * Important work gets pushed aside by urgent but less critical tasks
@@ -37,7 +36,6 @@ All change and growth starts with self, and there are a number of skills and tra
   * You feel overwhelmed and struggle to see the bigger picture
 
   #### Pathways to Improvement:
-
   * Try time-blocking: schedule specific time for different types of work
   * Read "Getting Things Done" by David Allen for comprehensive organization systems
   * Use the Eisenhower Matrix to categorize tasks by urgency and importance
