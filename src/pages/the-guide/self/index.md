@@ -129,13 +129,13 @@ All change and growth starts with self, and there are a number of skills and tra
   Studies show that 90% of top performers have high emotional intelligence. As a manager, your emotional state affects your entire team's performance and wellbeing. EQ is the foundation for building trust, navigating conflict, and creating psychological safety.
 
   #### This Is Strong When:
-  You notice your emotional triggers before they impact your behavior
-  You can stay calm and thoughtful during stressful or heated situations
-  You accurately read the room and adjust your approach accordingly
-  Team members feel comfortable expressing concerns or disagreement with you
-  You give feedback without letting personal frustration cloud your message
-  You recognize when someone is struggling and respond with appropriate support
-  You can separate your emotions from business decisions
+  * You notice your emotional triggers before they impact your behavior
+  * You can stay calm and thoughtful during stressful or heated situations
+  * You accurately read the room and adjust your approach accordingly
+  * Team members feel comfortable expressing concerns or disagreement with you
+  * You give feedback without letting personal frustration cloud your message
+  * You recognize when someone is struggling and respond with appropriate support
+  * You can separate your emotions from business decisions
 
   #### Warning Signs:
   * You often react impulsively in challenging situations
