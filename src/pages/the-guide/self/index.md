@@ -8,7 +8,6 @@ template: docs
 All change and growth starts with self, and there are a number of skills and traits of effective managers that would be considered personal or ‘self’.
 
 <details>
-
   <summary>Time and Task Management</summary>
 
   #### Definition
@@ -45,6 +44,82 @@ All change and growth starts with self, and there are a number of skills and tra
   * Experiment with productivity techniques like Pomodoro or time-batching
 
 </details>
+
+<details>
+  <summary>Empathy and Compassion</summary>
+
+  #### Definition
+  The ability to understand and share the feelings of your team members, showing genuine care for their wellbeing and experiences while maintaining professional boundaries and making fair decisions.
+
+  #### Why It Matters
+  Teams with empathetic managers show 50% lower turnover and higher engagement. Empathy builds psychological safety, enables better problem-solving, and helps you make decisions that consider the human impact, not just business metrics.
+  
+  #### This Is Strong When:
+  * You notice when team members are struggling before they have to tell you
+  * People feel comfortable sharing personal challenges that might affect their work
+  * You can put yourself in others' shoes when making decisions that affect them
+  * Your responses to team concerns feel genuine and thoughtful rather than scripted
+  * You balance compassion with accountability - caring doesn't mean lowering standards
+  * You remember important personal details and follow up appropriately
+  * Difficult conversations happen with kindness even when delivering hard messages
+
+  #### Warning Signs:
+  * Team members seem surprised when you show interest in their wellbeing
+  * You focus solely on work outcomes without considering personal circumstances
+  * People don't come to you when they're facing challenges
+  * Your attempts at empathy feel forced or performative
+  * You either become too involved in personal issues or remain completely detached
+  * You make decisions based purely on logic without considering emotional impact
+  * Team members describe you as "cold" or "all business"
+
+  #### Pathways to Improvement:
+  * Practice active listening - focus entirely on understanding before responding
+  * Read "Nonviolent Communication" by Marshall Rosenberg for empathetic communication
+  * Ask open-ended questions about how people are feeling, not just what they're doing
+  * Share appropriate personal stories to model vulnerability
+  * Pay attention to body language and energy levels in your team
+  * When someone shares a challenge, ask "How can I support you?" rather than immediately * problem-solving
+  * Practice perspective-taking: regularly ask yourself "How would I feel in their situation?"
+</details>
+
+<details>
+  <summary>Growth Mindset</summary>
+
+  #### Definition
+  The belief that abilities and intelligence can be developed through effort, learning, and persistence. This includes embracing challenges, learning from failure, and continuously seeking to improve yourself and help others grow.
+  
+  #### Why It Matters
+  Research by Carol Dweck shows that teams with growth-mindset leaders are 34% more likely to feel committed to their company and 65% more likely to say their company supports risk-taking. Your mindset directly influences your team's willingness to innovate and develop.
+  
+  #### This Is Strong When:
+  * You openly discuss your own learning goals and areas for improvement
+  * You treat failures as learning opportunities rather than reasons for punishment
+  * You encourage your team to take on stretch assignments that challenge them
+  * You regularly seek feedback and act on it visibly
+  * You celebrate effort and progress, not just final outcomes
+  * You invest time in your own professional development consistently
+  * Your language focuses on "how can we learn from this?" rather than "who's to blame?"
+
+  #### Warning Signs:
+  * You avoid challenges or new responsibilities that might expose weaknesses
+  * Team members seem afraid to admit mistakes or ask for help
+  * You focus primarily on hiring people who already have all necessary skills
+  * Failure leads to blame rather than analysis and improvement
+  * You haven't changed your approach or learned new skills in the past year
+  * Your team doesn't take risks or suggest innovative solutions
+  * You defend your current methods rather than exploring alternatives
+
+  #### Pathways to Improvement:
+  * Read "Mindset" by Carol Dweck to understand fixed vs. growth mindset patterns
+  * Start each team meeting by sharing something you're learning or want to improve
+  * When things go wrong, ask "What can we learn?" before "What went wrong?"
+  * Set learning goals for yourself alongside performance goals
+  * Celebrate team members who take thoughtful risks, even when they don't succeed
+  * Find a mentor or coach who can challenge your thinking
+  * Practice saying "I don't know, but I'll figure it out" instead of pretending to know everything
+</details>
+
+## OR
 
 * **Time and Task Management** - the difference between chaotically shuffling your diary and always having perpetual todos and having a clean inbox, protected time, and space to reflect and think.  Effective skills in this area make the difference between a manager that juggles priorities, and one who solves for the biggest issues with a laser focus.
 * **Empathy and Compassion** - perhaps two of the most important skills in any managers toolbox.  You cannot effectively manage people or engage in conversations with stakeholders if you are not strong in these areas.  Those strongest in these skills will always consider situations from others’ perspectives, and will be masters of stepping into the shoes of those they talk to.
