@@ -11,7 +11,7 @@ All change and growth starts with self, and there are a number of skills and tra
   <summary>Time and Task Management</summary>
 
   #### Definition
-  The ability to prioritize work effectively, manage your calendar strategically, and create systems that help you stay organized and focused on high-impact activities while maintaining work-life boundaries.
+  The difference between chaotically shuffling your diary and always having perpetual todos and having a clean inbox, protected time, and space to reflect and think.  Effective skills in this area make the difference between a manager that juggles priorities, and one who solves for the biggest issues with a laser focus. Think prioritising work effectively, managing your calendar strategically, and creating systems that help you stay organised and focused on high-impact activities while maintaining work-life boundaries.
 
   #### Why It Matters
   Managers who excel at time management are 25% more productive and create 40% less stress for their teams. Your time management directly models behavior for your team and affects your ability to be present for important conversations and decisions.
@@ -49,7 +49,7 @@ All change and growth starts with self, and there are a number of skills and tra
   <summary>Empathy and Compassion</summary>
 
   #### Definition
-  The ability to understand and share the feelings of your team members, showing genuine care for their wellbeing and experiences while maintaining professional boundaries and making fair decisions.
+  The ability to understand and share the feelings of your team members, showing genuine care for their wellbeing and experiences while maintaining professional boundaries and making fair decisions, these are perhaps two of the most important skills in any managers toolbox.  You cannot effectively manage people or engage in conversations with stakeholders if you are not strong in these areas.  Those strongest in these skills will always consider situations from others’ perspectives, and will be masters of stepping into the shoes of those they talk to.
 
   #### Why It Matters
   Teams with empathetic managers show 50% lower turnover and higher engagement. Empathy builds psychological safety, enables better problem-solving, and helps you make decisions that consider the human impact, not just business metrics.
@@ -86,8 +86,8 @@ All change and growth starts with self, and there are a number of skills and tra
   <summary>Growth Mindset</summary>
 
   #### Definition
-  The belief that abilities and intelligence can be developed through effort, learning, and persistence. This includes embracing challenges, learning from failure, and continuously seeking to improve yourself and help others grow.
-  
+  The belief that abilities and intelligence can be developed through effort, learning, and persistence. This includes embracing challenges, learning from failure, and continuously seeking to improve yourself and help others grow. You didn’t start as a manager, and you clearly did well in the roles you have had up until the point of management.  Being a manager is a lifelong learning pathway, and a growth mindset is crucial.  You have moved from being an expert in your domain as an individual contributor to a role that has its basis in human psychology, culture, learning, leadership, strategy - and these all require study and understanding.  The best managers will have demonstrable and objective measure of improvement in their skills.
+
   #### Why It Matters
   Research by Carol Dweck shows that teams with growth-mindset leaders are 34% more likely to feel committed to their company and 65% more likely to say their company supports risk-taking. Your mindset directly influences your team's willingness to innovate and develop.
   
@@ -123,7 +123,7 @@ All change and growth starts with self, and there are a number of skills and tra
   <summary>Emotional Intelligence</summary>
 
   #### Definition
-  The ability to recognize, understand, and manage your own emotions while effectively reading and responding to others' emotional states. This includes self-awareness, self-regulation, empathy, and social skills in professional contexts.
+  The ability to recognize, understand, and manage your own emotions while effectively reading and responding to others' emotional states. This includes self-awareness, self-regulation, empathy, and social skills in professional contexts. Humans are emotionally led creatures, and our amygdala (that controls that ‘fight or flight’ reaction) can come into play just as easily in our business lives - we have all of us done or said things that we regret in a work setting.  An effective grounding in emotional intelligence lets us know ourself and choose ourself with regards to emotions, and is imperative when we move to humans being our primary interaction point in our business lives.  Effective managers will be in control of themselves, and will not demonstrate uncontrolled emotion.
 
   #### Why It Matters
   Studies show that 90% of top performers have high emotional intelligence. As a manager, your emotional state affects your entire team's performance and wellbeing. EQ is the foundation for building trust, navigating conflict, and creating psychological safety.
@@ -161,7 +161,7 @@ All change and growth starts with self, and there are a number of skills and tra
   <summary>Leadership Styles</summary>
 
   #### Definition
-  Understanding and flexibly applying different approaches to leading people based on the situation, team needs, and individual personalities. This includes knowing when to be directive, supportive, collaborative, or hands-off.
+  Understanding and flexibly applying different approaches to leading people based on the situation, team needs, and individual personalities. This includes knowing when to be directive, supportive, collaborative, or hands-off. A lot of managers will favour or default to particular styles, but awareness that leadership isn’t a one-size-fits-all and knowing when to switch and mix styles of leadership will maximise outcomes.  The best managers here will switch between styles dependent upon situation, context, and needs of the environment, and will be fully versed in multiple styles.
 
   #### Why It Matters
   Research shows that leaders who adapt their style to different situations achieve 30% better results than those who use only one approach. Different people and circumstances require different leadership approaches for optimal outcomes.
@@ -198,8 +198,8 @@ All change and growth starts with self, and there are a number of skills and tra
   <summary>Self Awareness</summary>
 
   #### Definition
-  Understanding your own strengths, weaknesses, values, motivations, and impact on others. This includes knowing your communication style, triggers, biases, and how others perceive you.
-
+  Understanding your own strengths, weaknesses, values, motivations, and impact on others. This includes knowing your communication style, triggers, biases, and how others perceive you. As humans, we are flawed in many and unique ways.  Understanding your own position - your strengths and opportunities - is a great step towards better.  Do you always react badly to bad news delivered late? Do you struggle with courtesy when faced with aggression?  These are stimulus and data that you can learn and grow from.  Managers who struggle here will not be able to talk easily about their weak spots or growth areas, and those who are self aware will have an effective narrative to talk to you about them.
+* 
   #### Why It Matters
   Self-aware leaders are more effective because they can leverage their strengths, manage their weaknesses, and adjust their behavior based on its impact on others. Teams trust leaders who understand themselves and admit their limitations.
 
@@ -235,7 +235,7 @@ All change and growth starts with self, and there are a number of skills and tra
   <summary>Cross-functional Skillset</summary>
 
   #### Definition
-  Understanding and developing capabilities beyond your core domain expertise, including knowledge of other business functions, technical skills, and the ability to work effectively across different disciplines.
+  Understanding and developing capabilities beyond your core domain expertise, including knowledge of other business functions, technical skills, and the ability to work effectively across different disciplines. Be you an engineering manager that works with product management, or a legal manager that interacts with compliance.  [T-shaped people](https://medium.com/@jchyip/why-t-shaped-people-e8706198e437) will often excel when faced with areas of cross-collaboration or stakeholder management.
 
   #### Why It Matters
   Modern organizations require leaders who can bridge different functions and speak multiple "business languages." Cross-functional knowledge helps you make better decisions, collaborate more effectively, and advance in your career.
@@ -273,7 +273,7 @@ All change and growth starts with self, and there are a number of skills and tra
   <summary>Resilience</summary>
 
   #### Definition
-  The ability to bounce back from setbacks, adapt to change, and maintain a positive attitude in the face of challenges. This includes managing stress effectively and maintaining focus on long-term goals.
+  Our capacity to face challenges time and again, to face defeat and not give up, is a hallmark of effective management. Our ability to bounce back after challenge, especially those that go badly, and learn from it is fundamental in a role that will see us take risk and lead in uncertainty.  Great managers in this space are inspirational for their ability to rise from defeat time and again and continue to focus on their goals.
 
   #### Why It Matters
   Resilient leaders create resilient teams. In an era of constant change and uncertainty, your ability to stay steady and focused during difficult times directly impacts your team's performance and wellbeing.
@@ -310,7 +310,7 @@ All change and growth starts with self, and there are a number of skills and tra
   <summary>Vulnerability and Courage</summary>
 
   #### Definition
-  The willingness to show up authentically, admit mistakes, ask for help, and have difficult conversations even when the outcome is uncertain. This includes taking calculated risks and standing up for what's right.
+  The willingness to show up authentically, admit mistakes, ask for help, and have difficult conversations even when the outcome is uncertain. This includes taking calculated risks and standing up for what's right. As [Brené Brown teaches us](https://www.forbes.com/sites/forbescoachescouncil/2019/01/10/four-skills-you-need-for-courageous-leadership/), these are keys to creativity and innovation, they allow us connection, and being an effective manager is about leaning into our vulnerability as a true path to courage.  Strong managers will be comfortable leaning on their teams and admitting they screwed up, or they don’t have the answers.
 
   #### Why It Matters
   Brené Brown's research shows that vulnerable leaders create more innovative, engaged teams. Courage and vulnerability model the behavior you want to see and create psychological safety for others to take risks and be honest.
@@ -343,14 +343,11 @@ All change and growth starts with self, and there are a number of skills and tra
   * Find a trusted mentor or peer group where you can practice being vulnerable
 </details>
 
-## OR
 
-* **Time and Task Management** - the difference between chaotically shuffling your diary and always having perpetual todos and having a clean inbox, protected time, and space to reflect and think.  Effective skills in this area make the difference between a manager that juggles priorities, and one who solves for the biggest issues with a laser focus.
-* **Empathy and Compassion** - perhaps two of the most important skills in any managers toolbox.  You cannot effectively manage people or engage in conversations with stakeholders if you are not strong in these areas.  Those strongest in these skills will always consider situations from others’ perspectives, and will be masters of stepping into the shoes of those they talk to.
-* **Growth Mindset** - you didn’t start as a manager, and you clearly did well in the roles you have had up until the point of management.  Being a manager is a lifelong learning pathway, and a growth mindset is crucial.  You have moved from being an expert in your domain as an individual contributor to a role that has its basis in human psychology, culture, learning, leadership, strategy - and these all require study and understanding.  The best managers will have demonstrable and objective measure of improvement in their skills.
-* **Emotional Intelligence** - humans are emotionally led creatures, and our amygdala (that controls that ‘fight or flight’ reaction) can come into play just as easily in our business lives - we have all of us done or said things that we regret in a work setting.  An effective grounding in emotional intelligence lets us know ourself and choose ourself with regards to emotions, and is imperative when we move to humans being our primary interaction point in our business lives.  Effective managers will be in control of themselves, and will not demonstrate uncontrolled emotion.
-* **Leadership Styles** - a lot of managers will favour or default to particular styles, but awareness that leadership isn’t a one-size-fits-all and knowing when to switch and mix styles of leadership will maximise outcomes.  The best managers here will switch between styles dependent upon situation, context, and needs of the environment, and will be fully versed in multiple styles.
-* **Self Awareness** - as humans, we are flawed in many and unique ways.  Understanding your own position - your strengths and opportunities - is a great step towards better.  Do you always react badly to bad news delivered late? Do you struggle with courtesy when faced with aggression?  These are stimulus and data that you can learn and grow from.  Managers who struggle here will not be able to talk easily about their weak spots or growth areas, and those who are self aware will have an effective narrative to talk to you about them.
-* **Cross-functional Skillset** - the best managers will have some understanding of others’ areas.  Be you an engineering manager that works with product management, or a legal manager that interacts with compliance.  [T-shaped people](https://medium.com/@jchyip/why-t-shaped-people-e8706198e437) will often excel when faced with areas of cross-collaboration or stakeholder management.
-* **Resilience** - our capacity to face challenges time and again, to face defeat and not give up, is a hallmark of effective management. Our ability to bounce back after challenge, especially those that go badly, and learn from it is fundamental in a role that will see us take risk and lead in uncertainty.  Great managers in this space are inspirational for their ability to rise from defeat time and again.
-* **Vulnerability and Courage** - as [Brené Brown teaches us](https://www.forbes.com/sites/forbescoachescouncil/2019/01/10/four-skills-you-need-for-courageous-leadership/), these are keys to creativity and innovation, they allow us connection, and being an effective manager is about leaning into our vulnerability as a true path to courage.  Strong managers will be comfortable leaning on their teams and admitting they screwed up, or they don’t have the answers.
+
+
+
+
+
+
+
