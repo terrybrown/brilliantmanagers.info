@@ -99,7 +99,7 @@ export default async function GuideChapterPage({ params }: Props) {
 
         {/* TOC */}
         <aside className="hidden xl:block">
-          <ChapterToc items={[]} />
+          <ChapterToc items={chapter.headings} />
         </aside>
       </div>
     </div>

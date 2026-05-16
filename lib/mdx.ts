@@ -1,6 +1,32 @@
 import { compileMDX } from 'next-mdx-remote/rsc'
 import { readFile, readdir } from 'fs/promises'
 import path from 'path'
+import remarkGfm from 'remark-gfm'
+import rehypeSlug from 'rehype-slug'
+
+export interface TocItem {
+  id: string
+  text: string
+  level: 2 | 3
+}
+
+export function extractHeadings(source: string): TocItem[] {
+  const headings: TocItem[] = []
+  for (const line of source.split('\n')) {
+    const match = line.match(/^(#{2,3})\s+(.+)$/)
+    if (!match) continue
+    const level = match[1].length as 2 | 3
+    const text = match[2].trim()
+    // github-slugger style: lowercase, strip non-alphanumeric except spaces/hyphens, collapse spaces to hyphens
+    const id = text
+      .toLowerCase()
+      .replace(/[^\w\s-]/g, '')
+      .trim()
+      .replace(/[\s_]+/g, '-')
+    headings.push({ id, text, level })
+  }
+  return headings
+}
 
 export interface GuideFrontmatter {
   title: string
@@ -23,17 +49,25 @@ async function readMdx(filePath: string) {
 export async function getGuideChapter(
   slug: string[],
   components: Record<string, React.ComponentType<any>> = {}
-) {
+): Promise<{ content: React.ReactElement; frontmatter: GuideFrontmatter; headings: TocItem[] }> {
   const filePath = path.join(contentDir, 'guide', `${slug.join('/')}.mdx`)
   const source = await readMdx(filePath)
+
+  const headings = extractHeadings(source)
 
   const { content, frontmatter } = await compileMDX<GuideFrontmatter>({
     source,
     components,
-    options: { parseFrontmatter: true },
+    options: {
+      parseFrontmatter: true,
+      mdxOptions: {
+        remarkPlugins: [remarkGfm],
+        rehypePlugins: [rehypeSlug],
+      },
+    },
   })
 
-  return { content, frontmatter }
+  return { content, frontmatter, headings }
 }
 
 export async function getGuideIndex(
@@ -52,7 +86,7 @@ export async function getBlogPost(
   const { content, frontmatter } = await compileMDX<BlogFrontmatter>({
     source,
     components,
-    options: { parseFrontmatter: true },
+    options: { parseFrontmatter: true, mdxOptions: { remarkPlugins: [remarkGfm] } },
   })
 
   return { content, frontmatter }
