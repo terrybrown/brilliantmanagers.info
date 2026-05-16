@@ -107,13 +107,15 @@ body {
 /* ── Prose: lists ── */
 .prose ul {
   list-style-type: disc;
-  padding-left: 2rem;
+  margin-left: 1.25rem;
+  padding-left: 1rem;
   margin-bottom: 1.25rem;
 }
 
 .prose ol {
   list-style-type: decimal;
-  padding-left: 2rem;
+  margin-left: 1.25rem;
+  padding-left: 1rem;
   margin-bottom: 1.25rem;
 }
 
