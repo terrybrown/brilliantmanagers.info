@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Page layouts</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Inter', sans-serif; background: #f0eeea; color: #1c1917; padding: 32px; font-size: 13px; }
+.page-title { font-family: 'Fraunces', serif; font-size: 22px; font-weight: 600; margin-bottom: 4px; }
+.page-subtitle { color: #78716c; margin-bottom: 32px; font-size: 12px; }
+.page-section { margin-bottom: 40px; }
+.page-label { font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #a8a29e; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+.route { background: #e7e5e0; color: #78716c; font-size: 10px; padding: 2px 7px; border-radius: 4px; font-family: monospace; letter-spacing: 0; text-transform: none; font-weight: 400; }
+.frame { border-radius: 12px; overflow: hidden; box-shadow: 0 2px 16px rgba(0,0,0,0.08); }
+
+/* ─── shared nav ─── */
+.nav { display: flex; align-items: center; justify-content: space-between; padding: 0 20px; height: 48px; flex-shrink: 0; }
+.nav-logo { font-family: 'Fraunces', serif; font-size: 15px; font-weight: 600; }
+.nav-links { display: flex; gap: 18px; }
+.nav-link { font-size: 12px; font-weight: 500; }
+.nav-right { display: flex; align-items: center; gap: 8px; }
+.github-btn { font-size: 11px; font-weight: 500; padding: 4px 10px; border-radius: 5px; }
+.theme-pill { display: flex; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); border-radius: 999px; padding: 2px; gap: 1px; }
+.theme-pill span { padding: 2px 8px; border-radius: 999px; font-size: 10px; color: rgba(254,252,247,0.45); }
+.theme-pill span.on { background: rgba(254,252,247,0.14); color: #fefcf7; }
+.theme-pill-l { display: flex; background: #ebe9e4; border: 1px solid #ddd9d4; border-radius: 999px; padding: 2px; gap: 1px; }
+.theme-pill-l span { padding: 2px 8px; border-radius: 999px; font-size: 10px; color: #a8a29e; }
+.theme-pill-l span.on { background: #1a3a5c; color: #fefcf7; }
+
+.nav-dark { background: #1a3a5c; }
+.nav-dark .nav-logo { color: #fefcf7; }
+.nav-dark .nav-link { color: rgba(254,252,247,0.5); }
+.nav-dark .nav-link.cur { color: #fefcf7; }
+.nav-dark .github-btn { background: rgba(254,252,247,0.08); border: 1px solid rgba(254,252,247,0.12); color: #fefcf7; }
+.nav-light { background: #fefcf7; border-bottom: 1px solid #e7e5e4; }
+.nav-light .nav-logo { color: #1c1917; }
+.nav-light .nav-link { color: #78716c; }
+.nav-light .nav-link.cur { color: #1c1917; font-weight: 600; }
+.nav-light .github-btn { background: #f0eeea; border: 1px solid #e7e5e4; color: #1c1917; }
+
+.amber-rule { width: 32px; height: 2px; background: #f59e0b; margin-bottom: 12px; }
+.amber-rule-sm { width: 24px; height: 2px; background: #f59e0b; margin-bottom: 8px; }
+
+/* ─── 1. HOMEPAGE ─── */
+.home { background: #1a3a5c; }
+.home-hero { padding: 48px 32px 40px; }
+.home-eyebrow { font-size: 9px; letter-spacing: 0.22em; text-transform: uppercase; color: rgba(254,252,247,0.38); margin-bottom: 10px; }
+.home-h1 { font-family: 'Fraunces', serif; font-size: 38px; font-weight: 700; line-height: 1.02; letter-spacing: -0.025em; color: #fefcf7; margin-bottom: 14px; }
+.home-h1 em { font-style: italic; color: #f59e0b; }
+.home-body { font-size: 14px; color: rgba(254,252,247,0.6); line-height: 1.65; margin-bottom: 22px; max-width: 480px; }
+.home-ctas { display: flex; gap: 10px; margin-bottom: 48px; }
+.btn-pri-dark { background: #fefcf7; color: #1a3a5c; font-weight: 600; font-size: 12px; padding: 8px 16px; border-radius: 6px; }
+.btn-sec-dark { background: rgba(254,252,247,0.07); border: 1px solid rgba(254,252,247,0.14); color: #fefcf7; font-size: 12px; padding: 8px 16px; border-radius: 6px; }
+.home-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; padding: 0 32px 32px; }
+.home-card { background: rgba(254,252,247,0.05); border: 1px solid rgba(254,252,247,0.1); border-radius: 10px; padding: 18px; }
+.home-card-icon { font-size: 18px; margin-bottom: 10px; }
+.home-card-title { font-family: 'Fraunces', serif; font-size: 15px; font-weight: 600; color: #fefcf7; margin-bottom: 6px; }
+.home-card-body { font-size: 12px; color: rgba(254,252,247,0.5); line-height: 1.55; margin-bottom: 12px; }
+.home-card-link { font-size: 11px; color: #f59e0b; font-weight: 500; }
+.home-quote { border-top: 1px solid rgba(254,252,247,0.08); padding: 28px 32px; }
+.home-quote blockquote { font-family: 'Fraunces', serif; font-size: 19px; font-style: italic; color: rgba(254,252,247,0.8); line-height: 1.45; max-width: 600px; }
+.home-quote cite { display: block; margin-top: 10px; font-size: 11px; color: rgba(254,252,247,0.35); letter-spacing: 0.06em; text-transform: uppercase; font-style: normal; }
+.home-footer { border-top: 1px solid rgba(254,252,247,0.08); padding: 18px 32px; display: flex; justify-content: space-between; align-items: center; }
+.footer-copy { font-size: 11px; color: rgba(254,252,247,0.3); }
+.footer-links { display: flex; gap: 16px; }
+.footer-link { font-size: 11px; color: rgba(254,252,247,0.35); }
+
+/* ─── 2. GUIDE CHAPTER ─── */
+.guide { background: #f9f8f4; display: flex; flex-direction: column; }
+.guide-body { display: grid; grid-template-columns: 220px 1fr 160px; gap: 0; flex: 1; }
+.guide-sidebar { background: #f0eeea; border-right: 1px solid #e7e5e4; padding: 20px 16px; }
+.sidebar-section { margin-bottom: 20px; }
+.sidebar-label { font-size: 9px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: #a8a29e; margin-bottom: 8px; }
+.sidebar-item { font-size: 12px; color: #78716c; padding: 4px 8px; border-radius: 5px; margin-bottom: 2px; }
+.sidebar-item.active { background: #1a3a5c; color: #fefcf7; font-weight: 500; }
+.sidebar-item.muted { color: #a8a29e; }
+.guide-content { padding: 28px 32px; }
+.guide-eyebrow { font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; color: #d97706; font-weight: 600; margin-bottom: 8px; }
+.guide-h1 { font-family: 'Fraunces', serif; font-size: 26px; font-weight: 600; letter-spacing: -0.02em; color: #1c1917; margin-bottom: 14px; line-height: 1.1; }
+.guide-prose { font-size: 14px; color: #44403c; line-height: 1.72; margin-bottom: 14px; max-width: 560px; }
+.guide-callout { background: #fffbeb; border-left: 3px solid #f59e0b; padding: 10px 14px; border-radius: 0 6px 6px 0; max-width: 560px; }
+.guide-callout p { font-size: 12px; color: #78716c; line-height: 1.55; }
+.guide-toc { padding: 28px 14px; border-left: 1px solid #e7e5e4; }
+.toc-label { font-size: 9px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #a8a29e; margin-bottom: 10px; }
+.toc-item { font-size: 11px; color: #a8a29e; padding: 3px 0; }
+.toc-item.active { color: #d97706; font-weight: 500; }
+.guide-prev-next { border-top: 1px solid #e7e5e4; padding: 16px 32px; display: flex; justify-content: space-between; }
+.pn-link { font-size: 12px; font-weight: 500; color: #1a3a5c; }
+
+/* ─── 3. TOOL LANDING ─── */
+.tool { background: #1a3a5c; }
+.tool-hero { padding: 48px 32px 32px; display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: center; }
+.tool-eyebrow { font-size: 9px; letter-spacing: 0.22em; text-transform: uppercase; color: rgba(254,252,247,0.38); margin-bottom: 10px; }
+.tool-h1 { font-family: 'Fraunces', serif; font-size: 28px; font-weight: 600; letter-spacing: -0.02em; color: #fefcf7; margin-bottom: 12px; line-height: 1.1; }
+.tool-h1 em { font-style: italic; color: #f59e0b; }
+.tool-body { font-size: 13px; color: rgba(254,252,247,0.58); line-height: 1.65; margin-bottom: 20px; }
+.tool-ctas { display: flex; flex-direction: column; gap: 8px; }
+.btn-sheet { background: #fefcf7; color: #1a3a5c; font-weight: 600; font-size: 12px; padding: 9px 16px; border-radius: 6px; display: flex; align-items: center; gap: 6px; }
+.btn-notify { background: rgba(254,252,247,0.06); border: 1px solid rgba(254,252,247,0.12); color: rgba(254,252,247,0.65); font-size: 12px; padding: 9px 16px; border-radius: 6px; }
+.tool-card { background: rgba(254,252,247,0.05); border: 1px solid rgba(254,252,247,0.1); border-radius: 10px; padding: 20px; }
+.tool-card-label { font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(254,252,247,0.35); margin-bottom: 12px; }
+.tool-score-row { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(254,252,247,0.07); }
+.tool-score-row:last-child { border-bottom: none; }
+.score-label { font-size: 12px; color: rgba(254,252,247,0.65); }
+.score-bar { display: flex; gap: 3px; }
+.score-dot { width: 10px; height: 10px; border-radius: 50%; }
+.score-dot.filled { background: #f59e0b; }
+.score-dot.empty { background: rgba(254,252,247,0.1); }
+.tool-coming { border-top: 1px solid rgba(254,252,247,0.08); padding: 20px 32px; display: flex; align-items: center; gap: 12px; }
+.coming-badge { background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.25); color: #fbbf24; font-size: 10px; font-weight: 600; padding: 3px 9px; border-radius: 999px; white-space: nowrap; }
+.coming-text { font-size: 12px; color: rgba(254,252,247,0.4); line-height: 1.5; }
+
+/* ─── 4. BLOG INDEX ─── */
+.blog { background: #f9f8f4; }
+.blog-header { padding: 36px 32px 24px; }
+.blog-eyebrow { font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; color: #d97706; font-weight: 600; margin-bottom: 8px; }
+.blog-h1 { font-family: 'Fraunces', serif; font-size: 28px; font-weight: 600; letter-spacing: -0.02em; color: #1c1917; margin-bottom: 8px; }
+.blog-sub { font-size: 13px; color: #78716c; }
+.blog-divider { height: 1px; background: #e7e5e4; margin: 0 32px; }
+.blog-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 24px 32px 32px; }
+.post-card { background: white; border-radius: 10px; padding: 20px; border: 1px solid #e7e5e4; }
+.post-date { font-size: 10px; color: #a8a29e; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 8px; }
+.post-title { font-family: 'Fraunces', serif; font-size: 16px; font-weight: 600; color: #1c1917; line-height: 1.25; margin-bottom: 8px; }
+.post-excerpt { font-size: 12px; color: #78716c; line-height: 1.6; margin-bottom: 12px; }
+.post-link { font-size: 11px; font-weight: 600; color: #1a3a5c; }
+
+/* ─── FOOTER ─── */
+.site-footer { background: #1a3a5c; padding: 20px 32px; display: flex; justify-content: space-between; align-items: center; }
+.sf-copy { font-size: 11px; color: rgba(254,252,247,0.3); }
+.sf-links { display: flex; gap: 16px; }
+.sf-link { font-size: 11px; color: rgba(254,252,247,0.3); }
+</style>
+</head>
+<body>
+
+<p class="page-title">Section 3 — Page layouts</p>
+<p class="page-subtitle">Five distinct page types, each with appropriate treatment. Scroll to see all.</p>
+
+<!-- ══ 1. HOMEPAGE ══ -->
+<div class="page-section">
+  <div class="page-label">Homepage <span class="route">/</span> <span class="route">always dark · no toggle</span></div>
+  <div class="frame">
+    <div class="home">
+      <div class="nav nav-dark">
+        <span class="nav-logo">Brilliant Managers</span>
+        <div class="nav-links">
+          <span class="nav-link">The Guide</span>
+          <span class="nav-link">The Tool</span>
+          <span class="nav-link">Blog</span>
+          <span class="nav-link">Resources</span>
+        </div>
+        <div class="nav-right">
+          <span class="github-btn">GitHub →</span>
+        </div>
+      </div>
+      <div class="home-hero">
+        <div class="home-eyebrow">A Field Guide to Management</div>
+        <div class="amber-rule"></div>
+        <div class="home-h1">Most of us became managers<br><em>by accident.</em></div>
+        <div class="home-body">A framework for doing it on purpose — whether you're stepping into the role, a few years in, or two decades deep and still figuring it out.</div>
+        <div class="home-ctas">
+          <span class="btn-pri-dark">Read The Guide →</span>
+          <span class="btn-sec-dark">Try The Tool</span>
+        </div>
+      </div>
+      <div class="home-grid">
+        <div class="home-card">
+          <div class="home-card-icon">📖</div>
+          <div class="home-card-title">The Guide</div>
+          <div class="home-card-body">A structured framework across Self, Team, Strategy, Communications, and Domain Expertise.</div>
+          <div class="home-card-link">Start reading →</div>
+        </div>
+        <div class="home-card">
+          <div class="home-card-icon">🎯</div>
+          <div class="home-card-title">The Tool</div>
+          <div class="home-card-body">Score yourself against the framework. Understand your strengths and your growth edges.</div>
+          <div class="home-card-link">Open the scorecard →</div>
+        </div>
+        <div class="home-card">
+          <div class="home-card-icon">✍️</div>
+          <div class="home-card-title">The Blog</div>
+          <div class="home-card-body">Posts on management — the messy parts, the surprising parts, and the stuff no one tells you upfront.</div>
+          <div class="home-card-link">View posts →</div>
+        </div>
+      </div>
+      <div class="home-quote">
+        <blockquote>"Management is the job of creating conditions where other people can do their best work. Everything else is administration."</blockquote>
+        <cite>— Terry Brown, Brilliant Managers</cite>
+      </div>
+      <div class="home-footer">
+        <span class="footer-copy">© 2025 Brilliant Managers</span>
+        <div class="footer-links">
+          <span class="footer-link">Twitter</span>
+          <span class="footer-link">LinkedIn</span>
+          <span class="footer-link">GitHub</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 2. GUIDE CHAPTER ══ -->
+<div class="page-section">
+  <div class="page-label">Guide chapter <span class="route">/the-guide/self</span> <span class="route">light default · toggle visible</span></div>
+  <div class="frame">
+    <div class="guide">
+      <div class="nav nav-light">
+        <span class="nav-logo">Brilliant Managers</span>
+        <div class="nav-links">
+          <span class="nav-link cur">The Guide</span>
+          <span class="nav-link">The Tool</span>
+          <span class="nav-link">Blog</span>
+          <span class="nav-link">Resources</span>
+        </div>
+        <div class="nav-right">
+          <div class="theme-pill-l"><span class="on">☀️</span><span>🌙</span></div>
+          <span class="github-btn">GitHub →</span>
+        </div>
+      </div>
+      <div class="guide-body">
+        <div class="guide-sidebar">
+          <div class="sidebar-section">
+            <div class="sidebar-label">The Guide</div>
+            <div class="sidebar-item">Introduction</div>
+            <div class="sidebar-item">Measurement</div>
+            <div class="sidebar-item active">Self</div>
+            <div class="sidebar-item">Team</div>
+            <div class="sidebar-item">Strategy</div>
+            <div class="sidebar-item">Communications</div>
+            <div class="sidebar-item">Domain Expertise</div>
+            <div class="sidebar-item muted">FAQ</div>
+          </div>
+        </div>
+        <div class="guide-content">
+          <div class="guide-eyebrow">Chapter 2 · Self</div>
+          <div class="amber-rule-sm"></div>
+          <div class="guide-h1">Understanding yourself as a manager</div>
+          <div class="guide-prose">Before you can lead a team effectively, you need a clear-eyed view of how you operate — your instincts, your defaults under pressure, your genuine strengths, and the blind spots you've probably stopped noticing.</div>
+          <div class="guide-prose">This isn't a personality test. It's an invitation to sit with a set of questions that most managers never get asked directly — and to answer them honestly.</div>
+          <div class="guide-callout"><p>💡 This chapter works best as a conversation. Use it with your own manager, a trusted peer, or a coach — not just as private reflection.</p></div>
+        </div>
+        <div class="guide-toc">
+          <div class="toc-label">On this page</div>
+          <div class="toc-item active">Overview</div>
+          <div class="toc-item">Your defaults</div>
+          <div class="toc-item">Blind spots</div>
+          <div class="toc-item">The scorecard</div>
+        </div>
+      </div>
+      <div class="guide-prev-next">
+        <span class="pn-link">← Measurement</span>
+        <span class="pn-link">Team →</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 3. TOOL LANDING ══ -->
+<div class="page-section">
+  <div class="page-label">Tool landing <span class="route">/the-tool</span> <span class="route">always dark · no toggle</span></div>
+  <div class="frame">
+    <div class="tool">
+      <div class="nav nav-dark">
+        <span class="nav-logo">Brilliant Managers</span>
+        <div class="nav-links">
+          <span class="nav-link">The Guide</span>
+          <span class="nav-link cur" style="color:#fefcf7">The Tool</span>
+          <span class="nav-link">Blog</span>
+          <span class="nav-link">Resources</span>
+        </div>
+        <div class="nav-right">
+          <span class="github-btn">GitHub →</span>
+        </div>
+      </div>
+      <div class="tool-hero">
+        <div>
+          <div class="tool-eyebrow">The Manager Scorecard</div>
+          <div class="amber-rule"></div>
+          <div class="tool-h1">Score yourself.<br>Know where to <em>grow.</em></div>
+          <div class="tool-body">A structured self-assessment across the five pillars of the framework. Best done with your manager — not in isolation.</div>
+          <div class="tool-ctas">
+            <span class="btn-sheet">📊 Open current version (Google Sheets)</span>
+            <span class="btn-notify">Get notified when the app launches</span>
+          </div>
+        </div>
+        <div class="tool-card">
+          <div class="tool-card-label">Sample · Self pillar</div>
+          <div class="tool-score-row">
+            <span class="score-label">Self-awareness</span>
+            <div class="score-bar">
+              <div class="score-dot filled"></div><div class="score-dot filled"></div><div class="score-dot filled"></div><div class="score-dot filled"></div><div class="score-dot empty"></div>
+            </div>
+          </div>
+          <div class="tool-score-row">
+            <span class="score-label">Emotional regulation</span>
+            <div class="score-bar">
+              <div class="score-dot filled"></div><div class="score-dot filled"></div><div class="score-dot filled"></div><div class="score-dot empty"></div><div class="score-dot empty"></div>
+            </div>
+          </div>
+          <div class="tool-score-row">
+            <span class="score-label">Coaching instinct</span>
+            <div class="score-bar">
+              <div class="score-dot filled"></div><div class="score-dot filled"></div><div class="score-dot empty"></div><div class="score-dot empty"></div><div class="score-dot empty"></div>
+            </div>
+          </div>
+          <div class="tool-score-row">
+            <span class="score-label">Receiving feedback</span>
+            <div class="score-bar">
+              <div class="score-dot filled"></div><div class="score-dot filled"></div><div class="score-dot filled"></div><div class="score-dot filled"></div><div class="score-dot filled"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="tool-coming">
+        <span class="coming-badge">Coming in v2</span>
+        <span class="coming-text">A native web app — save your scores, track progress over time, and share with your manager. No spreadsheet required.</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 4. BLOG INDEX ══ -->
+<div class="page-section">
+  <div class="page-label">Blog index <span class="route">/blog</span> <span class="route">light default · toggle visible</span></div>
+  <div class="frame">
+    <div class="blog">
+      <div class="nav nav-light">
+        <span class="nav-logo">Brilliant Managers</span>
+        <div class="nav-links">
+          <span class="nav-link">The Guide</span>
+          <span class="nav-link">The Tool</span>
+          <span class="nav-link cur">Blog</span>
+          <span class="nav-link">Resources</span>
+        </div>
+        <div class="nav-right">
+          <div class="theme-pill-l"><span class="on">☀️</span><span>🌙</span></div>
+          <span class="github-btn">GitHub →</span>
+        </div>
+      </div>
+      <div class="blog-header">
+        <div class="blog-eyebrow">Writing on management</div>
+        <div class="amber-rule-sm"></div>
+        <div class="blog-h1">The Blog</div>
+        <div class="blog-sub">Notes from the field — the messy parts, the surprising parts, and the stuff no one tells you upfront.</div>
+      </div>
+      <div class="blog-divider"></div>
+      <div class="blog-grid">
+        <div class="post-card">
+          <div class="post-date">May 2025</div>
+          <div class="post-title">You can't manage what you won't measure — and what that actually means</div>
+          <div class="post-excerpt">Metrics in management get a bad rap, mostly because they're used badly. Here's how to use measurement as a tool for clarity, not surveillance.</div>
+          <div class="post-link">Read →</div>
+        </div>
+        <div class="post-card">
+          <div class="post-date">March 2025</div>
+          <div class="post-title">The conversation you keep postponing is probably the most important one</div>
+          <div class="post-excerpt">Most underperformance conversations happen six months too late. Why we delay them — and what it costs.</div>
+          <div class="post-link">Read →</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,261 @@
+@import "tailwindcss";
+
+/* Dark mode: applies when an ancestor has the .dark class (set by next-themes) */
+@variant dark (&:is(.dark *));
+
+@theme {
+  /* ── Fonts ── */
+  --font-display: var(--font-fraunces), serif;
+  --font-body: var(--font-inter), sans-serif;
+
+  /* ── Colour tokens (light mode defaults) ── */
+  --color-bg-base: #fefcf7;
+  --color-bg-reading: #f9f8f4;
+  --color-text-primary: #1c1917;
+  --color-text-muted: #44403c;
+  --color-accent: #d97706;
+  --color-border: #e7e5e4;
+
+  /* ── Layout tokens ── */
+  --radius: 8px;
+  --radius-lg: 16px;
+  --container-width: 1080px;
+  --prose-width: 680px;
+  --section-gap: 96px;
+}
+
+/* Dark mode overrides — applied when .dark class is on an ancestor */
+.dark {
+  --color-bg-base: #1a3a5c;
+  --color-bg-reading: #16202d;
+  --color-text-primary: #fefcf7;
+  --color-text-muted: rgba(254, 252, 247, 0.60);
+  --color-accent: #f59e0b;
+  --color-border: rgba(254, 252, 247, 0.12);
+}
+
+/* ── Base styles ── */
+body {
+  background-color: var(--color-bg-base);
+  color: var(--color-text-primary);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Amber rule utility ── */
+.amber-rule {
+  display: block;
+  width: 40px;
+  height: 2px;
+  background-color: var(--color-accent);
+  margin-bottom: 12px;
+}
+
+/* ── Prose overrides for MDX content ── */
+.prose {
+  max-width: var(--prose-width);
+  font-size: 17px;
+  line-height: 1.7;
+  color: var(--color-text-muted);
+}
+
+.prose h1, .prose h2, .prose h3 {
+  font-family: var(--font-display);
+  color: var(--color-text-primary);
+}
+
+.prose a {
+  color: var(--color-accent);
+  text-underline-offset: 2px;
+}
+
+/* ── Prose: paragraph spacing ── */
+.prose p {
+  margin-bottom: 1.25rem;
+}
+
+/* ── Prose: headings ── */
+.prose h2 {
+  font-family: var(--font-display);
+  font-size: 1.65rem;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  color: var(--color-text-primary);
+  margin-top: 3rem;
+  margin-bottom: 0.75rem;
+  scroll-margin-top: 5rem;
+}
+
+.prose h3 {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin-top: 2.25rem;
+  margin-bottom: 0.5rem;
+  scroll-margin-top: 5rem;
+}
+
+.prose h4 {
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-text-muted);
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+/* ── Prose: lists ── */
+.prose ul {
+  list-style-type: disc;
+  margin-left: 1.25rem;
+  padding-left: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.prose ol {
+  list-style-type: decimal;
+  margin-left: 1.25rem;
+  padding-left: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.prose li {
+  margin-bottom: 0.4rem;
+  line-height: 1.65;
+  color: var(--color-text-muted);
+}
+
+.prose ul li::marker {
+  color: var(--color-accent);
+  font-size: 0.65em;
+}
+
+.prose ol li::marker {
+  color: var(--color-accent);
+  font-size: 0.85em;
+  font-weight: 600;
+}
+
+.prose li > ul,
+.prose li > ol {
+  margin-top: 0.4rem;
+  margin-bottom: 0;
+}
+
+/* ── Prose: strong and em ── */
+.prose strong {
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.prose em {
+  font-style: italic;
+}
+
+/* ── Prose: blockquote ── */
+.prose blockquote {
+  border-left: 3px solid var(--color-accent);
+  padding-left: 1.5rem;
+  margin: 1.5rem 0;
+  font-style: italic;
+  color: var(--color-text-muted);
+}
+
+/* ── Prose: code ── */
+.prose code {
+  font-size: 0.85em;
+  background: var(--color-bg-reading);
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  padding: 0.1em 0.35em;
+}
+
+/* ── Prose: details / summary (collapsible sections) ── */
+.prose details {
+  border-left: 2px solid var(--color-border);
+  padding: 0 0 0 1rem;
+  margin-bottom: 1rem;
+  scroll-margin-top: 5rem;
+}
+
+.prose summary {
+  cursor: pointer;
+  padding: 0.5rem 0;
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  list-style: none;
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  user-select: none;
+}
+
+.prose summary::-webkit-details-marker {
+  display: none;
+}
+
+.prose summary::before {
+  content: '+';
+  font-family: var(--font-body);
+  font-size: 1rem;
+  font-weight: 400;
+  color: var(--color-accent);
+  flex-shrink: 0;
+  transition: none;
+}
+
+.prose details[open] > summary::before {
+  content: '−';
+}
+
+.prose details[open] > summary {
+  margin-bottom: 0.5rem;
+}
+
+.prose details > *:not(summary) {
+  padding: 0;
+}
+
+/* ── Prose: tables (remark-gfm) ── */
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+  margin: 1.5rem 0;
+}
+
+.prose thead th {
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--color-text-muted);
+  padding: 0.6rem 1rem;
+  border-bottom: 2px solid var(--color-border);
+}
+
+.prose tbody td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+  vertical-align: top;
+  line-height: 1.55;
+}
+
+.prose tbody td:first-child {
+  font-weight: 600;
+  color: var(--color-text-primary);
+  white-space: nowrap;
+}
+
+/* ── Prose: horizontal rule ── */
+.prose hr {
+  border: none;
+  border-top: 1px solid var(--color-border);
+  margin: 2rem 0;
+}

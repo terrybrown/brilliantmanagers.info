@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Design System v2 — with theme modes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,300;1,9..144,400;1,9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Inter', sans-serif; background: #f5f4f0; color: #1c1917; padding: 40px 32px; font-size: 14px; line-height: 1.5; }
+.page-title { font-family: 'Fraunces', serif; font-size: 24px; font-weight: 600; margin-bottom: 4px; }
+.page-subtitle { color: #78716c; margin-bottom: 32px; font-size: 13px; }
+h2.section-label { font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #a8a29e; margin-bottom: 14px; }
+.section { margin-bottom: 48px; }
+
+/* ── PALETTE TABLES ── */
+.palette-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.palette-panel { border-radius: 12px; overflow: hidden; }
+.palette-header { padding: 12px 16px; font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; }
+.ph-dark { background: #0f2942; color: rgba(254,252,247,0.5); }
+.ph-light { background: #e7e5e0; color: #a8a29e; }
+.swatch-row { display: flex; align-items: center; gap: 12px; padding: 10px 16px; }
+.swatch-row:nth-child(odd) { background: rgba(0,0,0,0.04); }
+.swatch-dot { width: 32px; height: 32px; border-radius: 6px; flex-shrink: 0; }
+.swatch-info .name { font-size: 12px; font-weight: 600; }
+.swatch-info .hex { font-size: 11px; color: #78716c; }
+.swatch-info .usage { font-size: 11px; color: #a8a29e; }
+.panel-dark .swatch-info .name { color: rgba(254,252,247,0.9); }
+.panel-dark .swatch-info .hex { color: rgba(254,252,247,0.4); }
+.panel-dark .swatch-info .usage { color: rgba(254,252,247,0.3); }
+.panel-dark .swatch-row:nth-child(odd) { background: rgba(255,255,255,0.03); }
+.panel-dark { background: #1a3a5c; }
+.panel-light { background: white; }
+
+/* ── SURFACE PREVIEWS ── */
+.surface-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.surface-card { border-radius: 12px; overflow: hidden; }
+.surface-label { padding: 9px 16px; font-size: 11px; font-weight: 600; letter-spacing: 0.09em; text-transform: uppercase; display: flex; justify-content: space-between; align-items: center; }
+.surface-preview { padding: 28px 28px 32px; }
+
+/* Dark surface — marketing page */
+.s-dark-dark .surface-label { background: #0f2942; color: rgba(254,252,247,0.4); }
+.s-dark-dark .surface-preview { background: #1a3a5c; }
+.s-dark-light .surface-label { background: #e7e5e0; color: #a8a29e; }
+.s-dark-light .surface-preview { background: #fefcf7; }
+/* Light surface — reading page */
+.s-light-light .surface-label { background: #e7e5e0; color: #a8a29e; }
+.s-light-light .surface-preview { background: #fefcf7; }
+.s-light-dark .surface-label { background: #0f2942; color: rgba(254,252,247,0.4); }
+.s-light-dark .surface-preview { background: #16202d; }
+
+/* shared type elements */
+.eyebrow-dark { font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(254,252,247,0.4); margin-bottom: 10px; }
+.eyebrow-light { font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: #d97706; font-weight: 600; margin-bottom: 10px; }
+.rule-amber { width: 36px; height: 2px; background: #f59e0b; margin-bottom: 14px; }
+.hero-dark { font-family: 'Fraunces', serif; font-size: 30px; font-weight: 600; line-height: 1.05; letter-spacing: -0.02em; color: #fefcf7; margin-bottom: 12px; }
+.hero-dark em { font-style: italic; color: #f59e0b; }
+.hero-light-on-dark { font-family: 'Fraunces', serif; font-size: 30px; font-weight: 600; line-height: 1.05; letter-spacing: -0.02em; color: #1c1917; margin-bottom: 12px; }
+.hero-light-on-dark em { font-style: italic; color: #d97706; }
+.body-dark { font-size: 13px; color: rgba(254,252,247,0.6); line-height: 1.6; margin-bottom: 18px; }
+.body-light { font-size: 13px; color: #44403c; line-height: 1.6; margin-bottom: 18px; }
+.ctas { display: flex; gap: 8px; }
+.btn-primary-dark { background: #fefcf7; color: #1a3a5c; font-weight: 600; font-size: 12px; padding: 7px 14px; border-radius: 6px; font-family: 'Inter', sans-serif; }
+.btn-secondary-dark { background: rgba(254,252,247,0.07); color: #fefcf7; border: 1px solid rgba(254,252,247,0.14); font-size: 12px; padding: 7px 14px; border-radius: 6px; font-family: 'Inter', sans-serif; }
+.btn-primary-light { background: #1c1917; color: #fefcf7; font-weight: 600; font-size: 12px; padding: 7px 14px; border-radius: 6px; font-family: 'Inter', sans-serif; }
+.btn-secondary-light { background: white; color: #1c1917; border: 1px solid #e7e5e4; font-size: 12px; padding: 7px 14px; border-radius: 6px; font-family: 'Inter', sans-serif; }
+.toggle-chip { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 999px; font-size: 10px; font-weight: 600; }
+.chip-dark { background: rgba(254,252,247,0.1); color: rgba(254,252,247,0.5); }
+.chip-light { background: #e7e5e0; color: #78716c; }
+
+/* reading page elements */
+.chapter-dark { font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(254,252,247,0.35); margin-bottom: 10px; }
+.chapter-light { font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: #d97706; font-weight: 600; margin-bottom: 10px; }
+.read-h2-dark { font-family: 'Fraunces', serif; font-size: 22px; font-weight: 600; letter-spacing: -0.015em; color: #fefcf7; margin-bottom: 10px; line-height: 1.1; }
+.read-h2-light { font-family: 'Fraunces', serif; font-size: 22px; font-weight: 600; letter-spacing: -0.015em; color: #1c1917; margin-bottom: 10px; line-height: 1.1; }
+.read-body-dark { font-size: 14px; color: rgba(254,252,247,0.65); line-height: 1.7; margin-bottom: 14px; }
+.read-body-light { font-size: 14px; color: #44403c; line-height: 1.7; margin-bottom: 14px; }
+.callout-dark { background: rgba(245,158,11,0.08); border-left: 3px solid #f59e0b; padding: 10px 14px; border-radius: 0 6px 6px 0; }
+.callout-dark p { font-size: 12px; color: rgba(254,252,247,0.55); line-height: 1.55; }
+.callout-light { background: #fffbeb; border-left: 3px solid #f59e0b; padding: 10px 14px; border-radius: 0 6px 6px 0; }
+.callout-light p { font-size: 12px; color: #78716c; line-height: 1.55; }
+
+/* theme toggle preview */
+.toggle-preview { display: flex; align-items: center; gap: 16px; background: white; border-radius: 10px; padding: 16px 20px; border: 1px solid #e7e5e4; }
+.toggle-btn { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 6px; font-size: 12px; font-weight: 500; font-family: 'Inter', sans-serif; border: 1px solid #e7e5e4; background: white; color: #44403c; cursor: pointer; }
+.toggle-btn.active { background: #1a3a5c; color: #fefcf7; border-color: #1a3a5c; }
+.toggle-note { font-size: 12px; color: #78716c; }
+</style>
+</head>
+<body>
+
+<p class="page-title">Design System — with light/dark mode</p>
+<p class="page-subtitle">v2 · Tokens, colour modes, and what each surface looks like in both themes</p>
+
+<!-- COLOUR TOKENS: BOTH MODES -->
+<div class="section">
+  <h2 class="section-label">Colour tokens — dark mode vs light mode</h2>
+  <div class="palette-grid">
+    <div class="palette-panel">
+      <div class="palette-header ph-dark">🌙 Dark mode</div>
+      <div class="panel-dark">
+        <div class="swatch-row"><div class="swatch-dot" style="background:#1a3a5c;border:1px solid rgba(255,255,255,0.1)"></div><div class="swatch-info"><div class="name">bg-base</div><div class="hex">#1a3a5c</div><div class="usage">Marketing page background</div></div></div>
+        <div class="swatch-row"><div class="swatch-dot" style="background:#16202d"></div><div class="swatch-info"><div class="name">bg-reading</div><div class="hex">#16202d</div><div class="usage">Guide/blog background</div></div></div>
+        <div class="swatch-row"><div class="swatch-dot" style="background:#fefcf7"></div><div class="swatch-info"><div class="name">text-primary</div><div class="hex">#fefcf7</div><div class="usage">Headlines, body</div></div></div>
+        <div class="swatch-row"><div class="swatch-dot" style="background:rgba(254,252,247,0.6);border:1px solid rgba(255,255,255,0.1)"></div><div class="swatch-info"><div class="name">text-muted</div><div class="hex">cream / 60%</div><div class="usage">Secondary text</div></div></div>
+        <div class="swatch-row"><div class="swatch-dot" style="background:#f59e0b"></div><div class="swatch-info"><div class="name">accent</div><div class="hex">#f59e0b</div><div class="usage">Amber — unchanged</div></div></div>
+      </div>
+    </div>
+    <div class="palette-panel">
+      <div class="palette-header ph-light">☀️ Light mode</div>
+      <div class="panel-light">
+        <div class="swatch-row"><div class="swatch-dot" style="background:#fefcf7;border:1px solid #e7e5e4"></div><div class="swatch-info"><div class="name">bg-base</div><div class="hex">#fefcf7</div><div class="usage">Marketing page background</div></div></div>
+        <div class="swatch-row"><div class="swatch-dot" style="background:#f9f8f4;border:1px solid #e7e5e4"></div><div class="swatch-info"><div class="name">bg-reading</div><div class="hex">#f9f8f4</div><div class="usage">Guide/blog background</div></div></div>
+        <div class="swatch-row"><div class="swatch-dot" style="background:#1c1917"></div><div class="swatch-info"><div class="name">text-primary</div><div class="hex">#1c1917</div><div class="usage">Headlines, body</div></div></div>
+        <div class="swatch-row"><div class="swatch-dot" style="background:#44403c"></div><div class="swatch-info"><div class="name">text-muted</div><div class="hex">#44403c</div><div class="usage">Secondary text</div></div></div>
+        <div class="swatch-row"><div class="swatch-dot" style="background:#d97706"></div><div class="swatch-info"><div class="name">accent</div><div class="hex">#d97706</div><div class="usage">Amber — slightly deeper for contrast</div></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MARKETING PAGE: BOTH MODES -->
+<div class="section">
+  <h2 class="section-label">Marketing surface (homepage / tool landing) — both modes</h2>
+  <div class="surface-grid">
+    <div class="surface-card s-dark-dark">
+      <div class="surface-label"><span>🌙 Dark mode (default)</span></div>
+      <div class="surface-preview">
+        <div class="eyebrow-dark">A Field Guide to Management</div>
+        <div class="rule-amber"></div>
+        <div class="hero-dark">Most of us became managers<br><em>by accident.</em></div>
+        <div class="body-dark">A framework for doing it on purpose — whether you're new to the role or two decades in.</div>
+        <div class="ctas">
+          <span class="btn-primary-dark">Read The Guide →</span>
+          <span class="btn-secondary-dark">Try The Tool</span>
+        </div>
+      </div>
+    </div>
+    <div class="surface-card s-dark-light">
+      <div class="surface-label"><span>☀️ Light mode</span></div>
+      <div class="surface-preview">
+        <div class="eyebrow-light">A Field Guide to Management</div>
+        <div class="rule-amber"></div>
+        <div class="hero-light-on-dark">Most of us became managers<br><em>by accident.</em></div>
+        <div class="body-light">A framework for doing it on purpose — whether you're new to the role or two decades in.</div>
+        <div class="ctas">
+          <span class="btn-primary-light">Read The Guide →</span>
+          <span class="btn-secondary-light">Try The Tool</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- READING PAGE: BOTH MODES -->
+<div class="section">
+  <h2 class="section-label">Reading surface (Guide chapters / blog posts) — both modes</h2>
+  <div class="surface-grid">
+    <div class="surface-card s-light-light">
+      <div class="surface-label"><span>☀️ Light mode (default for reading)</span></div>
+      <div class="surface-preview">
+        <div class="chapter-light">Chapter 2 · Self</div>
+        <div class="rule-amber"></div>
+        <div class="read-h2-light">Understanding yourself as a manager</div>
+        <div class="read-body-light">Before you can lead a team effectively, you need a clear-eyed view of how you operate — your instincts, your defaults, your blind spots.</div>
+        <div class="callout-light"><p>💡 This is best done with input from someone who manages you.</p></div>
+      </div>
+    </div>
+    <div class="surface-card s-light-dark">
+      <div class="surface-label"><span>🌙 Dark mode</span></div>
+      <div class="surface-preview" style="background:#16202d">
+        <div class="chapter-dark">Chapter 2 · Self</div>
+        <div class="rule-amber"></div>
+        <div class="read-h2-dark">Understanding yourself as a manager</div>
+        <div class="read-body-dark">Before you can lead a team effectively, you need a clear-eyed view of how you operate — your instincts, your defaults, your blind spots.</div>
+        <div class="callout-dark"><p>💡 This is best done with input from someone who manages you.</p></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- THEME TOGGLE COMPONENT -->
+<div class="section">
+  <h2 class="section-label">Theme toggle component (header, top-right)</h2>
+  <div class="toggle-preview">
+    <span class="toggle-btn active">🌙 Dark</span>
+    <span class="toggle-btn">☀️ Light</span>
+    <span class="toggle-note">Implemented via <code>next-themes</code> + <code>ThemeProvider</code>. Persists to <code>localStorage</code>, respects <code>prefers-color-scheme</code> on first visit. A single <code>ThemeToggle</code> component lives in the nav bar.</span>
+  </div>
+</div>
+
+<div style="background:#fffbeb;border-left:3px solid #f59e0b;padding:12px 16px;border-radius:0 6px 6px 0;">
+  <p style="font-size:13px;color:#78716c;line-height:1.55"><strong>Implementation note:</strong> Tailwind v4 dark mode is via the <code>dark</code> class on <code>&lt;html&gt;</code>, controlled by <code>next-themes</code>. shadcn/ui uses CSS custom properties that already switch with the <code>.dark</code> class — so all shadcn components get dark mode for free. Custom components use <code>dark:</code> Tailwind variants. Default respects system preference on first visit.</p>
+</div>
+
+<script>
+function toggleSelect(el) {
+  el.classList.toggle('selected');
+  if (window.recordChoice) recordChoice(el.dataset.choice, el.textContent.trim());
+}
+</script>
+</body>
+</html>

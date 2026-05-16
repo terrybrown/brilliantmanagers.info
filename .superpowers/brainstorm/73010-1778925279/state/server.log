@@ -1,0 +1,13 @@
+{"type":"server-started","port":49944,"host":"127.0.0.1","url_host":"localhost","url":"http://localhost:49944","screen_dir":"/Users/terry.brown/work/personal/brilliantmanagers.info/.superpowers/brainstorm/73010-1778925279/content","state_dir":"/Users/terry.brown/work/personal/brilliantmanagers.info/.superpowers/brainstorm/73010-1778925279/state"}
+{"type":"screen-added","file":"/Users/terry.brown/work/personal/brilliantmanagers.info/.superpowers/brainstorm/73010-1778925279/content/intro.html"}
+{"type":"screen-added","file":"/Users/terry.brown/work/personal/brilliantmanagers.info/.superpowers/brainstorm/73010-1778925279/content/visual-direction.html"}
+{"source":"user-event","type":"click","text":"№ 01 — INTRODUCTION\n      Most of usbecame managersby accident.\n      A field guide to doing it on purpose.\n      Read the guide →\n    \n    \n      D. Bold / editorial-statement\n      Big serif, single-statement hero, accent colour, magazine-cover energy. High personality, opinionated.\n      Anthropic · Stripe.com · Every.to","choice":"d","id":null,"timestamp":1778925644254}
+{"type":"screen-added","file":"/Users/terry.brown/work/personal/brilliantmanagers.info/.superpowers/brainstorm/73010-1778925279/content/waiting.html"}
+{"type":"screen-added","file":"/Users/terry.brown/work/personal/brilliantmanagers.info/.superpowers/brainstorm/73010-1778925279/content/design-system.html"}
+{"type":"screen-added","file":"/Users/terry.brown/work/personal/brilliantmanagers.info/.superpowers/brainstorm/73010-1778925279/content/design-system-v2.html"}
+{"type":"screen-added","file":"/Users/terry.brown/work/personal/brilliantmanagers.info/.superpowers/brainstorm/73010-1778925279/content/theme-nav.html"}
+{"type":"screen-added","file":"/Users/terry.brown/work/personal/brilliantmanagers.info/.superpowers/brainstorm/73010-1778925279/content/page-layouts.html"}
+{"type":"screen-added","file":"/Users/terry.brown/work/personal/brilliantmanagers.info/.superpowers/brainstorm/73010-1778925279/content/scoring-levels.html"}
+{"type":"screen-added","file":"/Users/terry.brown/work/personal/brilliantmanagers.info/.superpowers/brainstorm/73010-1778925279/content/scoring-levels-v2.html"}
+{"type":"screen-added","file":"/Users/terry.brown/work/personal/brilliantmanagers.info/.superpowers/brainstorm/73010-1778925279/content/waiting-2.html"}
+{"type":"server-stopped","reason":"idle timeout"}
