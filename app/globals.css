@@ -157,7 +157,7 @@ body {
 /* ── Prose: blockquote ── */
 .prose blockquote {
   border-left: 3px solid var(--color-accent);
-  padding-left: 1rem;
+  padding-left: 1.5rem;
   margin: 1.5rem 0;
   font-style: italic;
   color: var(--color-text-muted);
