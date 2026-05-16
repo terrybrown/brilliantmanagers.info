@@ -20,8 +20,6 @@ export default function HomePage() {
           </>
         }
         body="A framework — not a manual. It won't tell you what to do. It'll help you see where you are."
-        primaryCta={{ label: 'Read The Guide →', href: '/the-guide' }}
-        secondaryCta={{ label: 'Try The Tool', href: '/the-tool' }}
       />
       <FeatureGrid
         cards={[
