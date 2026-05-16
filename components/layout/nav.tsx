@@ -30,7 +30,7 @@ export function Nav() {
 
         <nav className="hidden items-center gap-6 md:flex">
           {siteConfig.nav.map((item) => {
-            const isActive = item.href === '/' ? pathname === '/' : pathname === item.href || pathname.startsWith(item.href + '/')
+            const isActive = pathname === item.href || pathname.startsWith(item.href + '/')
             return (
               <Link
                 key={item.href}
