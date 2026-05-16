@@ -2,17 +2,17 @@
 import { createClient } from '@/lib/supabase/server'
 import { createConnection, acceptConnection } from '@/lib/db/connections'
 
-export async function inviteConnection(formData: FormData) {
+export async function inviteConnection(formData: FormData): Promise<void> {
   const supabase = await createClient()
   const {
     data: { user },
   } = await supabase.auth.getUser()
-  if (!user) return { error: 'Not authenticated' }
+  if (!user) return
 
   const email = formData.get('email') as string
   const role = formData.get('role') as 'manager' | 'direct_report'
 
-  return createConnection({
+  await createConnection({
     initiatorId: user.id,
     otherEmail: email,
     initiatorRole: role,
