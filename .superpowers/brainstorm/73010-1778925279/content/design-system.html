@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Design System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,300;1,9..144,400;1,9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Inter', sans-serif; background: #f5f4f0; color: #1c1917; padding: 40px 32px; font-size: 14px; line-height: 1.5; }
+.page-title { font-family: 'Fraunces', serif; font-size: 28px; font-weight: 600; margin-bottom: 6px; }
+.page-subtitle { color: #78716c; margin-bottom: 40px; }
+h2.section-label { font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #a8a29e; margin-bottom: 16px; }
+.section { margin-bottom: 48px; }
+
+/* ── PALETTE ── */
+.swatches { display: flex; gap: 12px; flex-wrap: wrap; }
+.swatch { border-radius: 10px; overflow: hidden; width: 160px; }
+.swatch-color { height: 80px; }
+.swatch-label { padding: 10px 12px; background: white; }
+.swatch-label .name { font-weight: 600; font-size: 12px; }
+.swatch-label .hex { font-size: 11px; color: #78716c; margin-top: 1px; }
+.swatch-label .usage { font-size: 11px; color: #a8a29e; margin-top: 4px; }
+
+/* ── TYPE SCALE ── */
+.type-row { display: flex; align-items: baseline; gap: 20px; padding: 14px 0; border-bottom: 1px solid #e7e5e4; }
+.type-row:last-child { border-bottom: none; }
+.type-meta { width: 160px; flex-shrink: 0; }
+.type-meta .token { font-size: 11px; font-weight: 600; color: #a8a29e; letter-spacing: 0.05em; }
+.type-meta .spec { font-size: 11px; color: #78716c; margin-top: 2px; }
+.type-sample { flex: 1; }
+
+/* ── COLOUR MODES ── */
+.modes { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.mode { border-radius: 12px; overflow: hidden; }
+.mode-dark { background: #1a3a5c; }
+.mode-light { background: #fefcf7; border: 1px solid #e7e5e4; }
+.mode-inner { padding: 28px; }
+
+/* Dark mode elements */
+.dark-eyebrow { font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(254,252,247,0.45); margin-bottom: 12px; }
+.dark-h1 { font-family: 'Fraunces', serif; font-size: 36px; font-weight: 600; line-height: 1.05; letter-spacing: -0.02em; color: #fefcf7; margin-bottom: 14px; }
+.dark-h1 em { font-style: italic; color: #f59e0b; }
+.dark-body { font-size: 14px; color: rgba(254,252,247,0.65); line-height: 1.6; margin-bottom: 20px; }
+.btn-dark-pri { display: inline-flex; align-items: center; gap: 6px; background: #fefcf7; color: #1a3a5c; font-family: 'Inter', sans-serif; font-weight: 600; font-size: 13px; padding: 9px 18px; border-radius: 6px; }
+.btn-dark-sec { display: inline-flex; align-items: center; gap: 6px; background: rgba(254,252,247,0.07); color: #fefcf7; border: 1px solid rgba(254,252,247,0.12); font-family: 'Inter', sans-serif; font-weight: 500; font-size: 13px; padding: 9px 18px; border-radius: 6px; margin-left: 8px; }
+.amber-rule { width: 40px; height: 2px; background: #f59e0b; margin-bottom: 20px; }
+.mode-label { padding: 10px 16px; background: rgba(0,0,0,0.15); }
+.mode-label-light { padding: 10px 16px; background: #f5f4f0; }
+.mode-label span { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.5); }
+.mode-label-light span { color: #a8a29e; }
+
+/* Light mode elements */
+.light-chapter { font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: #d97706; font-weight: 600; margin-bottom: 10px; }
+.light-h2 { font-family: 'Fraunces', serif; font-size: 24px; font-weight: 600; line-height: 1.1; letter-spacing: -0.015em; color: #1c1917; margin-bottom: 10px; }
+.light-body { font-size: 15px; color: #44403c; line-height: 1.7; margin-bottom: 16px; }
+.light-rule { width: 40px; height: 2px; background: #f59e0b; margin-bottom: 16px; }
+.callout { background: #fffbeb; border-left: 3px solid #f59e0b; padding: 12px 16px; border-radius: 0 6px 6px 0; }
+.callout p { font-size: 13px; color: #78716c; line-height: 1.55; }
+
+/* ── COMPONENT TOKENS ── */
+.token-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.token-card { background: white; border-radius: 8px; padding: 14px; }
+.token-card .token-name { font-size: 11px; font-weight: 600; color: #a8a29e; letter-spacing: 0.05em; margin-bottom: 6px; }
+.token-card .token-val { font-size: 13px; font-weight: 500; color: #1c1917; }
+.token-card .token-preview { margin-top: 8px; }
+
+/* ── NAV PREVIEW ── */
+.nav-preview { background: #1a3a5c; border-radius: 10px; padding: 0 24px; display: flex; align-items: center; justify-content: space-between; height: 56px; }
+.nav-logo { font-family: 'Fraunces', serif; font-size: 17px; color: #fefcf7; font-weight: 600; letter-spacing: -0.01em; }
+.nav-links { display: flex; gap: 24px; }
+.nav-link { font-size: 13px; color: rgba(254,252,247,0.6); font-weight: 500; }
+.nav-link.active { color: #fefcf7; }
+.nav-cta { background: rgba(254,252,247,0.1); border: 1px solid rgba(254,252,247,0.15); color: #fefcf7; font-size: 13px; font-weight: 500; padding: 6px 14px; border-radius: 5px; }
+</style>
+</head>
+<body>
+<p class="page-title">Brilliant Managers — Design System</p>
+<p class="page-subtitle">Section 2 of 6: Tokens, typography, colour modes, components</p>
+
+<!-- NAV -->
+<div class="section">
+  <h2 class="section-label">Navigation bar</h2>
+  <div class="nav-preview">
+    <span class="nav-logo">Brilliant Managers</span>
+    <div class="nav-links">
+      <span class="nav-link active">The Guide</span>
+      <span class="nav-link">The Tool</span>
+      <span class="nav-link">Blog</span>
+      <span class="nav-link">Resources</span>
+    </div>
+    <span class="nav-cta">GitHub</span>
+  </div>
+</div>
+
+<!-- PALETTE -->
+<div class="section">
+  <h2 class="section-label">Colour tokens</h2>
+  <div class="swatches">
+    <div class="swatch">
+      <div class="swatch-color" style="background:#1a3a5c"></div>
+      <div class="swatch-label"><div class="name">Surface Dark</div><div class="hex">#1a3a5c</div><div class="usage">Marketing pages, nav bar, footer</div></div>
+    </div>
+    <div class="swatch">
+      <div class="swatch-color" style="background:#fefcf7;border:1px solid #e7e5e4"></div>
+      <div class="swatch-label"><div class="name">Surface Light</div><div class="hex">#fefcf7</div><div class="usage">Guide chapters, blog posts</div></div>
+    </div>
+    <div class="swatch">
+      <div class="swatch-color" style="background:#f59e0b"></div>
+      <div class="swatch-label"><div class="name">Accent Amber</div><div class="hex">#f59e0b</div><div class="usage">Ruled lines, italic pull, CTAs on light</div></div>
+    </div>
+    <div class="swatch">
+      <div class="swatch-color" style="background:#1c1917"></div>
+      <div class="swatch-label"><div class="name">Ink</div><div class="hex">#1c1917</div><div class="usage">Body text on light surfaces</div></div>
+    </div>
+    <div class="swatch">
+      <div class="swatch-color" style="background:#44403c"></div>
+      <div class="swatch-label"><div class="name">Ink Muted</div><div class="hex">#44403c</div><div class="usage">Secondary text, prose body</div></div>
+    </div>
+    <div class="swatch">
+      <div class="swatch-color" style="background:#a8a29e"></div>
+      <div class="swatch-label"><div class="name">Ink Subtle</div><div class="hex">#a8a29e</div><div class="usage">Captions, labels, timestamps</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- TYPE SCALE -->
+<div class="section">
+  <h2 class="section-label">Typography scale — Fraunces (headlines) + Inter (UI/body)</h2>
+  <div style="background:white;border-radius:10px;padding:20px 24px;">
+    <div class="type-row">
+      <div class="type-meta"><div class="token">display</div><div class="spec">Fraunces 600 · 64px · -0.03em</div></div>
+      <div class="type-sample" style="font-family:'Fraunces',serif;font-size:48px;font-weight:600;letter-spacing:-0.03em;line-height:1">Become the manager<br>you'd want.</div>
+    </div>
+    <div class="type-row">
+      <div class="type-meta"><div class="token">h1</div><div class="spec">Fraunces 600 · 40px · -0.02em</div></div>
+      <div class="type-sample" style="font-family:'Fraunces',serif;font-size:36px;font-weight:600;letter-spacing:-0.02em;line-height:1.05">Most of us became managers by accident.</div>
+    </div>
+    <div class="type-row">
+      <div class="type-meta"><div class="token">h2</div><div class="spec">Fraunces 600 · 28px · -0.015em</div></div>
+      <div class="type-sample" style="font-family:'Fraunces',serif;font-size:26px;font-weight:600;letter-spacing:-0.015em;line-height:1.1">Chapter 1 — Understanding Yourself</div>
+    </div>
+    <div class="type-row">
+      <div class="type-meta"><div class="token">h3</div><div class="spec">Fraunces 400 italic · 20px</div></div>
+      <div class="type-sample" style="font-family:'Fraunces',serif;font-size:19px;font-weight:400;font-style:italic;line-height:1.2">What does it mean to manage intentionally?</div>
+    </div>
+    <div class="type-row">
+      <div class="type-meta"><div class="token">body-lg</div><div class="spec">Inter 400 · 17px · 1.7</div></div>
+      <div class="type-sample" style="font-size:16px;line-height:1.7;color:#44403c;max-width:560px">A lot of us stumble into management. It wasn't a deliberate choice — it was a series of yeses that added up until one day, people reported to you.</div>
+    </div>
+    <div class="type-row">
+      <div class="type-meta"><div class="token">eyebrow</div><div class="spec">Inter 600 · 11px · 0.15em</div></div>
+      <div class="type-sample" style="font-size:11px;font-weight:600;letter-spacing:0.15em;text-transform:uppercase;color:#d97706">Chapter 3 · Strategy</div>
+    </div>
+  </div>
+</div>
+
+<!-- COLOUR MODES -->
+<div class="section">
+  <h2 class="section-label">Surface modes in context</h2>
+  <div class="modes">
+    <div class="mode mode-dark">
+      <div class="mode-label"><span>Dark — marketing / homepage</span></div>
+      <div class="mode-inner">
+        <div class="dark-eyebrow">A Field Guide to Management</div>
+        <div class="amber-rule"></div>
+        <div class="dark-h1">Most of us became managers<br><em>by accident.</em></div>
+        <div class="dark-body">A framework for doing it on purpose — whether you're considering the role, new to it, or two decades in.</div>
+        <span class="btn-dark-pri">Read The Guide →</span>
+        <span class="btn-dark-sec">Try The Tool</span>
+      </div>
+    </div>
+    <div class="mode mode-light">
+      <div class="mode-label-light"><span>Light — guide chapters / blog posts</span></div>
+      <div class="mode-inner">
+        <div class="light-chapter">Chapter 2 · Self</div>
+        <div class="light-rule"></div>
+        <div class="light-h2">Understanding yourself as a manager</div>
+        <div class="light-body">Before you can lead a team effectively, you need a clear-eyed view of how you operate — your instincts, your defaults, your blind spots.</div>
+        <div class="callout"><p>💡 This is best done with input from someone who manages you. Your perception of your own strengths is often the least accurate data point you have.</p></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- COMPONENT TOKENS -->
+<div class="section">
+  <h2 class="section-label">Spacing & layout tokens</h2>
+  <div class="token-grid">
+    <div class="token-card"><div class="token-name">--radius</div><div class="token-val">8px</div><div class="token-preview"><div style="width:48px;height:24px;background:#1a3a5c;border-radius:8px"></div></div></div>
+    <div class="token-card"><div class="token-name">--radius-lg</div><div class="token-val">16px</div><div class="token-preview"><div style="width:48px;height:24px;background:#1a3a5c;border-radius:16px"></div></div></div>
+    <div class="token-card"><div class="token-name">--container</div><div class="token-val">1080px max</div></div>
+    <div class="token-card"><div class="token-name">--prose-width</div><div class="token-val">680px max</div><div class="token-preview" style="font-size:11px;color:#a8a29e">reading column</div></div>
+    <div class="token-card"><div class="token-name">--amber-rule</div><div class="token-val">2px solid #f59e0b</div><div class="token-preview"><div style="width:40px;height:2px;background:#f59e0b;margin-top:6px"></div></div></div>
+    <div class="token-card"><div class="token-name">--section-gap</div><div class="token-val">96px</div></div>
+    <div class="token-card"><div class="token-name">--dark-glass</div><div class="token-val">rgba(254,252,247,0.07)</div></div>
+    <div class="token-card"><div class="token-name">--border-dark</div><div class="token-val">rgba(254,252,247,0.12)</div></div>
+  </div>
+</div>
+
+<div style="background:#fffbeb;border-left:3px solid #f59e0b;padding:12px 16px;border-radius:0 6px 6px 0;margin-bottom:32px">
+  <p style="font-size:13px;color:#78716c">No dark-mode toggle — the site uses <strong>one deliberate mood per surface type</strong> (dark for marketing pages, light for reading pages). This is a design choice, not an omission.</p>
+</div>
+
+</body>
+</html>

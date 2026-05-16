@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Scoring levels</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Inter', sans-serif; background: #f0eeea; color: #1c1917; padding: 36px 32px; font-size: 13px; line-height: 1.5; }
+.page-title { font-family: 'Fraunces', serif; font-size: 22px; font-weight: 600; margin-bottom: 4px; }
+.page-subtitle { color: #78716c; margin-bottom: 32px; font-size: 12px; }
+h2.label { font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #a8a29e; margin-bottom: 12px; }
+.section { margin-bottom: 40px; }
+
+/* Level strip */
+.levels { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 32px; }
+.level { background: white; border-radius: 10px; padding: 16px; border: 2px solid transparent; }
+.level-num { font-size: 10px; font-weight: 600; color: #a8a29e; letter-spacing: 0.08em; margin-bottom: 6px; }
+.level-name { font-family: 'Fraunces', serif; font-size: 17px; font-weight: 600; margin-bottom: 6px; }
+.level-desc { font-size: 11px; color: #78716c; line-height: 1.5; }
+.l1 { border-color: #e7e5e4; } .l1 .level-name { color: #a8a29e; }
+.l2 { border-color: #bfdbfe; } .l2 .level-name { color: #3b82f6; }
+.l3 { border-color: #a7f3d0; } .l3 .level-name { color: #059669; }
+.l4 { border-color: #fde68a; } .l4 .level-name { color: #d97706; }
+.l5 { border-color: #f59e0b; background: #fffbeb; } .l5 .level-name { color: #92400e; }
+
+/* Scorecard mockup — dark surface */
+.scorecard { background: #1a3a5c; border-radius: 14px; overflow: hidden; }
+.sc-header { padding: 20px 24px 16px; border-bottom: 1px solid rgba(254,252,247,0.08); }
+.sc-title { font-family: 'Fraunces', serif; font-size: 18px; font-weight: 600; color: #fefcf7; margin-bottom: 4px; }
+.sc-sub { font-size: 12px; color: rgba(254,252,247,0.45); }
+.sc-pillar { border-bottom: 1px solid rgba(254,252,247,0.06); }
+.sc-pillar-header { padding: 14px 24px 8px; display: flex; align-items: center; gap: 8px; }
+.sc-pillar-name { font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(254,252,247,0.5); }
+.sc-amber-rule { width: 20px; height: 2px; background: #f59e0b; }
+.sc-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 24px; gap: 16px; }
+.sc-row:hover { background: rgba(254,252,247,0.03); }
+.sc-criterion { font-size: 13px; color: rgba(254,252,247,0.8); flex: 1; }
+.sc-select { display: inline-flex; align-items: center; gap: 6px; background: rgba(254,252,247,0.06); border: 1px solid rgba(254,252,247,0.12); border-radius: 6px; padding: 5px 10px; font-size: 11px; font-weight: 600; white-space: nowrap; cursor: pointer; }
+.sc-select .arrow { color: rgba(254,252,247,0.3); font-size: 9px; }
+.sel-aware { color: #94a3b8; }
+.sel-developing { color: #60a5fa; }
+.sel-practising { color: #34d399; }
+.sel-proficient { color: #fbbf24; }
+.sel-leading { color: #f59e0b; }
+.sc-unset { color: rgba(254,252,247,0.25); border-style: dashed; }
+
+/* progress bar */
+.sc-footer { padding: 16px 24px; border-top: 1px solid rgba(254,252,247,0.08); }
+.sc-progress-label { display: flex; justify-content: space-between; margin-bottom: 6px; }
+.sc-progress-label span { font-size: 11px; color: rgba(254,252,247,0.4); }
+.sc-progress-label strong { font-size: 11px; color: #fefcf7; }
+.sc-bar { height: 4px; background: rgba(254,252,247,0.08); border-radius: 999px; overflow: hidden; }
+.sc-bar-fill { height: 100%; background: linear-gradient(90deg, #3b82f6 0%, #f59e0b 100%); border-radius: 999px; width: 60%; }
+
+/* tooltip key */
+.key { background: white; border-radius: 10px; padding: 16px 20px; }
+.key-row { display: flex; align-items: center; gap: 12px; padding: 6px 0; border-bottom: 1px solid #f0eeea; }
+.key-row:last-child { border-bottom: none; }
+.key-badge { font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 999px; white-space: nowrap; min-width: 90px; text-align: center; }
+.kb-aware { background: #f1f5f9; color: #64748b; }
+.kb-developing { background: #eff6ff; color: #3b82f6; }
+.kb-practising { background: #ecfdf5; color: #059669; }
+.kb-proficient { background: #fffbeb; color: #d97706; }
+.kb-leading { background: #fef3c7; color: #92400e; }
+.key-text { font-size: 12px; color: #78716c; line-height: 1.4; }
+
+.note { background: #fffbeb; border-left: 3px solid #f59e0b; padding: 12px 16px; border-radius: 0 6px 6px 0; font-size: 12px; color: #78716c; line-height: 1.6; margin-top: 20px; }
+.note code { background: #fef3c7; padding: 1px 5px; border-radius: 3px; font-size: 11px; }
+</style>
+</head>
+<body>
+
+<p class="page-title">Scoring — named competency levels</p>
+<p class="page-subtitle">Replacing 1–10 with five named levels. Each name carries its own meaning — no translation required.</p>
+
+<!-- PROPOSED LEVELS -->
+<div class="section">
+  <h2 class="label">Proposed levels (1 → 5)</h2>
+  <div class="levels">
+    <div class="level l1">
+      <div class="level-num">1</div>
+      <div class="level-name">Unaware</div>
+      <div class="level-desc">Not yet on your radar as something to develop or pay attention to.</div>
+    </div>
+    <div class="level l2">
+      <div class="level-num">2</div>
+      <div class="level-name">Developing</div>
+      <div class="level-desc">Actively building awareness and beginning to apply this in practice.</div>
+    </div>
+    <div class="level l3">
+      <div class="level-num">3</div>
+      <div class="level-name">Practising</div>
+      <div class="level-desc">Applying with reasonable consistency. Some rough edges, but deliberate.</div>
+    </div>
+    <div class="level l4">
+      <div class="level-num">4</div>
+      <div class="level-name">Proficient</div>
+      <div class="level-desc">Reliably demonstrated. Others notice and benefit from this in you.</div>
+    </div>
+    <div class="level l5">
+      <div class="level-num">5</div>
+      <div class="level-name">Leading</div>
+      <div class="level-desc">Role-modelling this for others. Helping people around you grow in this area.</div>
+    </div>
+  </div>
+</div>
+
+<!-- SCORECARD MOCKUP -->
+<div class="section">
+  <h2 class="label">Scorecard — how it looks with named levels</h2>
+  <div class="scorecard">
+    <div class="sc-header">
+      <div class="sc-title">My Manager Scorecard</div>
+      <div class="sc-sub">Self-assessment · May 2025 · Review with your manager</div>
+    </div>
+
+    <!-- Self pillar -->
+    <div class="sc-pillar">
+      <div class="sc-pillar-header">
+        <div class="sc-amber-rule"></div>
+        <span class="sc-pillar-name">Self</span>
+      </div>
+      <div class="sc-row">
+        <span class="sc-criterion">Self-awareness</span>
+        <div class="sc-select sel-proficient">Proficient <span class="arrow">▾</span></div>
+      </div>
+      <div class="sc-row">
+        <span class="sc-criterion">Emotional regulation under pressure</span>
+        <div class="sc-select sel-practising">Practising <span class="arrow">▾</span></div>
+      </div>
+      <div class="sc-row">
+        <span class="sc-criterion">Coaching instinct</span>
+        <div class="sc-select sel-developing">Developing <span class="arrow">▾</span></div>
+      </div>
+      <div class="sc-row">
+        <span class="sc-criterion">Receiving feedback openly</span>
+        <div class="sc-select sel-leading">Leading <span class="arrow">▾</span></div>
+      </div>
+    </div>
+
+    <!-- Team pillar -->
+    <div class="sc-pillar">
+      <div class="sc-pillar-header">
+        <div class="sc-amber-rule"></div>
+        <span class="sc-pillar-name">Team</span>
+      </div>
+      <div class="sc-row">
+        <span class="sc-criterion">Psychological safety</span>
+        <div class="sc-select sel-practising">Practising <span class="arrow">▾</span></div>
+      </div>
+      <div class="sc-row">
+        <span class="sc-criterion">Delegation and trust</span>
+        <div class="sc-select sc-unset">— not yet rated <span class="arrow">▾</span></div>
+      </div>
+      <div class="sc-row">
+        <span class="sc-criterion">Growing individuals</span>
+        <div class="sc-select sc-unset">— not yet rated <span class="arrow">▾</span></div>
+      </div>
+    </div>
+
+    <div class="sc-footer">
+      <div class="sc-progress-label"><span>Overall completion</span><strong>5 of 18 rated</strong></div>
+      <div class="sc-bar"><div class="sc-bar-fill"></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- LEVEL KEY -->
+<div class="section">
+  <h2 class="label">Level reference (hover tooltip in the app / sidebar in the sheet)</h2>
+  <div class="key">
+    <div class="key-row"><span class="key-badge kb-aware">Unaware</span><span class="key-text">Not yet on your radar. No shame — this is just the starting point.</span></div>
+    <div class="key-row"><span class="key-badge kb-developing">Developing</span><span class="key-text">You know this matters and you're working on it. The gap between knowing and doing is closing.</span></div>
+    <div class="key-row"><span class="key-badge kb-practising">Practising</span><span class="key-text">You apply this with reasonable consistency. It's not automatic yet, but it's deliberate.</span></div>
+    <div class="key-row"><span class="key-badge kb-proficient">Proficient</span><span class="key-text">This shows up reliably. The people around you notice and benefit from it.</span></div>
+    <div class="key-row"><span class="key-badge kb-leading">Leading</span><span class="key-text">You're role-modelling this and actively helping others develop it too.</span></div>
+  </div>
+</div>
+
+<div class="note">
+  <strong>Google Sheet update (next session):</strong> The dropdown validation in each scoring cell changes from <code>1–10</code> to a named list: <code>Unaware, Developing, Practising, Proficient, Leading</code>. The summary/radar chart formula will map names → numbers (1–5) internally for visualisation. The level key becomes a reference tab in the sheet.
+</div>
+
+</body>
+</html>

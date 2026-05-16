@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Theme toggle placement</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Inter', sans-serif; background: #f5f4f0; color: #1c1917; padding: 40px 32px; font-size: 14px; }
+.page-title { font-family: 'Fraunces', serif; font-size: 22px; font-weight: 600; margin-bottom: 4px; }
+.page-subtitle { color: #78716c; margin-bottom: 32px; font-size: 13px; }
+h2.section-label { font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #a8a29e; margin-bottom: 12px; }
+.section { margin-bottom: 40px; }
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.card { border-radius: 12px; overflow: hidden; cursor: pointer; border: 2px solid transparent; transition: border-color 0.15s; }
+.card:hover { border-color: #e7e5e4; }
+.card.selected { border-color: #1a3a5c; box-shadow: 0 0 0 3px rgba(26,58,92,0.12); }
+.card-label { padding: 10px 16px; background: #e7e5e0; font-size: 11px; font-weight: 600; letter-spacing: 0.09em; text-transform: uppercase; color: #78716c; }
+.card-body { padding: 0 0 16px; }
+.card-desc { padding: 14px 16px 0; }
+.card-desc h3 { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+.card-desc p { font-size: 12px; color: #78716c; line-height: 1.5; }
+
+/* NAV SHARED */
+.nav { display: flex; align-items: center; justify-content: space-between; padding: 0 20px; height: 52px; }
+.nav-logo { font-family: 'Fraunces', serif; font-size: 16px; font-weight: 600; }
+.nav-links { display: flex; gap: 20px; }
+.nav-link { font-size: 13px; font-weight: 500; }
+.nav-right { display: flex; align-items: center; gap: 10px; }
+.nav-github { font-size: 12px; font-weight: 500; padding: 5px 12px; border-radius: 5px; }
+
+/* DARK NAV */
+.nav-dark { background: #1a3a5c; }
+.nav-dark .nav-logo { color: #fefcf7; }
+.nav-dark .nav-link { color: rgba(254,252,247,0.55); }
+.nav-dark .nav-github { background: rgba(254,252,247,0.09); border: 1px solid rgba(254,252,247,0.13); color: #fefcf7; }
+
+/* LIGHT NAV */
+.nav-light { background: #fefcf7; border-bottom: 1px solid #e7e5e4; }
+.nav-light .nav-logo { color: #1c1917; }
+.nav-light .nav-link { color: #78716c; }
+.nav-light .nav-github { background: #f5f4f0; border: 1px solid #e7e5e4; color: #1c1917; }
+
+/* TOGGLE BUTTONS */
+.toggle-pill { display: flex; align-items: center; background: rgba(254,252,247,0.08); border: 1px solid rgba(254,252,247,0.13); border-radius: 999px; padding: 3px; gap: 2px; }
+.toggle-pill .t-btn { padding: 3px 10px; border-radius: 999px; font-size: 11px; font-weight: 500; color: rgba(254,252,247,0.5); cursor: pointer; }
+.toggle-pill .t-btn.active { background: rgba(254,252,247,0.15); color: #fefcf7; }
+.toggle-pill-light { display: flex; align-items: center; background: #f0eeea; border: 1px solid #e7e5e4; border-radius: 999px; padding: 3px; gap: 2px; }
+.toggle-pill-light .t-btn { padding: 3px 10px; border-radius: 999px; font-size: 11px; font-weight: 500; color: #a8a29e; cursor: pointer; }
+.toggle-pill-light .t-btn.active { background: #1a3a5c; color: #fefcf7; }
+
+/* HERO FRAGMENT */
+.hero { padding: 28px 20px 24px; }
+.eyebrow { font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 10px; }
+.amber-rule { width: 32px; height: 2px; background: #f59e0b; margin-bottom: 12px; }
+.h1 { font-family: 'Fraunces', serif; font-size: 26px; font-weight: 600; line-height: 1.05; letter-spacing: -0.02em; margin-bottom: 10px; }
+.h1 em { font-style: italic; color: #f59e0b; }
+.body-text { font-size: 13px; line-height: 1.6; margin-bottom: 16px; }
+.ctas { display: flex; gap: 8px; }
+.btn-p { font-size: 12px; font-weight: 600; padding: 7px 14px; border-radius: 6px; }
+.btn-s { font-size: 12px; font-weight: 500; padding: 7px 14px; border-radius: 6px; }
+.dark-hero { background: #1a3a5c; }
+.dark-hero .eyebrow { color: rgba(254,252,247,0.38); }
+.dark-hero .h1 { color: #fefcf7; }
+.dark-hero .body-text { color: rgba(254,252,247,0.6); }
+.dark-hero .btn-p { background: #fefcf7; color: #1a3a5c; }
+.dark-hero .btn-s { background: rgba(254,252,247,0.07); border: 1px solid rgba(254,252,247,0.13); color: #fefcf7; }
+
+.divider { border: none; border-top: 1px solid rgba(254,252,247,0.1); margin: 0 20px 16px; }
+.light-divider { border: none; border-top: 1px solid #e7e5e4; margin: 0 20px 16px; }
+
+/* Guide preview */
+.guide-preview { padding: 20px; }
+.guide-preview .ch { font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: #d97706; font-weight: 600; margin-bottom: 8px; }
+.guide-preview .rule { width: 32px; height: 2px; background: #f59e0b; margin-bottom: 10px; }
+.guide-preview .h2 { font-family: 'Fraunces', serif; font-size: 18px; font-weight: 600; letter-spacing: -0.015em; margin-bottom: 8px; }
+.guide-light .h2 { color: #1c1917; }
+.guide-light { background: #f9f8f4; }
+.guide-light .body-text { color: #44403c; }
+.guide-dark { background: #16202d; }
+.guide-dark .ch { color: rgba(254,252,247,0.4); }
+.guide-dark .h2 { color: #fefcf7; }
+.guide-dark .body-text { color: rgba(254,252,247,0.6); }
+
+.badge { display: inline-block; background: #fffbeb; border: 1px solid #fde68a; color: #92400e; font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 999px; margin-bottom: 12px; }
+.badge-dark { display: inline-block; background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.2); color: #fbbf24; font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 999px; margin-bottom: 12px; }
+
+.impl-note { margin-top: 20px; background: #fffbeb; border-left: 3px solid #f59e0b; padding: 12px 16px; border-radius: 0 6px 6px 0; font-size: 12px; color: #78716c; line-height: 1.6; }
+.impl-note code { background: #fef3c7; padding: 1px 5px; border-radius: 3px; font-size: 11px; }
+</style>
+</head>
+<body>
+<p class="page-title">Theme toggle — where does it live?</p>
+<p class="page-subtitle">Homepage is always dark. Other pages follow the toggle with light as default. The question is whether the toggle appears on the homepage at all.</p>
+
+<div class="grid">
+
+  <!-- OPTION A: hide toggle on homepage -->
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-label">Option A — Hide toggle on homepage</div>
+    <div class="card-body">
+      <!-- dark homepage nav, no toggle -->
+      <div class="nav nav-dark">
+        <span class="nav-logo">Brilliant Managers</span>
+        <div class="nav-links">
+          <span class="nav-link">The Guide</span>
+          <span class="nav-link">The Tool</span>
+          <span class="nav-link">Blog</span>
+        </div>
+        <div class="nav-right">
+          <span class="nav-github">GitHub</span>
+        </div>
+      </div>
+      <div class="hero dark-hero">
+        <div class="eyebrow">A Field Guide to Management</div>
+        <div class="amber-rule"></div>
+        <div class="h1">Most of us became<br>managers <em>by accident.</em></div>
+        <div class="body-text">A framework for doing it on purpose.</div>
+        <div class="ctas"><span class="btn-p">Read The Guide →</span><span class="btn-s">Try The Tool</span></div>
+      </div>
+      <hr class="light-divider" style="margin:0 0 0">
+      <!-- light guide nav, toggle visible -->
+      <div class="nav nav-light" style="margin-top:1px">
+        <span class="nav-logo">Brilliant Managers</span>
+        <div class="nav-links">
+          <span class="nav-link">The Guide</span>
+          <span class="nav-link">The Tool</span>
+          <span class="nav-link">Blog</span>
+        </div>
+        <div class="nav-right">
+          <div class="toggle-pill-light">
+            <span class="t-btn">🌙</span>
+            <span class="t-btn active">☀️</span>
+          </div>
+          <span class="nav-github">GitHub</span>
+        </div>
+      </div>
+      <div class="guide-preview guide-light">
+        <div class="ch">Chapter 2 · Self</div>
+        <div class="rule"></div>
+        <div class="h2">Understanding yourself as a manager</div>
+        <div class="body-text" style="font-size:13px;line-height:1.6">Before you can lead a team effectively, you need a clear-eyed view of how you operate.</div>
+      </div>
+      <div class="card-desc">
+        <h3>Toggle hidden on homepage, visible everywhere else</h3>
+        <p>Clean — no confusion. Clearest signal that the homepage is a deliberate design choice, not a bug.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- OPTION B: toggle visible on homepage, labelled -->
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-label">Option B — Toggle always visible, homepage locks dark</div>
+    <div class="card-body">
+      <!-- dark homepage nav, toggle present but dark-locked -->
+      <div class="nav nav-dark">
+        <span class="nav-logo">Brilliant Managers</span>
+        <div class="nav-links">
+          <span class="nav-link">The Guide</span>
+          <span class="nav-link">The Tool</span>
+          <span class="nav-link">Blog</span>
+        </div>
+        <div class="nav-right">
+          <div class="toggle-pill">
+            <span class="t-btn active">🌙</span>
+            <span class="t-btn" style="opacity:0.35;cursor:not-allowed">☀️</span>
+          </div>
+          <span class="nav-github">GitHub</span>
+        </div>
+      </div>
+      <div class="hero dark-hero">
+        <div class="eyebrow">A Field Guide to Management</div>
+        <div class="amber-rule"></div>
+        <div class="h1">Most of us became<br>managers <em>by accident.</em></div>
+        <div class="body-text">A framework for doing it on purpose.</div>
+        <div class="ctas"><span class="btn-p">Read The Guide →</span><span class="btn-s">Try The Tool</span></div>
+      </div>
+      <hr class="light-divider" style="margin:0 0 0">
+      <!-- light guide nav -->
+      <div class="nav nav-light" style="margin-top:1px">
+        <span class="nav-logo">Brilliant Managers</span>
+        <div class="nav-links">
+          <span class="nav-link">The Guide</span>
+          <span class="nav-link">The Tool</span>
+          <span class="nav-link">Blog</span>
+        </div>
+        <div class="nav-right">
+          <div class="toggle-pill-light">
+            <span class="t-btn">🌙</span>
+            <span class="t-btn active">☀️</span>
+          </div>
+          <span class="nav-github">GitHub</span>
+        </div>
+      </div>
+      <div class="guide-preview guide-light">
+        <div class="ch">Chapter 2 · Self</div>
+        <div class="rule"></div>
+        <div class="h2">Understanding yourself as a manager</div>
+        <div class="body-text" style="font-size:13px;line-height:1.6">Before you can lead a team effectively, you need a clear-eyed view of how you operate.</div>
+      </div>
+      <div class="card-desc">
+        <h3>Toggle present, light option dimmed on homepage</h3>
+        <p>More discoverable but risks feeling broken — a dimmed button invites clicking and then confusion.</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="impl-note">
+  <strong>Implementation either way:</strong> Homepage <code>page.tsx</code> wraps its content in <code>&lt;div className="dark"&gt;</code>. Tailwind's <code>dark:</code> variants apply inside it regardless of the global <code>next-themes</code> state. Other pages read from <code>ThemeProvider</code> normally. Option A conditionally renders the toggle via a <code>usePathname()</code> check in the nav component.
+</div>
+
+<script>
+function toggleSelect(el) {
+  document.querySelectorAll('.card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  if (window.recordChoice) recordChoice(el.dataset.choice, el.querySelector('h3').textContent.trim());
+}
+</script>
+</body>
+</html>
