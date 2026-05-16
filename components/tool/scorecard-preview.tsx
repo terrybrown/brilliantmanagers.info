@@ -8,9 +8,9 @@ interface SampleRow {
 
 const SAMPLE_ROWS: SampleRow[] = [
   { label: 'Self-awareness', level: 'Proficient' },
-  { label: 'Emotional regulation under pressure', level: 'Practising' },
-  { label: 'Coaching instinct', level: 'Developing' },
-  { label: 'Receiving feedback openly', level: 'Leading' },
+  { label: 'Emotional regulation under pressure', level: 'Basic' },
+  { label: 'Coaching instinct', level: 'Needs Improvement' },
+  { label: 'Receiving feedback openly', level: 'Advanced' },
   { label: 'Delegation and trust', level: null },
 ]
 

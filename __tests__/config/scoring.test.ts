@@ -2,8 +2,8 @@ import { SCORING_LEVELS, SCORING_LEVEL_DESCRIPTIONS, SCORING_LEVEL_COLORS } from
 import type { ScoringLevel } from '@/config/scoring'
 
 describe('scoring config', () => {
-  it('has exactly four levels in the correct order', () => {
-    expect(SCORING_LEVELS).toEqual(['Developing', 'Practising', 'Proficient', 'Leading'])
+  it('has exactly five levels in the correct order', () => {
+    expect(SCORING_LEVELS).toEqual(['Needs Improvement', 'Basic', 'Proficient', 'Advanced', 'Expert'])
   })
 
   it('has a description for every level', () => {
