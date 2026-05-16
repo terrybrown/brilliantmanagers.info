@@ -29,8 +29,8 @@ export function extractHeadings(source: string): TocItem[] {
       headings.push({ id: toSlug(text), text, level })
       continue
     }
-    // HTML summary tags (used in <details> accordions)
-    const summaryMatch = line.match(/^<summary>(.+?)<\/summary>$/)
+    // HTML summary tags (used in <details> accordions) — may be indented
+    const summaryMatch = line.match(/^\s*<summary>(.+?)<\/summary>\s*$/)
     if (summaryMatch) {
       const text = summaryMatch[1].trim()
       headings.push({ id: toSlug(text), text, level: 2 })
