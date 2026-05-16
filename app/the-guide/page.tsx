@@ -41,8 +41,7 @@ export default function GuideIndexPage() {
             The Guide
           </h1>
           <p className="max-w-xl text-base leading-relaxed" style={{ color: 'var(--color-text-muted)' }}>
-            A framework for doing management on purpose — whether you're considering the role,
-            new to it, or two decades in and still figuring it out.
+            Six pillars. The honest truth about what management actually requires.
           </p>
         </header>
 

@@ -18,7 +18,7 @@ export default function HomePage() {
             <em style={{ color: '#f59e0b' }}>by accident.</em>
           </>
         }
-        body="A framework for doing it on purpose — whether you're stepping into the role, a few years in, or two decades deep and still figuring it out."
+        body="A framework — not a manual. It won't tell you what to do. It'll help you see where you are."
         primaryCta={{ label: 'Read The Guide →', href: '/the-guide' }}
         secondaryCta={{ label: 'Try The Tool', href: '/the-tool' }}
       />
@@ -27,14 +27,14 @@ export default function HomePage() {
           {
             icon: '📖',
             title: 'The Guide',
-            body: 'A structured framework across Self, Team, Strategy, Communications, and Domain Expertise.',
+            body: 'Five pillars. Dozens of dimensions. All the things nobody told you when you got the job.',
             href: '/the-guide',
             linkLabel: 'Start reading',
           },
           {
             icon: '🎯',
             title: 'The Tool',
-            body: 'Score yourself against the framework. Understand your strengths and your growth edges.',
+            body: 'Know where you actually are — not where you hope you are. Then do something about it.',
             href: '/the-tool',
             linkLabel: 'Open the scorecard',
           },
