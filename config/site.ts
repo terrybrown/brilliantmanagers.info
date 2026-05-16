@@ -12,7 +12,6 @@ export const siteConfig = {
     { label: 'FAQ', href: '/the-guide/faq' },
   ],
   social: {
-    twitter: 'https://twitter.com/terry_brown',
     linkedin: 'https://www.linkedin.com/in/terrybrownuk/',
     github: 'https://github.com/terrybrown/',
   },
