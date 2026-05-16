@@ -40,17 +40,6 @@ create policy "Users can manage scores for own rounds" on scores
       where id = scores.round_id and user_id = auth.uid()
     )
   );
-create policy "Managers can read scores for direct reports" on scores
-  for select using (
-    exists (
-      select 1 from assessment_rounds ar
-      join connections c on c.direct_report_id = ar.user_id
-      where ar.id = scores.round_id
-        and c.manager_id = auth.uid()
-        and c.status = 'active'
-    )
-  );
-
 -- connections: bidirectional manager/direct-report link
 create table connections (
   id uuid primary key default gen_random_uuid(),
@@ -71,6 +60,18 @@ create policy "Users can create connections involving themselves" on connections
   );
 create policy "Users can update connections they are part of" on connections
   for update using (auth.uid() = manager_id or auth.uid() = direct_report_id);
+
+-- Cross-table policy added after connections exists
+create policy "Managers can read scores for direct reports" on scores
+  for select using (
+    exists (
+      select 1 from assessment_rounds ar
+      join connections c on c.direct_report_id = ar.user_id
+      where ar.id = scores.round_id
+        and c.manager_id = auth.uid()
+        and c.status = 'active'
+    )
+  );
 
 -- manager_scores: manager's ratings linked to the direct report's round
 create table manager_scores (
