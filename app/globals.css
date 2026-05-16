@@ -1,49 +1,70 @@
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@import "tailwindcss";
+
+/* Dark mode: applies when an ancestor has the .dark class (set by next-themes) */
+@variant dark (&:is(.dark *));
+
+@theme {
+  /* ── Fonts ── */
+  --font-display: var(--font-fraunces), serif;
+  --font-body: var(--font-inter), sans-serif;
+
+  /* ── Colour tokens (light mode defaults) ── */
+  --color-bg-base: #fefcf7;
+  --color-bg-reading: #f9f8f4;
+  --color-text-primary: #1c1917;
+  --color-text-muted: #44403c;
+  --color-accent: #d97706;
+  --color-border: #e7e5e4;
+
+  /* ── Layout tokens ── */
+  --radius: 8px;
+  --radius-lg: 16px;
+  --container-width: 1080px;
+  --prose-width: 680px;
+  --section-gap: 96px;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* Dark mode overrides — applied when .dark class is on an ancestor */
+.dark {
+  --color-bg-base: #1a3a5c;
+  --color-bg-reading: #16202d;
+  --color-text-primary: #fefcf7;
+  --color-text-muted: rgba(254, 252, 247, 0.60);
+  --color-accent: #f59e0b;
+  --color-border: rgba(254, 252, 247, 0.12);
 }
 
-html {
-  height: 100%;
-}
-
-html,
+/* ── Base styles ── */
 body {
-  max-width: 100vw;
-  overflow-x: hidden;
-}
-
-body {
-  min-height: 100%;
-  display: flex;
-  flex-direction: column;
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--color-bg-base);
+  color: var(--color-text-primary);
+  font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
 }
 
-* {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
+/* ── Amber rule utility ── */
+.amber-rule {
+  display: block;
+  width: 40px;
+  height: 2px;
+  background-color: var(--color-accent);
+  margin-bottom: 12px;
 }
 
-a {
-  color: inherit;
-  text-decoration: none;
+/* ── Prose overrides for MDX content ── */
+.prose {
+  max-width: var(--prose-width);
+  font-size: 17px;
+  line-height: 1.7;
+  color: var(--color-text-muted);
 }
 
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
-  }
+.prose h1, .prose h2, .prose h3 {
+  font-family: var(--font-display);
+  color: var(--color-text-primary);
+}
+
+.prose a {
+  color: var(--color-accent);
+  text-underline-offset: 2px;
 }
