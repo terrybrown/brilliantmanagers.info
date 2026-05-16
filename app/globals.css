@@ -83,6 +83,7 @@ body {
   color: var(--color-text-primary);
   margin-top: 3rem;
   margin-bottom: 0.75rem;
+  scroll-margin-top: 5rem;
 }
 
 .prose h3 {
@@ -92,6 +93,7 @@ body {
   color: var(--color-text-primary);
   margin-top: 2.25rem;
   margin-bottom: 0.5rem;
+  scroll-margin-top: 5rem;
 }
 
 .prose h4 {
@@ -175,6 +177,7 @@ body {
   border-left: 2px solid var(--color-border);
   padding: 0 0 0 1rem;
   margin-bottom: 1rem;
+  scroll-margin-top: 5rem;
 }
 
 .prose summary {

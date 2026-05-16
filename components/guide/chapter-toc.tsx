@@ -34,6 +34,18 @@ export function ChapterToc({ items }: ChapterTocProps) {
 
   if (items.length === 0) return null
 
+  function handleClick(e: React.MouseEvent<HTMLAnchorElement>, id: string) {
+    e.preventDefault()
+    const el = document.getElementById(id)
+    if (!el) return
+    // Open accordion if target is a <details> element
+    if (el.tagName === 'DETAILS') {
+      (el as HTMLDetailsElement).open = true
+    }
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    setActiveId(id)
+  }
+
   return (
     <nav className="sticky top-20 w-44 shrink-0 self-start">
       <p
@@ -49,6 +61,7 @@ export function ChapterToc({ items }: ChapterTocProps) {
             <li key={item.id} style={{ paddingLeft: item.level === 3 ? '10px' : '0' }}>
               <a
                 href={`#${item.id}`}
+                onClick={(e) => handleClick(e, item.id)}
                 className="block text-xs leading-relaxed transition-colors"
                 style={{
                   color: isActive ? 'var(--color-accent)' : 'var(--color-text-muted)',

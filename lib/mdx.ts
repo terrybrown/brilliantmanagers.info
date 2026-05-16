@@ -3,6 +3,7 @@ import { readFile, readdir } from 'fs/promises'
 import path from 'path'
 import remarkGfm from 'remark-gfm'
 import rehypeSlug from 'rehype-slug'
+import { visit } from 'unist-util-visit'
 
 export interface TocItem {
   id: string
@@ -39,6 +40,38 @@ export function extractHeadings(source: string): TocItem[] {
   return headings
 }
 
+// Rehype plugin: adds id to <details> based on its <summary> text.
+// In MDX, <details> are JSX flow elements (mdxJsxFlowElement), not HTML element
+// nodes, so we must visit that type and use jsx attribute syntax.
+function rehypeDetailsIds() {
+  return (tree: any) => {
+    visit(tree, 'mdxJsxFlowElement', (node: any) => {
+      if (node.name !== 'details') return
+      const summary = node.children?.find(
+        (c: any) => c.type === 'mdxJsxFlowElement' && c.name === 'summary'
+      )
+      if (!summary) return
+      const text = extractNodeText(summary)
+      if (!text) return
+      const id = toSlug(text)
+      node.attributes = node.attributes ?? []
+      const existing = node.attributes.findIndex((a: any) => a.name === 'id')
+      if (existing >= 0) {
+        node.attributes[existing].value = id
+      } else {
+        node.attributes.push({ type: 'mdxJsxAttribute', name: 'id', value: id })
+      }
+    })
+  }
+}
+
+function extractNodeText(node: any): string {
+  if (node.type === 'text') return node.value ?? ''
+  if (node.value && typeof node.value === 'string') return node.value
+  if (node.children) return node.children.map(extractNodeText).join('')
+  return ''
+}
+
 export interface GuideFrontmatter {
   title: string
   excerpt?: string
@@ -73,7 +106,7 @@ export async function getGuideChapter(
       parseFrontmatter: true,
       mdxOptions: {
         remarkPlugins: [remarkGfm],
-        rehypePlugins: [rehypeSlug],
+        rehypePlugins: [rehypeSlug, rehypeDetailsIds],
       },
     },
   })
