@@ -68,3 +68,144 @@ body {
   color: var(--color-accent);
   text-underline-offset: 2px;
 }
+
+/* ── Prose: paragraph spacing ── */
+.prose p {
+  margin-bottom: 1.25rem;
+}
+
+/* ── Prose: headings ── */
+.prose h2 {
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--color-text-primary);
+  margin-top: 2.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.prose h3 {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-top: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.prose h4 {
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-text-muted);
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+/* ── Prose: lists ── */
+.prose ul {
+  list-style-type: disc;
+  padding-left: 1.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.prose ol {
+  list-style-type: decimal;
+  padding-left: 1.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.prose li {
+  margin-bottom: 0.4rem;
+  line-height: 1.65;
+  color: var(--color-text-muted);
+}
+
+.prose li > ul,
+.prose li > ol {
+  margin-top: 0.4rem;
+  margin-bottom: 0;
+}
+
+/* ── Prose: strong and em ── */
+.prose strong {
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.prose em {
+  font-style: italic;
+}
+
+/* ── Prose: blockquote ── */
+.prose blockquote {
+  border-left: 3px solid var(--color-accent);
+  padding-left: 1rem;
+  margin: 1.5rem 0;
+  font-style: italic;
+  color: var(--color-text-muted);
+}
+
+/* ── Prose: code ── */
+.prose code {
+  font-size: 0.85em;
+  background: var(--color-bg-reading);
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  padding: 0.1em 0.35em;
+}
+
+/* ── Prose: details / summary (collapsible sections) ── */
+.prose details {
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 0;
+  margin-bottom: 0.75rem;
+  overflow: hidden;
+}
+
+.prose summary {
+  cursor: pointer;
+  padding: 0.75rem 1rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--color-text-primary);
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  user-select: none;
+}
+
+.prose summary::-webkit-details-marker {
+  display: none;
+}
+
+.prose summary::before {
+  content: '▶';
+  font-size: 0.65rem;
+  color: var(--color-accent);
+  transition: transform 0.15s;
+  flex-shrink: 0;
+}
+
+.prose details[open] > summary::before {
+  transform: rotate(90deg);
+}
+
+.prose details[open] > summary {
+  border-bottom: 1px solid var(--color-border);
+}
+
+.prose details > *:not(summary) {
+  padding: 0.75rem 1rem;
+}
+
+/* ── Prose: horizontal rule ── */
+.prose hr {
+  border: none;
+  border-top: 1px solid var(--color-border);
+  margin: 2rem 0;
+}

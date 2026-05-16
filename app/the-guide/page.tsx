@@ -13,6 +13,16 @@ const SECTION_EXCERPTS: Record<string, string> = {
   faq: 'The questions that come up again and again.',
 }
 
+const SECTION_ICONS: Record<string, string> = {
+  measurement: '📊',
+  self: '🧠',
+  team: '👥',
+  strategy: '🧭',
+  communications: '💬',
+  'domain-expertise': '⚙️',
+  faq: '❓',
+}
+
 export default function GuideIndexPage() {
   return (
     <div style={{ background: 'var(--color-bg-base)', minHeight: '100vh' }}>
@@ -50,21 +60,24 @@ export default function GuideIndexPage() {
             <Link
               key={section}
               href={`/the-guide/${section}`}
-              className="group rounded-xl border p-5 transition-shadow hover:shadow-md"
+              className="group flex flex-col rounded-xl border p-5 transition-shadow hover:shadow-md"
               style={{ borderColor: 'var(--color-border)', background: 'var(--color-bg-reading)' }}
             >
+              <div className="mb-3 text-2xl">{SECTION_ICONS[section]}</div>
               <h2
                 className="mb-2 text-base font-semibold"
                 style={{ fontFamily: 'var(--font-display)', color: 'var(--color-text-primary)' }}
               >
                 {GUIDE_SECTION_LABELS[section]}
               </h2>
-              <p className="mb-4 text-sm leading-relaxed" style={{ color: 'var(--color-text-muted)' }}>
+              <p className="mb-4 flex-1 text-sm leading-relaxed" style={{ color: 'var(--color-text-muted)' }}>
                 {SECTION_EXCERPTS[section]}
               </p>
-              <span className="text-xs font-semibold" style={{ color: 'var(--color-accent)' }}>
-                Start reading →
-              </span>
+              <div className="flex justify-end">
+                <span className="text-xs font-semibold" style={{ color: 'var(--color-accent)' }}>
+                  Start reading →
+                </span>
+              </div>
             </Link>
           ))}
         </div>
