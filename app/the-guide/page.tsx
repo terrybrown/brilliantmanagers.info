@@ -11,7 +11,6 @@ const SECTION_EXCERPTS: Record<string, string> = {
   strategy: 'Connecting day-to-day work to longer-term direction.',
   communications: 'Saying the right things to the right people at the right time.',
   'domain-expertise': 'Knowing enough to lead without needing to know everything.',
-  faq: 'The questions that come up again and again.',
 }
 
 export default function GuideIndexPage() {

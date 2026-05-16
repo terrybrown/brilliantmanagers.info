@@ -9,6 +9,7 @@ export const siteConfig = {
     { label: 'The Tool', href: '/the-tool' },
     { label: 'Blog', href: '/blog' },
     { label: 'Resources', href: '/resources' },
+    { label: 'FAQ', href: '/the-guide/faq' },
   ],
   social: {
     twitter: 'https://twitter.com/terry_brown',
