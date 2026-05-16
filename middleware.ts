@@ -37,13 +37,6 @@ export async function middleware(request: NextRequest) {
     if (!user) {
       return NextResponse.redirect(new URL('/login', request.url))
     }
-    const betaEmails = process.env.APP_BETA_EMAILS
-    if (betaEmails) {
-      const allowed = betaEmails.split(',').map(e => e.trim())
-      if (!allowed.includes(user.email ?? '')) {
-        return NextResponse.redirect(new URL('/the-tool', request.url))
-      }
-    }
   }
 
   // Redirect authenticated users away from login
