@@ -68,3 +68,33 @@ All styles entered through `src/sass/main.scss` (imported by `Layout.js`). The p
 - `gatsby-source-data` is the only thing that exposes `src/data/*.yml` to templates. If a new data file isn't showing up in `pageContext.site.data`, restart `develop` (chokidar normally handles this, but cold start is the fallback).
 - Section components rendered by `advanced.js` are resolved by **string-to-component lookup via `src/components/index.js`**. A new component file that isn't re-exported from `index.js` will silently fail to render.
 - The footer content in `site-metadata.json` still carries the Stackbit attribution copy from the original theme — edit there, not in `Footer.js`.
+
+## Supabase / database rules
+
+Every table in the `public` schema must have Row Level Security enabled and at least one policy per operation that the app uses. These are non-negotiable — a table with RLS off, or with RLS on but no policies, is either fully open or fully broken.
+
+### Checklist for any new table
+
+1. **Enable RLS immediately** — `ALTER TABLE <table> ENABLE ROW LEVEL SECURITY;` before any data or policies are added.
+2. **Write a policy for every operation the app performs** (SELECT, INSERT, UPDATE, DELETE). Never leave an operation uncovered and rely on "default deny" — make the intent explicit.
+3. **All policies must gate on `auth.uid()`** — the USING / WITH CHECK expression must reference `auth.uid()`, directly or via a subquery to another table. A policy with `USING (true)` is equivalent to no RLS.
+4. **Do not read `APP_BETA_EMAILS` (or any sensitive env var) in edge middleware** — Next.js inlines `process.env` into the edge bundle at build time. Keep sensitive env var reads in Node.js runtime code (server components, server actions, API routes).
+5. **Never use the service role key in client code or `NEXT_PUBLIC_` variables** — it bypasses RLS entirely. Only the anon key belongs in the client bundle.
+
+### Verifying a new table
+
+After creating a table and its policies, confirm with unauthenticated curl requests that SELECT and INSERT are both rejected:
+
+```bash
+SUPABASE_URL="https://jxanausntacmzgnzzncu.supabase.co"
+ANON_KEY="$NEXT_PUBLIC_SUPABASE_ANON_KEY"
+
+# Should return []
+curl -s -H "apikey: $ANON_KEY" -H "Authorization: Bearer $ANON_KEY" \
+  "$SUPABASE_URL/rest/v1/<table>?select=*"
+
+# Should return a 42501 RLS violation, not success
+curl -s -X POST -H "apikey: $ANON_KEY" -H "Authorization: Bearer $ANON_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{...}' "$SUPABASE_URL/rest/v1/<table>"
+```
