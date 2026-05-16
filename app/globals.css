@@ -123,6 +123,17 @@ body {
   color: var(--color-text-muted);
 }
 
+.prose ul li::marker {
+  color: var(--color-accent);
+  font-size: 0.65em;
+}
+
+.prose ol li::marker {
+  color: var(--color-accent);
+  font-size: 0.85em;
+  font-weight: 600;
+}
+
 .prose li > ul,
 .prose li > ol {
   margin-top: 0.4rem;
