@@ -10,20 +10,31 @@ export interface TocItem {
   level: 2 | 3
 }
 
+function toSlug(text: string): string {
+  return text
+    .toLowerCase()
+    .replace(/[^\w\s-]/g, '')
+    .trim()
+    .replace(/[\s_]+/g, '-')
+}
+
 export function extractHeadings(source: string): TocItem[] {
   const headings: TocItem[] = []
   for (const line of source.split('\n')) {
-    const match = line.match(/^(#{2,3})\s+(.+)$/)
-    if (!match) continue
-    const level = match[1].length as 2 | 3
-    const text = match[2].trim()
-    // github-slugger style: lowercase, strip non-alphanumeric except spaces/hyphens, collapse spaces to hyphens
-    const id = text
-      .toLowerCase()
-      .replace(/[^\w\s-]/g, '')
-      .trim()
-      .replace(/[\s_]+/g, '-')
-    headings.push({ id, text, level })
+    // Markdown headings: ## and ###
+    const mdMatch = line.match(/^(#{2,3})\s+(.+)$/)
+    if (mdMatch) {
+      const level = mdMatch[1].length as 2 | 3
+      const text = mdMatch[2].trim()
+      headings.push({ id: toSlug(text), text, level })
+      continue
+    }
+    // HTML summary tags (used in <details> accordions)
+    const summaryMatch = line.match(/^<summary>(.+?)<\/summary>$/)
+    if (summaryMatch) {
+      const text = summaryMatch[1].trim()
+      headings.push({ id: toSlug(text), text, level: 2 })
+    }
   }
   return headings
 }
