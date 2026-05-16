@@ -110,6 +110,18 @@ export default function ToolPage() {
               </li>
             ))}
           </ul>
+          <div className="mt-6 flex items-center gap-4">
+            <Link
+              href="/login"
+              className="inline-flex items-center gap-2 rounded-md border px-5 py-2.5 text-sm font-semibold transition-opacity hover:opacity-90"
+              style={{ borderColor: 'rgba(245,158,11,0.5)', color: '#f59e0b' }}
+            >
+              Try the new app (beta) →
+            </Link>
+            <span className="text-xs" style={{ color: 'rgba(254,252,247,0.30)' }}>
+              Request access to join the waitlist
+            </span>
+          </div>
         </div>
       </div>
     </div>
