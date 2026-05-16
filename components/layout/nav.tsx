@@ -2,8 +2,17 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { BookOpen, Gauge, PenLine, Library, HelpCircle } from 'lucide-react'
 import { siteConfig } from '@/config/site'
 import { ThemeToggle } from './theme-toggle'
+
+const NAV_ICONS: Record<string, React.ElementType> = {
+  '/the-guide': BookOpen,
+  '/the-tool': Gauge,
+  '/blog': PenLine,
+  '/resources': Library,
+  '/the-guide/faq': HelpCircle,
+}
 
 const ALWAYS_DARK_ROUTES = ['/', '/the-tool']
 
@@ -31,13 +40,21 @@ export function Nav() {
         <nav className="hidden items-center gap-6 md:flex">
           {siteConfig.nav.map((item) => {
             const isActive = pathname === item.href || pathname.startsWith(item.href + '/')
+            const Icon = NAV_ICONS[item.href]
             return (
               <Link
                 key={item.href}
                 href={item.href}
-                className="text-sm font-medium transition-colors hover:opacity-100"
+                className="flex items-center gap-1.5 text-sm font-medium transition-opacity hover:opacity-100"
                 style={{ color: isActive ? 'var(--color-text-primary)' : 'var(--color-text-muted)' }}
               >
+                {Icon && (
+                  <Icon
+                    size={14}
+                    strokeWidth={1.75}
+                    style={{ color: 'var(--color-accent)', flexShrink: 0 }}
+                  />
+                )}
                 {item.label}
               </Link>
             )
