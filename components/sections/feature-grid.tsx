@@ -19,7 +19,7 @@ export function FeatureGrid({ cards }: FeatureGridProps) {
         {cards.map((card) => (
           <div
             key={card.href}
-            className="rounded-xl p-5"
+            className="rounded-xl p-6"
             style={{
               background: 'rgba(254,252,247,0.05)',
               border: '1px solid rgba(254,252,247,0.10)',
@@ -27,14 +27,14 @@ export function FeatureGrid({ cards }: FeatureGridProps) {
           >
             <div className="mb-3 text-2xl">{card.icon}</div>
             <h2
-              className="mb-2 text-base font-semibold"
+              className="mb-2 text-xl font-bold"
               style={{ fontFamily: 'var(--font-display)', color: '#fefcf7' }}
             >
               {card.title}
             </h2>
             <p
               className="mb-4 text-sm leading-relaxed"
-              style={{ color: 'rgba(254,252,247,0.50)' }}
+              style={{ color: 'rgba(254,252,247,0.70)' }}
             >
               {card.body}
             </p>

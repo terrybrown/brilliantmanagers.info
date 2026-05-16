@@ -22,23 +22,26 @@ export function Nav() {
       >
         <Link
           href="/"
-          className="text-lg font-semibold tracking-tight"
+          className="text-xl font-bold tracking-tight"
           style={{ fontFamily: 'var(--font-display)', color: 'var(--color-text-primary)' }}
         >
           Brilliant Managers
         </Link>
 
         <nav className="hidden items-center gap-6 md:flex">
-          {siteConfig.nav.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="text-sm font-medium transition-colors hover:opacity-100"
-              style={{ color: 'var(--color-text-muted)' }}
-            >
-              {item.label}
-            </Link>
-          ))}
+          {siteConfig.nav.map((item) => {
+            const isActive = item.href === '/' ? pathname === '/' : pathname === item.href || pathname.startsWith(item.href + '/')
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="text-sm font-medium transition-colors hover:opacity-100"
+                style={{ color: isActive ? 'var(--color-text-primary)' : 'var(--color-text-muted)' }}
+              >
+                {item.label}
+              </Link>
+            )
+          })}
         </nav>
 
         <div className="flex items-center gap-3">
