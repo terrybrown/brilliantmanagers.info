@@ -48,7 +48,6 @@ export default async function BlogPostPage({ params }: Props) {
               year: 'numeric',
             })}
           </time>
-          <span className="amber-rule" />
           <h1
             className="leading-tight"
             style={{

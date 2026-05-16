@@ -171,16 +171,9 @@ export default function ResourcesPage() {
     <div style={{ background: 'var(--color-bg-base)', minHeight: '100vh' }}>
       <div
         className="mx-auto px-6 pb-20 pt-16"
-        style={{ maxWidth: 'var(--prose-width)' }}
+        style={{ maxWidth: 'var(--container-width)' }}
       >
         <header className="mb-12">
-          <p
-            className="mb-3 text-xs font-semibold uppercase tracking-widest"
-            style={{ color: 'var(--color-accent)', letterSpacing: '0.18em' }}
-          >
-            Curated
-          </p>
-          <span className="amber-rule" />
           <h1
             className="mb-4"
             style={{
@@ -198,44 +191,48 @@ export default function ResourcesPage() {
           </p>
         </header>
 
-        {RESOURCES.map((section) => (
-          <section key={section.heading} className="mb-12">
-            <h2
-              className="mb-5 text-sm font-semibold uppercase tracking-widest"
-              style={{ color: 'var(--color-text-muted)', opacity: 0.6 }}
-            >
-              {section.heading}
-            </h2>
-            <ul className="space-y-5">
-              {section.items.map((item) => (
-                <li
-                  key={item.title}
-                  className="border-l-2 pl-4"
-                  style={{ borderColor: 'var(--color-border)' }}
-                >
-                  {item.href ? (
-                    <Link
-                      href={item.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="mb-1 block text-sm font-semibold hover:opacity-80"
-                      style={{ color: 'var(--color-accent)' }}
-                    >
-                      {item.title} ↗
-                    </Link>
-                  ) : (
-                    <p className="mb-1 text-sm font-semibold" style={{ color: 'var(--color-text-primary)' }}>
-                      {item.title}
+        <div className="grid gap-12 sm:grid-cols-2">
+          {RESOURCES.map((section) => (
+            <section key={section.heading}>
+              <h2
+                className="mb-5 pb-2 text-lg font-bold"
+                style={{
+                  fontFamily: 'var(--font-display)',
+                  color: 'var(--color-text-primary)',
+                  borderBottom: '1px solid var(--color-accent)',
+                }}
+              >
+                {section.heading}
+              </h2>
+              <ul className="space-y-5">
+                {section.items.map((item) => (
+                  <li
+                    key={item.title}
+                  >
+                    {item.href ? (
+                      <Link
+                        href={item.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="mb-1 block text-sm font-semibold hover:opacity-80"
+                        style={{ color: 'var(--color-text-primary)' }}
+                      >
+                        {item.title} <span style={{ color: 'var(--color-accent)' }}>↗</span>
+                      </Link>
+                    ) : (
+                      <p className="mb-1 text-sm font-semibold" style={{ color: 'var(--color-text-primary)' }}>
+                        {item.title}
+                      </p>
+                    )}
+                    <p className="text-sm leading-relaxed" style={{ color: 'var(--color-text-muted)' }}>
+                      {item.annotation}
                     </p>
-                  )}
-                  <p className="text-sm leading-relaxed" style={{ color: 'var(--color-text-muted)' }}>
-                    {item.annotation}
-                  </p>
-                </li>
-              ))}
-            </ul>
-          </section>
-        ))}
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ))}
+        </div>
       </div>
     </div>
   )

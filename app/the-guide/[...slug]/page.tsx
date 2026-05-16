@@ -36,7 +36,7 @@ export default async function GuideChapterPage({ params }: Props) {
   return (
     <div style={{ background: 'var(--color-bg-base)', minHeight: '100vh' }}>
       <div
-        className="mx-auto flex gap-8 px-6 py-12"
+        className="mx-auto flex gap-8 px-6 pt-16 pb-20"
         style={{ maxWidth: 'var(--container-width)' }}
       >
         {/* Sidebar */}
@@ -46,14 +46,13 @@ export default async function GuideChapterPage({ params }: Props) {
 
         {/* Main content */}
         <article className="min-w-0 flex-1">
-          <header className="mb-8">
+          <header className="mb-10">
             <p
               className="mb-3 text-xs font-semibold uppercase tracking-widest"
               style={{ color: 'var(--color-accent)', letterSpacing: '0.18em' }}
             >
               {GUIDE_SECTION_LABELS[activeSlug as keyof typeof GUIDE_SECTION_LABELS]}
             </p>
-            <span className="amber-rule" />
             <h1
               className="leading-tight"
               style={{

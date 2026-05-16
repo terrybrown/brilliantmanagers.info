@@ -27,17 +27,10 @@ export default function GuideIndexPage() {
   return (
     <div style={{ background: 'var(--color-bg-base)', minHeight: '100vh' }}>
       <div
-        className="mx-auto px-6 pb-20 pt-16"
+        className="mx-auto px-6 pb-20 pt-20"
         style={{ maxWidth: 'var(--container-width)' }}
       >
         <header className="mb-12">
-          <p
-            className="mb-3 text-xs font-semibold uppercase tracking-widest"
-            style={{ color: 'var(--color-accent)', letterSpacing: '0.18em' }}
-          >
-            A Field Guide
-          </p>
-          <span className="amber-rule" />
           <h1
             className="mb-4"
             style={{
@@ -60,16 +53,18 @@ export default function GuideIndexPage() {
             <Link
               key={section}
               href={`/the-guide/${section}`}
-              className="group flex flex-col rounded-xl border p-5 transition-shadow hover:shadow-md"
-              style={{ borderColor: 'var(--color-border)', background: 'var(--color-bg-reading)' }}
+              className="group flex flex-col rounded-xl border p-5 transition-all hover:shadow-md hover:border-[var(--color-accent)]"
+              style={{ borderColor: 'var(--color-border)', background: 'var(--color-bg-reading)', transition: 'box-shadow 0.15s, border-color 0.15s' }}
             >
-              <div className="mb-3 text-2xl">{SECTION_ICONS[section]}</div>
-              <h2
-                className="mb-2 text-base font-semibold"
-                style={{ fontFamily: 'var(--font-display)', color: 'var(--color-text-primary)' }}
-              >
-                {GUIDE_SECTION_LABELS[section]}
-              </h2>
+              <div className="mb-2 flex items-center gap-2">
+                <span className="text-xl">{SECTION_ICONS[section]}</span>
+                <h2
+                  className="text-base font-semibold"
+                  style={{ fontFamily: 'var(--font-display)', color: 'var(--color-text-primary)' }}
+                >
+                  {GUIDE_SECTION_LABELS[section]}
+                </h2>
+              </div>
               <p className="mb-4 flex-1 text-sm leading-relaxed" style={{ color: 'var(--color-text-muted)' }}>
                 {SECTION_EXCERPTS[section]}
               </p>

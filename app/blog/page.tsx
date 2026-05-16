@@ -10,17 +10,10 @@ export default async function BlogIndexPage() {
   return (
     <div style={{ background: 'var(--color-bg-base)', minHeight: '100vh' }}>
       <div
-        className="mx-auto px-6 pb-20 pt-16"
+        className="mx-auto px-6 pb-20 pt-20"
         style={{ maxWidth: 'var(--container-width)' }}
       >
-        <header className="mb-6">
-          <p
-            className="mb-3 text-xs font-semibold uppercase tracking-widest"
-            style={{ color: 'var(--color-accent)', letterSpacing: '0.18em' }}
-          >
-            Writing on management
-          </p>
-          <span className="amber-rule" />
+        <header className="mb-8">
           <h1
             className="mb-2"
             style={{
