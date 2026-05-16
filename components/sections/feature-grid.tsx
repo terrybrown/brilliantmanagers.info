@@ -1,7 +1,8 @@
 import Link from 'next/link'
+import { type ReactNode } from 'react'
 
 interface FeatureCard {
-  icon: string
+  icon: ReactNode
   title: string
   body: string
   href: string
@@ -26,7 +27,7 @@ export function FeatureGrid({ cards }: FeatureGridProps) {
             }}
           >
             <div className="mb-2 flex items-center gap-2">
-              <span className="text-xl">{card.icon}</span>
+              {card.icon}
               <h2
                 className="text-xl font-bold"
                 style={{ fontFamily: 'var(--font-display)', color: '#fefcf7' }}

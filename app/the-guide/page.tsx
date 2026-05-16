@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { GUIDE_SECTIONS, GUIDE_SECTION_LABELS } from '@/lib/guide'
+import { GuideIcon } from '@/components/icons/guide-icons'
 
 export const metadata = { title: 'The Guide' }
 
@@ -11,16 +12,6 @@ const SECTION_EXCERPTS: Record<string, string> = {
   communications: 'Saying the right things to the right people at the right time.',
   'domain-expertise': 'Knowing enough to lead without needing to know everything.',
   faq: 'The questions that come up again and again.',
-}
-
-const SECTION_ICONS: Record<string, string> = {
-  measurement: '📊',
-  self: '🧠',
-  team: '👥',
-  strategy: '🧭',
-  communications: '💬',
-  'domain-expertise': '⚙️',
-  faq: '❓',
 }
 
 export default function GuideIndexPage() {
@@ -57,7 +48,7 @@ export default function GuideIndexPage() {
               style={{ borderColor: 'var(--color-border)', background: 'var(--color-bg-reading)', transition: 'box-shadow 0.15s, border-color 0.15s' }}
             >
               <div className="mb-2 flex items-center gap-2">
-                <span className="text-xl">{SECTION_ICONS[section]}</span>
+                <GuideIcon section={section} size={20} />
                 <h2
                   className="text-base font-semibold"
                   style={{ fontFamily: 'var(--font-display)', color: 'var(--color-text-primary)' }}
