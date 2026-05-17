@@ -20,6 +20,7 @@ import { PillarAccordion } from '@/components/app/PillarAccordion'
 import type { PillarData } from '@/components/app/PillarAccordion'
 import { ScheduleWidget } from '@/components/app/ScheduleWidget'
 import { GrowthSummaryCard } from '@/components/app/GrowthSummaryCard'
+import { CheckInNudgeCard } from '@/components/app/CheckInNudgeCard'
 
 export default async function DashboardPage() {
   const supabase = await createClient()
@@ -58,6 +59,13 @@ export default async function DashboardPage() {
   ])
 
   const hasManagerScores = managerScores.length > 0
+
+  const overdueCheckins = plans.filter(p => {
+    if (p.status === 'completed' || !p.checkin_frequency_weeks) return false
+    const base = p.last_checkin_at ? new Date(p.last_checkin_at) : new Date(p.created_at)
+    const nextDue = new Date(base.getTime() + p.checkin_frequency_weeks * 7 * 24 * 60 * 60 * 1000)
+    return nextDue < new Date()
+  })
 
   // ── Overall score + trend ────────────────────────────────────────────────────
   const overallAvg =
@@ -197,6 +205,7 @@ export default async function DashboardPage() {
         <aside className="flex flex-col gap-4">
           <ScheduleWidget scheduled={scheduled} />
           <GrowthSummaryCard plans={plans} />
+          <CheckInNudgeCard overdueCount={overdueCheckins.length} />
 
           {!hasManagerScores && (
             <div
