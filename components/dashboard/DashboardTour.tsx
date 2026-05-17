@@ -56,8 +56,9 @@ export function DashboardTour() {
       stageRadius: 8,
       popoverClass: 'bm-tour-popover',
       steps: TOUR_STEPS,
-      onDestroyStarted: () => {
-        driverObj.destroy()
+      // bm_tour_seen is write-only — the button always shows so users can
+      // re-run the tour. driver.js calls destroy() itself; we just persist the flag.
+      onDestroyed: () => {
         try {
           localStorage.setItem('bm_tour_seen', '1')
         } catch {
