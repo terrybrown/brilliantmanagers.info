@@ -7,9 +7,16 @@ vi.mock('next/navigation', () => ({ useRouter: () => ({ push: vi.fn() }) }))
 const user = { displayName: 'Terry Brown', email: 'terry@test.com', initials: 'TB' }
 
 describe('AvatarDropdown', () => {
-  it('shows initials on the button', () => {
+  it('shows initials when no avatarUrl', () => {
     render(<AvatarDropdown user={user} />)
     expect(screen.getByText('TB')).toBeTruthy()
+  })
+
+  it('shows avatar image when avatarUrl provided', () => {
+    render(<AvatarDropdown user={{ ...user, avatarUrl: 'https://example.com/avatar.jpg' }} />)
+    const img = screen.getByRole('img', { name: 'Terry Brown' })
+    expect(img.getAttribute('src')).toBe('https://example.com/avatar.jpg')
+    expect(screen.queryByText('TB')).toBeNull()
   })
 
   it('dropdown is hidden by default', () => {
@@ -29,5 +36,13 @@ describe('AvatarDropdown', () => {
     fireEvent.click(btn)
     fireEvent.click(btn)
     expect(screen.queryByText('Profile & settings')).toBeNull()
+  })
+
+  it('falls back to initials when avatar image fails to load', () => {
+    render(<AvatarDropdown user={{ ...user, avatarUrl: 'https://example.com/avatar.jpg' }} />)
+    const img = screen.getByRole('img', { name: 'Terry Brown' })
+    fireEvent.error(img)
+    expect(screen.queryByRole('img')).toBeNull()
+    expect(screen.getByText('TB')).toBeTruthy()
   })
 })

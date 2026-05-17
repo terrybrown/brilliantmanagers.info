@@ -1,7 +1,14 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { getProfile } from '@/lib/db/profiles'
-import { updateProfileAction } from './actions'
+import { getProfile, getSignedAvatarUrl } from '@/lib/db/profiles'
+import { updateProfileAction, removeAvatarAction } from './actions'
+
+function getInitials(name: string | null, email: string | null): string {
+  const src = name ?? email ?? '?'
+  const parts = src.split(/[\s@]/).filter(Boolean)
+  if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase()
+  return src.slice(0, 2).toUpperCase()
+}
 
 export default async function ProfilePage() {
   const supabase = await createClient()
@@ -11,6 +18,10 @@ export default async function ProfilePage() {
   if (!user) redirect('/login')
 
   const profile = await getProfile(user.id)
+  const avatarUrl = profile?.avatar_path
+    ? await getSignedAvatarUrl(profile.avatar_path)
+    : null
+  const initials = getInitials(profile?.display_name ?? null, user.email ?? null)
 
   return (
     <div className="mx-auto max-w-5xl">
@@ -20,6 +31,57 @@ export default async function ProfilePage() {
       </p>
 
       <form action={updateProfileAction} className="flex flex-col gap-5">
+        {/* Avatar section */}
+        <div className="mb-1 flex items-center gap-4">
+          <div
+            style={{
+              width: 64,
+              height: 64,
+              borderRadius: '50%',
+              overflow: 'hidden',
+              background: '#1f2937',
+              border: '2px solid #334155',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexShrink: 0,
+            }}
+          >
+            {avatarUrl ? (
+              <img
+                src={avatarUrl}
+                alt="Profile photo"
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+              />
+            ) : (
+              <span style={{ color: '#f59e0b', fontWeight: 700, fontSize: 20 }}>
+                {initials}
+              </span>
+            )}
+          </div>
+          <div className="flex items-center gap-3">
+            <label className="cursor-pointer rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-xs font-semibold text-white hover:border-amber-400 hover:text-amber-400 transition-colors">
+              Change photo
+              <input
+                type="file"
+                name="avatar"
+                accept="image/jpeg,image/png,image/webp"
+                className="sr-only"
+              />
+            </label>
+            {profile?.avatar_path && (
+              <form action={removeAvatarAction}>
+                <button
+                  type="submit"
+                  className="rounded-lg border border-slate-700 px-3 py-2 text-xs font-semibold text-slate-400 hover:border-red-500 hover:text-red-400 transition-colors"
+                >
+                  Remove
+                </button>
+              </form>
+            )}
+          </div>
+        </div>
+
         <div>
           <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-400">
             Display name

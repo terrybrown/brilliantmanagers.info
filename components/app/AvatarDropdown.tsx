@@ -9,12 +9,18 @@ interface UserInfo {
   displayName: string
   email: string
   initials: string
+  avatarUrl?: string
 }
 
 export function AvatarDropdown({ user }: { user: UserInfo }) {
   const [open, setOpen] = useState(false)
+  const [imgError, setImgError] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
   const router = useRouter()
+
+  useEffect(() => {
+    setImgError(false)
+  }, [user.avatarUrl])
 
   useEffect(() => {
     function handleOutsideClick(e: MouseEvent) {
@@ -31,6 +37,8 @@ export function AvatarDropdown({ user }: { user: UserInfo }) {
     await supabase.auth.signOut()
     router.push('/login')
   }
+
+  const showImage = user.avatarUrl && !imgError
 
   return (
     <div ref={ref} style={{ position: 'relative' }}>
@@ -53,9 +61,20 @@ export function AvatarDropdown({ user }: { user: UserInfo }) {
           color: '#f59e0b',
           cursor: 'pointer',
           transition: 'border-color 0.15s',
+          overflow: 'hidden',
+          padding: 0,
         }}
       >
-        {user.initials}
+        {showImage ? (
+          <img
+            src={user.avatarUrl}
+            alt={user.displayName}
+            onError={() => setImgError(true)}
+            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+          />
+        ) : (
+          user.initials
+        )}
       </button>
 
       {open && (
