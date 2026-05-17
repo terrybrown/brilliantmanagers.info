@@ -40,11 +40,16 @@ interface PillarTickProps {
 function PillarTick({ x = 0, y = 0, payload, textAnchor = 'middle', onPillarClick }: PillarTickProps) {
   const label = payload?.value ?? ''
   const pillarKey = PILLAR_LABEL_TO_KEY[label]
+  const xNum = Number(x)
+  const yNum = Number(y)
+  const rectX = textAnchor === 'end' ? xNum - 64 : textAnchor === 'start' ? xNum : xNum - 32
   return (
     <g
-      style={{ cursor: onPillarClick ? 'pointer' : 'default' }}
+      style={{ cursor: onPillarClick ? 'pointer' : 'default', pointerEvents: 'all' }}
       onClick={() => pillarKey && onPillarClick?.(pillarKey)}
     >
+      {/* Transparent rect gives a generous hit area beyond the text glyphs */}
+      <rect x={rectX} y={yNum - 10} width={64} height={20} fill="transparent" />
       <text x={x} y={y} fill="#94a3b8" fontSize={11} textAnchor={textAnchor} dominantBaseline="central">
         {label}
       </text>
@@ -66,7 +71,7 @@ export function ScorecardRadarChart({ pillarScores, showManager, onPillarClick }
 
   return (
     <ResponsiveContainer width="100%" height={280}>
-      <RadarChart data={data} margin={{ top: 10, right: 30, bottom: 10, left: 30 }} style={{ outline: 'none' }}>
+      <RadarChart data={data} margin={{ top: 10, right: 30, bottom: 10, left: 30 }}>
         <PolarGrid stroke="#1e293b" />
         <PolarAngleAxis
           dataKey="pillar"
