@@ -22,8 +22,7 @@ export default async function ScorecardPage() {
   const hasCompleteRound = !!(await getLatestCompleteRound(user.id))
 
   return (
-    <div className="dark min-h-screen" style={{ background: '#0f172a' }}>
-      <div className="mx-auto max-w-2xl px-4 py-12">
+    <div className="mx-auto max-w-5xl">
         <h1 className="mb-2 text-2xl font-bold text-white">Your Scorecard</h1>
         <p className="mb-8 text-sm text-slate-400">
           Score yourself on each pillar. Scores save automatically.
@@ -70,14 +69,13 @@ export default async function ScorecardPage() {
         {hasCompleteRound && (
           <div className="mt-8 text-center">
             <Link
-              href="/results"
+              href="/dashboard"
               className="text-sm font-semibold text-amber-400 hover:text-amber-300"
             >
-              View results →
+              View dashboard →
             </Link>
           </div>
         )}
-      </div>
     </div>
   )
 }

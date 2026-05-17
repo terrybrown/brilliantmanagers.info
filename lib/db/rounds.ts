@@ -61,3 +61,33 @@ export async function maybeCompleteRound(roundId: string): Promise<void> {
       .eq('id', roundId)
   }
 }
+
+export async function getInProgressRound(userId: string): Promise<Round | null> {
+  const supabase = await createClient()
+  const { data } = await supabase
+    .from('assessment_rounds')
+    .select('*')
+    .eq('user_id', userId)
+    .eq('status', 'in_progress')
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .maybeSingle()
+  return data as Round | null
+}
+
+export async function getPreviousCompleteRound(
+  userId: string,
+  beforeCompletedAt: string
+): Promise<Round | null> {
+  const supabase = await createClient()
+  const { data } = await supabase
+    .from('assessment_rounds')
+    .select('*')
+    .eq('user_id', userId)
+    .eq('status', 'complete')
+    .lt('completed_at', beforeCompletedAt)
+    .order('completed_at', { ascending: false })
+    .limit(1)
+    .maybeSingle()
+  return data as Round | null
+}

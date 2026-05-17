@@ -1,20 +1,19 @@
+// components/app/Sidebar.tsx
 'use client'
 import {
   LayoutDashboard,
-  ClipboardCheck,
-  BarChart3,
-  Network,
   TrendingUp,
+  Link2,
+  Network,
 } from 'lucide-react'
 import { LogoMark } from './LogoMark'
 import { NavItem } from './NavItem'
 
 const NAV_ITEMS = [
   { href: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
-  { href: '/scorecard', icon: ClipboardCheck, label: 'Scorecard' },
-  { href: '/results', icon: BarChart3, label: 'Results' },
-  { href: '/organisation', icon: Network, label: 'Organisation' },
   { href: '/growth', icon: TrendingUp, label: 'Growth' },
+  { href: '/connections', icon: Link2, label: 'Connections' },
+  { href: '/organisation', icon: Network, label: 'Organisation' },
 ] as const
 
 interface SidebarProps {

@@ -59,7 +59,7 @@ export default async function ManagerPage({
     )
 
     return (
-      <div className="mx-auto max-w-2xl">
+      <div className="mx-auto max-w-5xl">
         <h1 className="mb-2 text-2xl font-bold text-white">
           Scoring {profile?.display_name ?? profile?.email}
         </h1>
