@@ -33,3 +33,14 @@ export async function getAllResources(): Promise<Resource[]> {
   if (error) throw error
   return (data ?? []) as Resource[]
 }
+
+export async function getResourcesByType(type: Resource['resource_type']): Promise<Resource[]> {
+  const supabase = await createClient()
+  const { data, error } = await supabase
+    .from('resources')
+    .select('*')
+    .eq('resource_type', type)
+    .order('title')
+  if (error) throw error
+  return (data ?? []) as Resource[]
+}
