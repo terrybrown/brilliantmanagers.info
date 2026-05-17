@@ -4,7 +4,8 @@ import { confirmLogin } from './actions'
 
 interface Props {
   searchParams: {
-    code?: string
+    token_hash?: string
+    type?: string
     error?: string
     error_description?: string
   }
@@ -31,7 +32,7 @@ export default async function AuthConfirmPage({ searchParams }: Props) {
     )
   }
 
-  if (!searchParams.code) {
+  if (!searchParams.token_hash) {
     redirect('/login')
   }
 
@@ -41,7 +42,7 @@ export default async function AuthConfirmPage({ searchParams }: Props) {
         <h1 className="mb-2 text-2xl font-bold">Complete your sign-in</h1>
         <p className="mb-6 text-slate-500">Click below to sign in to Brilliant Managers.</p>
         <form action={confirmLogin}>
-          <input type="hidden" name="code" value={searchParams.code} />
+          <input type="hidden" name="token_hash" value={searchParams.token_hash} />
           <button
             type="submit"
             className="w-full rounded-lg bg-amber-500 px-4 py-3 text-sm font-semibold text-white hover:bg-amber-400"

@@ -3,18 +3,18 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 
 export async function confirmLogin(formData: FormData) {
-  const code = formData.get('code') as string | null
-  if (!code) redirect('/login')
+  const tokenHash = formData.get('token_hash') as string | null
+  if (!tokenHash) redirect('/login')
 
   const supabase = await createClient()
   const {
     data: { user },
-    error: exchangeError,
-  } = await supabase.auth.exchangeCodeForSession(code)
+    error: verifyError,
+  } = await supabase.auth.verifyOtp({ token_hash: tokenHash, type: 'email' })
 
-  if (exchangeError) {
+  if (verifyError) {
     redirect(
-      `/auth/confirm?error=access_denied&error_description=${encodeURIComponent(exchangeError.message)}`
+      `/auth/confirm?error=access_denied&error_description=${encodeURIComponent(verifyError.message)}`
     )
   }
 
