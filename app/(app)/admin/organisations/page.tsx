@@ -7,7 +7,7 @@ interface OrgRow {
   created_at: string
   org_members: {
     role: string
-    profiles: { email: string | null; display_name: string | null } | null
+    profiles: { email: string | null; display_name: string | null }[]
   }[]
 }
 
@@ -42,7 +42,7 @@ export default async function AdminOrganisationsPage() {
                   <td className="px-4 py-3 font-medium text-white">{org.name}</td>
                   <td className="px-4 py-3 text-slate-400">
                     {admins.length > 0
-                      ? admins.map(a => a.profiles?.email ?? '—').join(', ')
+                      ? admins.map(a => a.profiles[0]?.email ?? '—').join(', ')
                       : '—'}
                   </td>
                   <td className="px-4 py-3 text-slate-400">{org.org_members.length}</td>
