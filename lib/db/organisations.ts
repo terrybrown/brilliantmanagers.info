@@ -23,16 +23,13 @@ export async function createOrg(userId: string, name: string): Promise<{ id: str
 export async function getOrgsForUser(userId: string): Promise<Org[]> {
   const supabase = await createClient()
   const { data, error } = await supabase
-    .from('organisations')
-    .select('id, name, created_by, created_at, org_members!inner(role)')
-    .eq('org_members.user_id', userId)
+    .from('org_members')
+    .select('role, organisations(id, name, created_by, created_at)')
+    .eq('user_id', userId)
   if (error) throw error
-  return ((data ?? []) as { id: string; name: string; created_by: string; created_at: string; org_members: { role: string }[] }[]).map(row => ({
-    id: row.id,
-    name: row.name,
-    created_by: row.created_by,
-    created_at: row.created_at,
-    userRole: row.org_members[0]?.role as 'org_admin' | 'member',
+  return ((data ?? []) as { role: string; organisations: { id: string; name: string; created_by: string; created_at: string } }[]).map(row => ({
+    ...row.organisations,
+    userRole: row.role as 'org_admin' | 'member',
   }))
 }
 

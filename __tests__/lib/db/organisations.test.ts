@@ -37,10 +37,10 @@ describe('createOrg', () => {
 
 describe('getOrgsForUser', () => {
   it('returns orgs the user is a member of', async () => {
-    const orgData = [
-      { id: 'org-1', name: 'Acme', created_by: 'user-1', created_at: '2024-01-01', org_members: [{ role: 'org_admin' }] },
+    const memberData = [
+      { role: 'org_admin', organisations: { id: 'org-1', name: 'Acme', created_by: 'user-1', created_at: '2024-01-01' } },
     ]
-    const eq = vi.fn().mockResolvedValue({ data: orgData })
+    const eq = vi.fn().mockResolvedValue({ data: memberData, error: null })
     const select = vi.fn().mockReturnValue({ eq })
     const from = vi.fn().mockReturnValue({ select })
     mockCreateClient.mockResolvedValue({ from })
