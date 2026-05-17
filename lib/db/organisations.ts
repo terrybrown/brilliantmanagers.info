@@ -16,15 +16,17 @@ export async function createOrg(userId: string, name: string): Promise<{ id: str
     .select()
     .single()
   if (error) throw error
+  if (!data) throw new Error('No data returned from insert')
   return data as { id: string; name: string }
 }
 
 export async function getOrgsForUser(userId: string): Promise<Org[]> {
   const supabase = await createClient()
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from('organisations')
-    .select('id, name, created_by, created_at, org_members(role)')
+    .select('id, name, created_by, created_at, org_members!inner(role)')
     .eq('org_members.user_id', userId)
+  if (error) throw error
   return ((data ?? []) as { id: string; name: string; created_by: string; created_at: string; org_members: { role: string }[] }[]).map(row => ({
     id: row.id,
     name: row.name,
