@@ -31,12 +31,48 @@ const APP_ROUTES = [
   '/notifications',
 ]
 
+function NavLink({
+  item,
+  isAuthenticated,
+  pathname,
+  iconSize,
+  className,
+  extraStyle,
+  onClick,
+}: {
+  item: (typeof siteConfig.nav)[number]
+  isAuthenticated: boolean
+  pathname: string
+  iconSize: number
+  className: string
+  extraStyle?: React.CSSProperties
+  onClick?: () => void
+}) {
+  const isActive = pathname === item.href || pathname.startsWith(item.href + '/')
+  const Icon = NAV_ICONS[item.href]
+  const href = item.href === '/the-tool' && isAuthenticated ? '/dashboard' : item.href
+  return (
+    <Link
+      href={href}
+      onClick={onClick}
+      className={className}
+      style={{ color: isActive ? 'var(--color-text-primary)' : 'var(--color-text-muted)', ...extraStyle }}
+    >
+      {Icon && (
+        <Icon size={iconSize} strokeWidth={1.75} style={{ color: 'var(--color-accent)', flexShrink: 0 }} />
+      )}
+      {item.label}
+    </Link>
+  )
+}
+
 export function Nav({ isAuthenticated }: { isAuthenticated: boolean }) {
   const pathname = usePathname()
   const showToggle = !ALWAYS_DARK_ROUTES.includes(pathname)
   const isAppRoute = APP_ROUTES.some(r => pathname === r || pathname.startsWith(r + '/'))
   const [isOpen, setIsOpen] = useState(false)
   const headerRef = useRef<HTMLElement>(null)
+  const prevPathname = useRef(pathname)
 
   // Close on click outside
   useEffect(() => {
@@ -54,9 +90,12 @@ export function Nav({ isAuthenticated }: { isAuthenticated: boolean }) {
     }
   }, [isOpen])
 
-  // Close on route change
+  // Close on route change — guard prevents no-op setState on initial mount
   useEffect(() => {
-    setIsOpen(false)
+    if (prevPathname.current !== pathname) {
+      prevPathname.current = pathname
+      setIsOpen(false)
+    }
   }, [pathname])
 
   return (
@@ -86,28 +125,16 @@ export function Nav({ isAuthenticated }: { isAuthenticated: boolean }) {
 
         {/* Centre zone — desktop only */}
         <nav className="hidden flex-none items-center gap-6 md:flex">
-          {siteConfig.nav.map((item) => {
-            const isActive = pathname === item.href || pathname.startsWith(item.href + '/')
-            const Icon = NAV_ICONS[item.href]
-            const href = item.href === '/the-tool' && isAuthenticated ? '/dashboard' : item.href
-            return (
-              <Link
-                key={item.href}
-                href={href}
-                className="flex items-center gap-1.5 text-sm font-medium transition-opacity hover:opacity-100"
-                style={{ color: isActive ? 'var(--color-text-primary)' : 'var(--color-text-muted)' }}
-              >
-                {Icon && (
-                  <Icon
-                    size={14}
-                    strokeWidth={1.75}
-                    style={{ color: 'var(--color-accent)', flexShrink: 0 }}
-                  />
-                )}
-                {item.label}
-              </Link>
-            )
-          })}
+          {siteConfig.nav.map((item) => (
+            <NavLink
+              key={item.href}
+              item={item}
+              isAuthenticated={isAuthenticated}
+              pathname={pathname}
+              iconSize={14}
+              className="flex items-center gap-1.5 text-sm font-medium transition-opacity hover:opacity-100"
+            />
+          ))}
         </nav>
 
         {/* Right zone — desktop only */}
@@ -137,7 +164,7 @@ export function Nav({ isAuthenticated }: { isAuthenticated: boolean }) {
         <div className="flex flex-1 items-center justify-end md:hidden">
           <button
             aria-label={isOpen ? 'Close menu' : 'Open menu'}
-            aria-expanded={isOpen}
+            aria-expanded={isOpen ? 'true' : 'false'}
             onClick={() => setIsOpen(!isOpen)}
             className="rounded-md p-2"
             style={{ color: 'var(--color-text-primary)' }}
@@ -147,43 +174,29 @@ export function Nav({ isAuthenticated }: { isAuthenticated: boolean }) {
         </div>
       </div>
 
-      {/* Mobile dropdown panel — conditionally rendered, not hidden */}
+      {/* Mobile dropdown panel — isOpen is the visibility gate */}
       {isOpen && (
         <nav
           role="navigation"
           aria-label="Mobile menu"
-          className="border-t md:hidden"
+          className="border-t"
           style={{
             borderColor: 'var(--color-border)',
             background: 'var(--color-nav-bg)',
           }}
         >
-          {siteConfig.nav.map((item) => {
-            const isActive = pathname === item.href || pathname.startsWith(item.href + '/')
-            const Icon = NAV_ICONS[item.href]
-            const href = item.href === '/the-tool' && isAuthenticated ? '/dashboard' : item.href
-            return (
-              <Link
-                key={item.href}
-                href={href}
-                onClick={() => setIsOpen(false)}
-                className="flex items-center gap-3 border-b px-6 py-3.5 text-sm font-medium"
-                style={{
-                  color: isActive ? 'var(--color-text-primary)' : 'var(--color-text-muted)',
-                  borderColor: 'var(--color-border)',
-                }}
-              >
-                {Icon && (
-                  <Icon
-                    size={16}
-                    strokeWidth={1.75}
-                    style={{ color: 'var(--color-accent)', flexShrink: 0 }}
-                  />
-                )}
-                {item.label}
-              </Link>
-            )
-          })}
+          {siteConfig.nav.map((item) => (
+            <NavLink
+              key={item.href}
+              item={item}
+              isAuthenticated={isAuthenticated}
+              pathname={pathname}
+              iconSize={16}
+              className="flex items-center gap-3 border-b px-6 py-3.5 text-sm font-medium"
+              extraStyle={{ borderColor: 'var(--color-border)' }}
+              onClick={() => setIsOpen(false)}
+            />
+          ))}
           <div className="flex items-center justify-between px-6 py-4">
             {!isAuthenticated && !isAppRoute && (
               <Link
@@ -195,7 +208,9 @@ export function Nav({ isAuthenticated }: { isAuthenticated: boolean }) {
                 Sign in
               </Link>
             )}
-            {showToggle && <ThemeToggle />}
+            <div className="ml-auto">
+              {showToggle && <ThemeToggle />}
+            </div>
           </div>
         </nav>
       )}
