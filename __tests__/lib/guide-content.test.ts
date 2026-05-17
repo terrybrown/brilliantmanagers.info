@@ -104,6 +104,16 @@ describe('parseGuideContent', () => {
     expect(parseGuideContent('no details here', 'Empathy & Compassion')).toBeNull()
   })
 
+  it('matches a label when the MDX summary has a parenthetical suffix', () => {
+    const mdxWithSuffix = SAMPLE_MDX.replace(
+      '<summary>Empathy and Compassion</summary>',
+      '<summary>Empathy and Compassion (EC)</summary>'
+    )
+    const result = parseGuideContent(mdxWithSuffix, 'Empathy & Compassion')
+    expect(result).not.toBeNull()
+    expect(result?.definition).toContain('understand and share the feelings')
+  })
+
   it('parses correctly when details block uses 2-space indentation (real MDX format)', () => {
     const indentedMdx = `
 <details>

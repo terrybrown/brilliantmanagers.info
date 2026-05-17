@@ -42,10 +42,13 @@ export function GuidePanel({ activeSkillKey }: GuidePanelProps) {
       setContent(null)
       return
     }
+    setContent(null)
+    let cancelled = false
     startTransition(async () => {
       const result = await getGuideContent(activeSkillKey)
-      setContent(result)
+      if (!cancelled) setContent(result)
     })
+    return () => { cancelled = true }
   }, [activeSkillKey])
 
   const activeSkill = SKILLS.find(s => s.key === activeSkillKey)

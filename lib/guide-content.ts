@@ -20,7 +20,7 @@ const PILLAR_TO_FILE: Record<string, string> = {
 }
 
 function normalise(s: string): string {
-  return s.toLowerCase().replace(/&/g, 'and').replace(/\s+/g, ' ').trim()
+  return s.toLowerCase().replace(/&/g, 'and').replace(/\s*\([^)]*\)/g, '').replace(/\s+/g, ' ').trim()
 }
 
 export function parseGuideContent(mdx: string, skillLabel: string): SkillGuideContent | null {
