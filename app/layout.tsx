@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Fraunces, Inter } from 'next/font/google'
+import { Bricolage_Grotesque, Inter } from 'next/font/google'
 import Script from 'next/script'
 import { ThemeProvider } from 'next-themes'
 import { Nav } from '@/components/layout/nav'
@@ -8,10 +8,10 @@ import { siteConfig } from '@/config/site'
 import { createClient } from '@/lib/supabase/server'
 import './globals.css'
 
-const fraunces = Fraunces({
+const bricolage = Bricolage_Grotesque({
   subsets: ['latin'],
-  axes: ['opsz', 'SOFT', 'WONK'],
-  variable: '--font-fraunces',
+  axes: ['opsz'],
+  variable: '--font-bricolage',
   display: 'swap',
 })
 
@@ -39,7 +39,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${fraunces.variable} ${inter.variable}`}>
+      <body className={`${bricolage.variable} ${inter.variable}`}>
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
           <div className="flex min-h-screen flex-col">
             <Nav isAuthenticated={!!user} />
