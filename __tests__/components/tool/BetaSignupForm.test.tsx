@@ -83,4 +83,28 @@ describe('BetaSignupForm', () => {
       expect(screen.getByPlaceholderText('your@email.com')).toBeTruthy()
     })
   })
+
+  it('disables the button while the request is in flight', async () => {
+    let resolve: (v: { error: null }) => void
+    mockSignInWithOtp.mockReturnValue(new Promise(r => { resolve = r }))
+    render(<BetaSignupForm />)
+    fireEvent.change(screen.getByPlaceholderText('your@email.com'), {
+      target: { value: 'test@example.com' },
+    })
+    fireEvent.click(screen.getByRole('button', { name: /get early access/i }))
+    expect(screen.getByRole('button', { name: /get early access/i })).toHaveProperty('disabled', true)
+    resolve!({ error: null })
+  })
+
+  it('shows a fallback error message when the request throws', async () => {
+    mockSignInWithOtp.mockRejectedValue(new Error('Network error'))
+    render(<BetaSignupForm />)
+    fireEvent.change(screen.getByPlaceholderText('your@email.com'), {
+      target: { value: 'test@example.com' },
+    })
+    fireEvent.click(screen.getByRole('button', { name: /get early access/i }))
+    await waitFor(() => {
+      expect(screen.getByText('Something went wrong. Please try again.')).toBeTruthy()
+    })
+  })
 })

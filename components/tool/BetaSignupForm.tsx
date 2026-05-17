@@ -6,21 +6,29 @@ export function BetaSignupForm() {
   const [email, setEmail] = useState('')
   const [sent, setSent] = useState(false)
   const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setError('')
+    setLoading(true)
     const supabase = createClient()
-    const { error: err } = await supabase.auth.signInWithOtp({
-      email,
-      options: {
-        emailRedirectTo: `${window.location.origin}/auth/callback`,
-      },
-    })
-    if (err) {
-      setError(err.message)
-    } else {
-      setSent(true)
+    try {
+      const { error: err } = await supabase.auth.signInWithOtp({
+        email,
+        options: {
+          emailRedirectTo: `${window.location.origin}/auth/callback`,
+        },
+      })
+      if (err) {
+        setError(err.message)
+      } else {
+        setSent(true)
+      }
+    } catch {
+      setError('Something went wrong. Please try again.')
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -54,6 +62,7 @@ export function BetaSignupForm() {
           onChange={e => setEmail(e.target.value)}
           placeholder="your@email.com"
           required
+          className="focus:outline-none focus:ring-2 focus:ring-amber-400"
           style={{
             flex: 1,
             background: 'rgba(254,252,247,0.08)',
@@ -62,11 +71,11 @@ export function BetaSignupForm() {
             padding: '12px 16px',
             color: '#fefcf7',
             fontSize: '0.875rem',
-            outline: 'none',
           }}
         />
         <button
           type="submit"
+          disabled={loading}
           style={{
             background: '#f59e0b',
             color: '#1a3a5c',
@@ -75,8 +84,9 @@ export function BetaSignupForm() {
             padding: '12px 22px',
             borderRadius: 8,
             border: 'none',
-            cursor: 'pointer',
+            cursor: loading ? 'not-allowed' : 'pointer',
             whiteSpace: 'nowrap',
+            opacity: loading ? 0.7 : 1,
           }}
         >
           Get early access →
