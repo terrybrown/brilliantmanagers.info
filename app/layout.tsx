@@ -33,7 +33,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const supabase = await createClient()
   const {
     data: { user },
+    error: authError,
   } = await supabase.auth.getUser()
+  if (authError) console.error('[layout] auth error:', authError.message)
 
   return (
     <html lang="en" suppressHydrationWarning>
