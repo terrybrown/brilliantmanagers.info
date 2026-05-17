@@ -1,19 +1,12 @@
 import Link from 'next/link'
-import { ExternalLink, Check } from 'lucide-react'
+import { ExternalLink } from 'lucide-react'
 import { ScorecardPreview } from '@/components/tool/scorecard-preview'
+import { BetaSignupForm } from '@/components/tool/BetaSignupForm'
 
 export const metadata = { title: 'The Tool' }
 
 const GOOGLE_SHEET_URL =
   'https://docs.google.com/spreadsheets/d/1CDalSItIni0PWWcrwXzMG-CAOWzjP-1FYPdRCbswcoo/edit?usp=sharing'
-
-const V2_FEATURES = [
-  'Score all six pillars in a guided flow — no spreadsheet skills needed',
-  'Track your progress over time and see where you\'ve grown',
-  'Share a structured snapshot with your manager — a proper conversation starter',
-  'Set specific development goals and revisit them at your next 1:1',
-  'Compare pillars to find where to invest next',
-]
 
 export default function ToolPage() {
   return (
@@ -77,51 +70,46 @@ export default function ToolPage() {
           <ScorecardPreview />
         </div>
 
-        {/* v2 coming section */}
+        {/* Beta sign-up section */}
         <div
-          className="mt-16 rounded-xl px-8 py-7"
-          style={{ background: 'rgba(254,252,247,0.04)', border: '1px solid rgba(254,252,247,0.10)' }}
+          id="beta-signup"
+          className="mt-16 rounded-xl px-8 py-11 text-center"
+          style={{
+            background: 'rgba(254,252,247,0.04)',
+            border: '1px solid rgba(245,158,11,0.30)',
+            borderTop: '3px solid #f59e0b',
+          }}
         >
-          <div className="mb-5 flex items-center gap-3">
-            <span
-              className="rounded-full border px-3 py-1 text-xs font-semibold"
-              style={{ borderColor: 'rgba(245,158,11,0.40)', color: '#fbbf24', background: 'rgba(245,158,11,0.10)' }}
-            >
-              Coming in v2
-            </span>
-            <p
-              className="text-sm font-semibold"
-              style={{ color: 'rgba(254,252,247,0.75)', fontFamily: 'var(--font-display)' }}
-            >
-              A proper app. Not a spreadsheet.
-            </p>
-          </div>
-          <ul className="grid gap-2.5 sm:grid-cols-2">
-            {V2_FEATURES.map((feature) => (
-              <li key={feature} className="flex items-start gap-2.5">
-                <Check
-                  size={14}
-                  strokeWidth={2.5}
-                  style={{ color: '#f59e0b', marginTop: '3px', flexShrink: 0 }}
-                />
-                <span className="text-sm leading-snug" style={{ color: 'rgba(254,252,247,0.55)' }}>
-                  {feature}
-                </span>
-              </li>
-            ))}
-          </ul>
-          <div className="mt-6 flex items-center gap-4">
-            <Link
-              href="/login"
-              className="inline-flex items-center gap-2 rounded-md border px-5 py-2.5 text-sm font-semibold transition-opacity hover:opacity-90"
-              style={{ borderColor: 'rgba(245,158,11,0.5)', color: '#f59e0b' }}
-            >
-              Try the new app (beta) →
-            </Link>
-            <span className="text-xs" style={{ color: 'rgba(254,252,247,0.30)' }}>
-              Request access to join the waitlist
-            </span>
-          </div>
+          <span
+            className="mb-5 inline-block rounded-full border px-3.5 py-1 text-xs font-bold uppercase tracking-widest"
+            style={{
+              borderColor: 'rgba(245,158,11,0.35)',
+              color: '#fbbf24',
+              background: 'rgba(245,158,11,0.12)',
+              letterSpacing: '0.14em',
+            }}
+          >
+            Beta — Free to join
+          </span>
+          <h2
+            className="mb-3 text-3xl font-extrabold leading-tight"
+            style={{ color: '#fefcf7', letterSpacing: '-0.025em' }}
+          >
+            Stop flying blind on your own development.
+          </h2>
+          <p
+            className="mx-auto mb-8 text-base leading-relaxed"
+            style={{ color: 'rgba(254,252,247,0.58)', maxWidth: '520px' }}
+          >
+            Most managers wait until their performance review to find out where they
+            stand. Brilliant Managers changes that — score yourself across six pillars,
+            get clear insights into where you&apos;re strong and where to improve, and
+            leave every session with practical steps you can act on straight away.
+          </p>
+          <BetaSignupForm />
+          <p className="mt-3 text-xs" style={{ color: 'rgba(254,252,247,0.25)' }}>
+            No password. Click the link in your email and you&apos;re in.
+          </p>
         </div>
       </div>
     </div>
