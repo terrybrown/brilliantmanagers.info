@@ -25,7 +25,15 @@ export function ScorecardShell({ roundId, allScores, allGuideContent }: Scorecar
 
   const handlePillarChange = (pillar: Pillar) => {
     setActivePillar(pillar)
-    setActiveSkillKey(lastActiveByPillar[pillar] ?? null)
+    const lastKey = lastActiveByPillar[pillar]
+    if (lastKey) {
+      setActiveSkillKey(lastKey)
+    } else {
+      const firstSkill = getSkillsByPillar(pillar)[0]
+      const firstKey = firstSkill?.key ?? null
+      setActiveSkillKey(firstKey)
+      if (firstKey) setLastActiveByPillar(prev => ({ ...prev, [pillar]: firstKey }))
+    }
   }
 
   const handleSkillActivate = (skillKey: string) => {
