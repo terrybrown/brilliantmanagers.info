@@ -1,7 +1,17 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
-const APP_ROUTES = ['/scorecard', '/results', '/connections', '/manager']
+const APP_ROUTES = [
+  '/dashboard',
+  '/scorecard',
+  '/results',
+  '/connections',
+  '/manager',
+  '/organisation',
+  '/growth',
+  '/profile',
+  '/notifications',
+]
 
 export async function middleware(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request })
@@ -41,7 +51,7 @@ export async function middleware(request: NextRequest) {
 
   // Redirect authenticated users away from login
   if (path === '/login' && user) {
-    return NextResponse.redirect(new URL('/scorecard', request.url))
+    return NextResponse.redirect(new URL('/dashboard', request.url))
   }
 
   return supabaseResponse
