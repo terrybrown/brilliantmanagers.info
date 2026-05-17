@@ -57,8 +57,8 @@ describe('addUserToNode', () => {
     const parentMemberEq = vi.fn().mockResolvedValue({ data: [{ user_id: 'manager-1' }], error: null })
     const parentMemberSelect = vi.fn().mockReturnValue({ eq: parentMemberEq })
 
-    const parentNodeSingle = vi.fn().mockResolvedValue({ data: { parent_id: null }, error: null })
-    const parentNodeEq = vi.fn().mockReturnValue({ single: parentNodeSingle })
+    const parentNodeMaybeSingle = vi.fn().mockResolvedValue({ data: { parent_id: null }, error: null })
+    const parentNodeEq = vi.fn().mockReturnValue({ maybeSingle: parentNodeMaybeSingle })
 
     let orgNodeCallCount = 0
     const from = vi.fn().mockImplementation((table: string) => {
@@ -122,8 +122,8 @@ describe('addUserToNode', () => {
           return { select: vi.fn().mockReturnValue({ eq: vi.fn().mockReturnValue({ single }) }) }
         }
         // ancestor node fetch returns parent_id pointing back to n1
-        const single = vi.fn().mockResolvedValue({ data: { parent_id: 'n1' }, error: null })
-        return { select: vi.fn().mockReturnValue({ eq: vi.fn().mockReturnValue({ single }) }) }
+        const maybeSingle = vi.fn().mockResolvedValue({ data: { parent_id: 'n1' }, error: null })
+        return { select: vi.fn().mockReturnValue({ eq: vi.fn().mockReturnValue({ maybeSingle }) }) }
       }
       if (table === 'org_members') return { upsert: vi.fn().mockResolvedValue({ error: null }) }
       if (table === 'org_node_members') return {

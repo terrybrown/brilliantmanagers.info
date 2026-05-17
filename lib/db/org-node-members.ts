@@ -28,6 +28,9 @@ export async function addUserToNode(params: {
     .insert({ node_id: params.nodeId, user_id: params.userId })
   if (insertError) throw insertError
 
+  // Note: if connectToAncestor throws after the insert above, the org_node_members
+  // row is already written. Supabase JS has no client-side transactions; use an RPC
+  // if atomic behaviour is required.
   if (node.parent_id) {
     await connectToAncestor(supabase, node.parent_id, params.userId, params.actorId, new Set([params.nodeId]))
   }
@@ -71,7 +74,7 @@ async function connectToAncestor(
     .from('org_nodes')
     .select('parent_id')
     .eq('id', ancestorNodeId)
-    .single()
+    .maybeSingle()
 
   if (ancestorError) throw ancestorError
   if (!ancestorNode) return  // orphaned node — stop recursing
