@@ -31,7 +31,7 @@ export async function getOrgsForUser(userId: string): Promise<Org[]> {
     if (!row.organisations) return []
     return [{
       ...row.organisations,
-      userRole: row.role as 'org_admin' | 'member',
+      userRole: row.role === 'org_admin' ? 'org_admin' : 'member',
     }]
   })
 }

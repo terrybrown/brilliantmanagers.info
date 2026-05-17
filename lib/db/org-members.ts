@@ -28,12 +28,15 @@ export async function setOrgRole(
   role: 'org_admin' | 'member'
 ): Promise<void> {
   const supabase = await createClient()
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from('org_members')
     .update({ role })
     .eq('org_id', orgId)
     .eq('user_id', userId)
+    .select('user_id')
+    .single()
   if (error) throw error
+  if (!data) throw new Error(`No org_member found for org ${orgId}, user ${userId}`)
 }
 
 // Caller must verify org_admin role — RLS enforces this for user-scoped clients.
