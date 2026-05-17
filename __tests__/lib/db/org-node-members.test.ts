@@ -86,6 +86,56 @@ describe('addUserToNode', () => {
       expect.objectContaining({ ignoreDuplicates: true })
     )
   })
+
+  it('throws when fetching ancestor members errors', async () => {
+    const nodeSingle = vi.fn().mockResolvedValue({ data: { org_id: 'org-1', parent_id: 'parent-node' }, error: null })
+    const nodeEq = vi.fn().mockReturnValue({ single: nodeSingle })
+    const nodeSelect = vi.fn().mockReturnValue({ eq: nodeEq })
+
+    // ancestor member select returns an error
+    const parentMemberEq = vi.fn().mockResolvedValue({ data: null, error: { message: 'members fetch error' } })
+    const parentMemberSelect = vi.fn().mockReturnValue({ eq: parentMemberEq })
+
+    const from = vi.fn().mockImplementation((table: string) => {
+      if (table === 'org_nodes') return { select: nodeSelect }
+      if (table === 'org_members') return { upsert: vi.fn().mockResolvedValue({ error: null }) }
+      if (table === 'org_node_members') return {
+        insert: vi.fn().mockResolvedValue({ error: null }),
+        select: parentMemberSelect,
+      }
+      return {}
+    })
+    mock.mockResolvedValue({ from })
+
+    await expect(addUserToNode({ nodeId: 'n1', userId: 'user-2', actorId: 'user-1' })).rejects.toThrow()
+  })
+
+  it('throws on cycle in parent_id chain', async () => {
+    // Node n1 has parent 'parent-node'; parent-node has parent 'n1' — a cycle
+    let orgNodeCallCount = 0
+    const from = vi.fn().mockImplementation((table: string) => {
+      if (table === 'org_nodes') {
+        orgNodeCallCount++
+        if (orgNodeCallCount === 1) {
+          // initial node fetch
+          const single = vi.fn().mockResolvedValue({ data: { org_id: 'org-1', parent_id: 'parent-node' }, error: null })
+          return { select: vi.fn().mockReturnValue({ eq: vi.fn().mockReturnValue({ single }) }) }
+        }
+        // ancestor node fetch returns parent_id pointing back to n1
+        const single = vi.fn().mockResolvedValue({ data: { parent_id: 'n1' }, error: null })
+        return { select: vi.fn().mockReturnValue({ eq: vi.fn().mockReturnValue({ single }) }) }
+      }
+      if (table === 'org_members') return { upsert: vi.fn().mockResolvedValue({ error: null }) }
+      if (table === 'org_node_members') return {
+        insert: vi.fn().mockResolvedValue({ error: null }),
+        select: vi.fn().mockReturnValue({ eq: vi.fn().mockResolvedValue({ data: [], error: null }) }),
+      }
+      return {}
+    })
+    mock.mockResolvedValue({ from })
+
+    await expect(addUserToNode({ nodeId: 'n1', userId: 'user-2', actorId: 'user-1' })).rejects.toThrow('Cycle detected')
+  })
 })
 
 describe('removeUserFromNode', () => {

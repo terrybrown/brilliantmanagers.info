@@ -29,7 +29,7 @@ export async function addUserToNode(params: {
   if (insertError) throw insertError
 
   if (node.parent_id) {
-    await connectToAncestor(supabase, node.parent_id, params.userId, params.actorId)
+    await connectToAncestor(supabase, node.parent_id, params.userId, params.actorId, new Set([params.nodeId]))
   }
 }
 
@@ -37,8 +37,12 @@ async function connectToAncestor(
   supabase: SupabaseClient,
   ancestorNodeId: string,
   newUserId: string,
-  actorId: string
+  actorId: string,
+  visited: Set<string>
 ): Promise<void> {
+  if (visited.has(ancestorNodeId)) throw new Error(`Cycle detected in org_nodes parent_id at node ${ancestorNodeId}`)
+  visited.add(ancestorNodeId)
+
   const { data: ancestorMembers, error: membersError } = await supabase
     .from('org_node_members')
     .select('user_id')
@@ -48,6 +52,7 @@ async function connectToAncestor(
 
   if (ancestorMembers && ancestorMembers.length > 0) {
     for (const member of ancestorMembers as { user_id: string }[]) {
+      if (!member.user_id) continue  // skip dirty rows
       const { error: connError } = await supabase.from('connections').upsert(
         {
           manager_id: member.user_id,
@@ -69,9 +74,10 @@ async function connectToAncestor(
     .single()
 
   if (ancestorError) throw ancestorError
+  if (!ancestorNode) return  // orphaned node — stop recursing
 
-  if (ancestorNode?.parent_id) {
-    await connectToAncestor(supabase, ancestorNode.parent_id, newUserId, actorId)
+  if (ancestorNode.parent_id) {
+    await connectToAncestor(supabase, ancestorNode.parent_id, newUserId, actorId, visited)
   }
 }
 
