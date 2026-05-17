@@ -9,7 +9,14 @@ export async function confirmLogin(formData: FormData) {
   const supabase = await createClient()
   const {
     data: { user },
+    error: exchangeError,
   } = await supabase.auth.exchangeCodeForSession(code)
+
+  if (exchangeError) {
+    redirect(
+      `/auth/confirm?error=access_denied&error_description=${encodeURIComponent(exchangeError.message)}`
+    )
+  }
 
   if (user) {
     await supabase.from('profiles').upsert(
