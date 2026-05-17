@@ -34,6 +34,9 @@ export function SkillList({
       try {
         await saveScore(roundId, skill.pillar, skill.key, level)
       } catch {
+        // Revert the optimistic update. previousLevel may be undefined (skill
+        // was never scored); ScorecardShell.handleScore deletes the key in
+        // that case, which correctly undoes the add from line 28.
         onScore(skill.key, previousLevel)
       }
     })
