@@ -26,8 +26,15 @@ export function ScorecardShell({ roundId, allScores }: ScorecardShellProps) {
     setLastActiveByPillar(prev => ({ ...prev, [activePillar]: skillKey }))
   }
 
-  const handleScore = (skillKey: string, level: Level) => {
-    setScores(prev => ({ ...prev, [skillKey]: level }))
+  const handleScore = (skillKey: string, level: Level | undefined) => {
+    setScores(prev => {
+      if (level === undefined) {
+        const next = { ...prev }
+        delete next[skillKey]
+        return next
+      }
+      return { ...prev, [skillKey]: level }
+    })
   }
 
   const pillarProgress = Object.fromEntries(

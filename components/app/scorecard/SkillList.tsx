@@ -9,7 +9,7 @@ interface SkillListProps {
   roundId: string
   activeSkillKey: string | null
   onSkillActivate: (skillKey: string) => void
-  onScore: (skillKey: string, level: Level) => void
+  onScore: (skillKey: string, level: Level | undefined) => void
 }
 
 export function SkillList({
@@ -23,6 +23,7 @@ export function SkillList({
   const [, startTransition] = useTransition()
 
   const handleRate = (skill: Skill, level: Level) => {
+    if (scores[skill.key] === level) return
     const previousLevel = scores[skill.key]
     onScore(skill.key, level)
     // Auto-advance: activate the next skill in the list after rating
@@ -33,7 +34,7 @@ export function SkillList({
       try {
         await saveScore(roundId, skill.pillar, skill.key, level)
       } catch {
-        if (previousLevel !== undefined) onScore(skill.key, previousLevel)
+        onScore(skill.key, previousLevel)
       }
     })
   }
