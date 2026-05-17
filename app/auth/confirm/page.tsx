@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { confirmLogin } from './actions'
+import { ConfirmButton } from './ConfirmButton'
 
 interface Props {
   searchParams: Promise<{
@@ -44,12 +45,7 @@ export default async function AuthConfirmPage({ searchParams }: Props) {
         <p className="mb-6 text-slate-500">Click below to sign in to Brilliant Managers.</p>
         <form action={confirmLogin}>
           <input type="hidden" name="token_hash" value={token_hash} />
-          <button
-            type="submit"
-            className="w-full rounded-lg bg-amber-500 px-4 py-3 text-sm font-semibold text-white hover:bg-amber-400"
-          >
-            Sign in →
-          </button>
+          <ConfirmButton />
         </form>
       </div>
     </div>
