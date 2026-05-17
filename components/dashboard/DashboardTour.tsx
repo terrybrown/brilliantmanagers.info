@@ -71,6 +71,7 @@ export function DashboardTour() {
 
   return (
     <button
+      type="button"
       onClick={startTour}
       style={{
         display: 'inline-flex',

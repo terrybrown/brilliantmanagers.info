@@ -11,6 +11,7 @@ export default defineConfig({
         url: 'http://localhost',
       },
     },
+    clearMocks: true,
     setupFiles: ['./vitest.setup.ts'],
     globals: true,
   },
