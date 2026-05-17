@@ -3,22 +3,23 @@ import Link from 'next/link'
 import { confirmLogin } from './actions'
 
 interface Props {
-  searchParams: {
+  searchParams: Promise<{
     token_hash?: string
     type?: string
     error?: string
     error_description?: string
-  }
+  }>
 }
 
 export default async function AuthConfirmPage({ searchParams }: Props) {
-  if (searchParams.error) {
+  const { token_hash, error, error_description } = await searchParams
+  if (error) {
     return (
       <div className="flex min-h-screen items-center justify-center px-4">
         <div className="max-w-sm text-center">
           <h1 className="mb-2 text-2xl font-bold">Link expired</h1>
           <p className="mb-6 text-slate-500">
-            {searchParams.error_description ??
+            {error_description ??
               'This sign-in link has expired or already been used.'}
           </p>
           <Link
@@ -32,7 +33,7 @@ export default async function AuthConfirmPage({ searchParams }: Props) {
     )
   }
 
-  if (!searchParams.token_hash) {
+  if (!token_hash) {
     redirect('/login')
   }
 
@@ -42,7 +43,7 @@ export default async function AuthConfirmPage({ searchParams }: Props) {
         <h1 className="mb-2 text-2xl font-bold">Complete your sign-in</h1>
         <p className="mb-6 text-slate-500">Click below to sign in to Brilliant Managers.</p>
         <form action={confirmLogin}>
-          <input type="hidden" name="token_hash" value={searchParams.token_hash} />
+          <input type="hidden" name="token_hash" value={token_hash} />
           <button
             type="submit"
             className="w-full rounded-lg bg-amber-500 px-4 py-3 text-sm font-semibold text-white hover:bg-amber-400"
