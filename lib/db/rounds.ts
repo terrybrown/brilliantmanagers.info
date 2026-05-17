@@ -103,16 +103,18 @@ export async function getAllCompleteRoundsWithScores(
     .select('*')
     .eq('user_id', userId)
     .eq('status', 'complete')
+    .not('completed_at', 'is', null)
     .order('completed_at', { ascending: true })
 
   if (!rounds || rounds.length === 0) return []
 
   const roundIds = (rounds as Round[]).map(r => r.id)
 
-  const { data: allScores } = await supabase
+  const { data: allScores, error: scoresError } = await supabase
     .from('scores')
     .select('*')
     .in('round_id', roundIds)
+  if (scoresError) throw scoresError
 
   const scoresByRound = new Map<string, Score[]>()
   for (const score of (allScores ?? []) as Score[]) {
