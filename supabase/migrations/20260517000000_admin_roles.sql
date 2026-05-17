@@ -1,18 +1,3 @@
--- Helper: check if current user is a member of an org.
--- SECURITY DEFINER avoids RLS recursion in policies below.
-CREATE OR REPLACE FUNCTION is_org_member(p_org_id uuid)
-RETURNS boolean
-LANGUAGE sql
-SECURITY DEFINER
-STABLE
-AS $$
-  SELECT EXISTS (
-    SELECT 1 FROM org_members
-    WHERE org_members.org_id = p_org_id
-      AND org_members.user_id = auth.uid()
-  )
-$$;
-
 -- user_roles: global roles (super_admin only for now)
 CREATE TABLE user_roles (
   id         uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -34,10 +19,8 @@ CREATE TABLE organisations (
   created_at timestamptz NOT NULL DEFAULT now()
 );
 ALTER TABLE organisations ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "member read" ON organisations
-  FOR SELECT USING (is_org_member(id));
 
--- org_members: per-org role
+-- org_members: per-org role (must exist before is_org_member function)
 CREATE TABLE org_members (
   id         uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   org_id     uuid NOT NULL REFERENCES organisations(id) ON DELETE CASCADE,
@@ -47,6 +30,27 @@ CREATE TABLE org_members (
   UNIQUE (org_id, user_id)
 );
 ALTER TABLE org_members ENABLE ROW LEVEL SECURITY;
+
+-- Helper: check if current user is a member of an org.
+-- SECURITY DEFINER avoids RLS recursion in policies below.
+-- Defined after org_members so the SQL body validates successfully.
+CREATE OR REPLACE FUNCTION is_org_member(p_org_id uuid)
+RETURNS boolean
+LANGUAGE sql
+SECURITY DEFINER
+STABLE
+AS $$
+  SELECT EXISTS (
+    SELECT 1 FROM org_members
+    WHERE org_members.org_id = p_org_id
+      AND org_members.user_id = auth.uid()
+  )
+$$;
+
+-- Policies that depend on is_org_member
+CREATE POLICY "member read" ON organisations
+  FOR SELECT USING (is_org_member(id));
+
 CREATE POLICY "member read" ON org_members
   FOR SELECT USING (is_org_member(org_id));
 
