@@ -1,7 +1,17 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
-const APP_ROUTES = ['/scorecard', '/results', '/connections', '/manager']
+const APP_ROUTES = [
+  '/dashboard',
+  '/scorecard',
+  '/results',
+  '/connections',
+  '/manager',
+  '/organisation',
+  '/growth',
+  '/profile',
+  '/notifications',
+]
 
 export async function middleware(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request })
@@ -37,18 +47,11 @@ export async function middleware(request: NextRequest) {
     if (!user) {
       return NextResponse.redirect(new URL('/login', request.url))
     }
-    const betaEmails = process.env.APP_BETA_EMAILS
-    if (betaEmails) {
-      const allowed = betaEmails.split(',').map(e => e.trim())
-      if (!allowed.includes(user.email ?? '')) {
-        return NextResponse.redirect(new URL('/the-tool', request.url))
-      }
-    }
   }
 
   // Redirect authenticated users away from login
   if (path === '/login' && user) {
-    return NextResponse.redirect(new URL('/scorecard', request.url))
+    return NextResponse.redirect(new URL('/dashboard', request.url))
   }
 
   return supabaseResponse

@@ -16,8 +16,7 @@ export default async function ConnectionsPage() {
   )
 
   return (
-    <div className="dark min-h-screen" style={{ background: '#0f172a' }}>
-      <div className="mx-auto max-w-2xl px-4 py-12">
+    <div className="mx-auto max-w-2xl">
         <h1 className="mb-8 text-2xl font-bold text-white">Connections</h1>
 
         {pendingIncoming.length > 0 && (
@@ -121,7 +120,6 @@ export default async function ConnectionsPage() {
             </button>
           </form>
         </section>
-      </div>
     </div>
   )
 }

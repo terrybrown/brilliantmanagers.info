@@ -40,10 +40,7 @@ export default async function ManagerPage({
   const round = await getLatestCompleteRound(userId)
   if (!round) {
     return (
-      <div
-        className="dark flex min-h-screen items-center justify-center"
-        style={{ background: '#0f172a' }}
-      >
+      <div className="flex items-center justify-center py-24">
         <p className="text-slate-400">
           {profile?.display_name ?? 'This person'} hasn't completed a self-assessment yet.
         </p>
@@ -62,29 +59,27 @@ export default async function ManagerPage({
     )
 
     return (
-      <div className="dark min-h-screen" style={{ background: '#0f172a' }}>
-        <div className="mx-auto max-w-2xl px-4 py-12">
-          <h1 className="mb-2 text-2xl font-bold text-white">
-            Scoring {profile?.display_name ?? profile?.email}
-          </h1>
-          <p className="mb-8 text-sm text-slate-400">Select a pillar to score.</p>
-          <div className="flex flex-col gap-3">
-            {PILLARS.map(p => (
-              <Link
-                key={p}
-                href={`/manager/${userId}?pillar=${p}`}
-                className="flex items-center gap-4 rounded-xl bg-slate-800 px-5 py-4"
-              >
-                <span className="flex-1 font-medium text-white">
-                  {PILLAR_LABELS[p as Pillar]}
-                </span>
-                {scoredPillars.has(p) && (
-                  <span className="text-xs text-green-400">✓ scored</span>
-                )}
-                <span className="text-slate-600">›</span>
-              </Link>
-            ))}
-          </div>
+      <div className="mx-auto max-w-2xl">
+        <h1 className="mb-2 text-2xl font-bold text-white">
+          Scoring {profile?.display_name ?? profile?.email}
+        </h1>
+        <p className="mb-8 text-sm text-slate-400">Select a pillar to score.</p>
+        <div className="flex flex-col gap-3">
+          {PILLARS.map(p => (
+            <Link
+              key={p}
+              href={`/manager/${userId}?pillar=${p}`}
+              className="flex items-center gap-4 rounded-xl bg-slate-800 px-5 py-4"
+            >
+              <span className="flex-1 font-medium text-white">
+                {PILLAR_LABELS[p as Pillar]}
+              </span>
+              {scoredPillars.has(p) && (
+                <span className="text-xs text-green-400">✓ scored</span>
+              )}
+              <span className="text-slate-600">›</span>
+            </Link>
+          ))}
         </div>
       </div>
     )
@@ -100,16 +95,14 @@ export default async function ManagerPage({
     })
 
   return (
-    <div className="dark min-h-screen" style={{ background: '#0f172a' }}>
-      <ManagerScoringView
-        roundId={round.id}
-        pillar={pillar}
-        pillarLabel={PILLAR_LABELS[pillar as Pillar]}
-        skills={skills}
-        initialScores={initialScores}
-        directReportName={profile?.display_name ?? profile?.email ?? 'your direct report'}
-        userId={userId}
-      />
-    </div>
+    <ManagerScoringView
+      roundId={round.id}
+      pillar={pillar}
+      pillarLabel={PILLAR_LABELS[pillar as Pillar]}
+      skills={skills}
+      initialScores={initialScores}
+      directReportName={profile?.display_name ?? profile?.email ?? 'your direct report'}
+      userId={userId}
+    />
   )
 }
