@@ -4,7 +4,7 @@ import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
 import { getOrgRole } from '@/lib/auth/roles'
 import { createOrg, updateOrgName } from '@/lib/db/organisations'
-import { addOrgMember, setOrgRole } from '@/lib/db/org-members'
+import { setOrgRole } from '@/lib/db/org-members'
 import { createNode, renameNode, deleteNode } from '@/lib/db/org-nodes'
 import { addUserToNode, removeUserFromNode } from '@/lib/db/org-node-members'
 import { logAudit } from '@/lib/audit'
@@ -30,10 +30,7 @@ export async function createOrgAction(formData: FormData): Promise<void> {
   const name = (formData.get('name') as string).trim()
   if (!name) return
 
-  const org = await createOrg(user.id, name)
-  // Not transactional: if addOrgMember fails, the org exists with no admin.
-  // Use an RPC if atomicity is required.
-  await addOrgMember(org.id, user.id, 'org_admin')
+  const org = await createOrg(name)
   await logAudit({ actorId: user.id, action: 'org.create', entityType: 'organisation', entityId: org.id, metadata: { name } })
   revalidatePath('/organisation')
 }
