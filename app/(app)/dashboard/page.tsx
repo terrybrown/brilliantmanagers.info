@@ -107,6 +107,7 @@ export default async function DashboardPage() {
               <Link
                 id="dashboard-cta-btn"
                 href="/scorecard"
+                className="hover:opacity-90 active:opacity-80"
                 style={{
                   display: 'inline-flex',
                   alignItems: 'center',
@@ -146,7 +147,7 @@ export default async function DashboardPage() {
           <div
             style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(4, 1fr)',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
               gap: 12,
             }}
           >
