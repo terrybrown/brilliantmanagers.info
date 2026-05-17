@@ -9,15 +9,16 @@ export interface Org {
 }
 
 export async function createOrg(userId: string, name: string): Promise<{ id: string; name: string }> {
+  // Generate the ID here so we can return it without a RETURNING clause.
+  // RETURNING would be filtered by the SELECT policy (is_org_member), which is
+  // false until addOrgMember runs — causing PGRST116 if we relied on .single().
+  const id = crypto.randomUUID()
   const supabase = await createClient()
-  const { data, error } = await supabase
+  const { error } = await supabase
     .from('organisations')
-    .insert({ name, created_by: userId })
-    .select()
-    .single()
+    .insert({ id, name, created_by: userId })
   if (error) throw error
-  if (!data) throw new Error('No data returned from insert')
-  return data as { id: string; name: string }
+  return { id, name }
 }
 
 export async function getOrgsForUser(userId: string): Promise<Org[]> {
