@@ -43,40 +43,46 @@ describe('createNode', () => {
 
 describe('renameNode', () => {
   it('updates name and node_type', async () => {
-    const eq = vi.fn().mockResolvedValue({ error: null })
-    const update = vi.fn().mockReturnValue({ eq })
+    const eq2 = vi.fn().mockResolvedValue({ error: null })
+    const eq1 = vi.fn().mockReturnValue({ eq: eq2 })
+    const update = vi.fn().mockReturnValue({ eq: eq1 })
     mock.mockResolvedValue({ from: vi.fn().mockReturnValue({ update }) })
 
-    await renameNode('n1', 'Backend', 'Team')
+    await renameNode('n1', 'org-1', 'Backend', 'Team')
     expect(update).toHaveBeenCalledWith({ name: 'Backend', node_type: 'Team' })
-    expect(eq).toHaveBeenCalledWith('id', 'n1')
+    expect(eq1).toHaveBeenCalledWith('id', 'n1')
+    expect(eq2).toHaveBeenCalledWith('org_id', 'org-1')
   })
 
   it('throws when update errors', async () => {
-    const eq = vi.fn().mockResolvedValue({ error: { message: 'db error' } })
-    const update = vi.fn().mockReturnValue({ eq })
+    const eq2 = vi.fn().mockResolvedValue({ error: { message: 'db error' } })
+    const eq1 = vi.fn().mockReturnValue({ eq: eq2 })
+    const update = vi.fn().mockReturnValue({ eq: eq1 })
     mock.mockResolvedValue({ from: vi.fn().mockReturnValue({ update }) })
 
-    await expect(renameNode('n1', 'Backend', 'Team')).rejects.toThrow()
+    await expect(renameNode('n1', 'org-1', 'Backend', 'Team')).rejects.toThrow()
   })
 })
 
 describe('deleteNode', () => {
-  it('deletes by id', async () => {
-    const eq = vi.fn().mockResolvedValue({ error: null })
-    const del = vi.fn().mockReturnValue({ eq })
+  it('deletes by id scoped to org', async () => {
+    const eq2 = vi.fn().mockResolvedValue({ error: null })
+    const eq1 = vi.fn().mockReturnValue({ eq: eq2 })
+    const del = vi.fn().mockReturnValue({ eq: eq1 })
     mock.mockResolvedValue({ from: vi.fn().mockReturnValue({ delete: del }) })
 
-    await deleteNode('n1')
-    expect(eq).toHaveBeenCalledWith('id', 'n1')
+    await deleteNode('n1', 'org-1')
+    expect(eq1).toHaveBeenCalledWith('id', 'n1')
+    expect(eq2).toHaveBeenCalledWith('org_id', 'org-1')
   })
 
   it('throws when delete errors', async () => {
-    const eq = vi.fn().mockResolvedValue({ error: { message: 'db error' } })
-    const del = vi.fn().mockReturnValue({ eq })
+    const eq2 = vi.fn().mockResolvedValue({ error: { message: 'db error' } })
+    const eq1 = vi.fn().mockReturnValue({ eq: eq2 })
+    const del = vi.fn().mockReturnValue({ eq: eq1 })
     mock.mockResolvedValue({ from: vi.fn().mockReturnValue({ delete: del }) })
 
-    await expect(deleteNode('n1')).rejects.toThrow()
+    await expect(deleteNode('n1', 'org-1')).rejects.toThrow()
   })
 })
 

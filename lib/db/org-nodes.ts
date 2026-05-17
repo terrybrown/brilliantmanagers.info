@@ -10,6 +10,15 @@ interface RawNodeRow {
   org_node_members: { user_id: string; profiles: { email: string | null; display_name: string | null } | null }[]
 }
 
+interface RawNodeInsertRow {
+  id: string
+  org_id: string
+  parent_id: string | null
+  name: string
+  node_type: string | null
+  created_at: string
+}
+
 export interface OrgNode {
   id: string
   org_id: string
@@ -39,34 +48,31 @@ export async function createNode(params: {
     .single()
   if (error) throw error
   if (!data) throw new Error('No data returned from org_nodes insert')
-  const raw = data as Record<string, unknown>
-  return {
-    id: raw.id as string,
-    org_id: raw.org_id as string,
-    parent_id: (raw.parent_id as string | null) ?? null,
-    name: raw.name as string,
-    node_type: (raw.node_type as string | null) ?? null,
-    created_at: raw.created_at as string,
-    members: [],
-  }
+  const raw = data as RawNodeInsertRow
+  return { ...raw, members: [] }
 }
 
 // Caller must verify org_admin role — RLS enforces this for user-scoped clients.
 // Silent no-op if nodeId does not exist (Postgres UPDATE on zero rows is not an error).
-export async function renameNode(nodeId: string, name: string, nodeType: string | null): Promise<void> {
+export async function renameNode(nodeId: string, orgId: string, name: string, nodeType: string | null): Promise<void> {
   const supabase = await createClient()
   const { error } = await supabase
     .from('org_nodes')
     .update({ name, node_type: nodeType })
     .eq('id', nodeId)
+    .eq('org_id', orgId)
   if (error) throw error
 }
 
 // Cascade on org_nodes.parent_id handles child nodes automatically.
 // Silent no-op if nodeId does not exist (Postgres DELETE on zero rows is not an error).
-export async function deleteNode(nodeId: string): Promise<void> {
+export async function deleteNode(nodeId: string, orgId: string): Promise<void> {
   const supabase = await createClient()
-  const { error } = await supabase.from('org_nodes').delete().eq('id', nodeId)
+  const { error } = await supabase
+    .from('org_nodes')
+    .delete()
+    .eq('id', nodeId)
+    .eq('org_id', orgId)
   if (error) throw error
 }
 
