@@ -35,7 +35,8 @@ export function parseGuideContent(mdx: string, skillLabel: string): SkillGuideCo
     if (normalise(summaryMatch[1]) !== target) continue
 
     // Split on #### headings; index 0 is content before the first heading
-    const parts = block.split(/^####\s+/m)
+    // Allow optional leading whitespace to handle indented MDX (e.g. inside <details>)
+    const parts = block.split(/^\s*####\s+/m)
 
     const findSection = (heading: string): string => {
       const part = parts.find(p =>

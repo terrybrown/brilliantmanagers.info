@@ -103,4 +103,32 @@ describe('parseGuideContent', () => {
   it('returns null when there are no details blocks', () => {
     expect(parseGuideContent('no details here', 'Empathy & Compassion')).toBeNull()
   })
+
+  it('parses correctly when details block uses 2-space indentation (real MDX format)', () => {
+    const indentedMdx = `
+<details>
+  <summary>Empathy and Compassion</summary>
+
+  #### Definition
+  The ability to understand and share the feelings of others.
+
+  #### Why It Matters
+  Trust is built through genuine care.
+
+  #### This Is Strong When:
+  * You actively listen without interrupting.
+
+  #### Warning Signs:
+  * Dismissing emotions.
+
+  #### Pathways to Improvement:
+  * Practice reflective listening.
+
+</details>
+`
+    const result = parseGuideContent(indentedMdx, 'Empathy & Compassion')
+    expect(result).not.toBeNull()
+    expect(result?.definition).toContain('understand and share the feelings')
+    expect(result?.whyItMatters).toContain('Trust is built')
+  })
 })
