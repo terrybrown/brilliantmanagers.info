@@ -1,6 +1,7 @@
 'use client'
 import { useState } from 'react'
-import { PILLARS, getSkillsByPillar, type Pillar, type Level } from '@/lib/skills'
+import Link from 'next/link'
+import { PILLARS, PILLAR_LABELS, getSkillsByPillar, type Pillar, type Level } from '@/lib/skills'
 import type { SkillGuideContent } from '@/lib/guide-content'
 import { PillarNav } from './PillarNav'
 import { SkillList } from './SkillList'
@@ -25,7 +26,15 @@ export function ScorecardShell({ roundId, allScores, allGuideContent }: Scorecar
 
   const handlePillarChange = (pillar: Pillar) => {
     setActivePillar(pillar)
-    setActiveSkillKey(lastActiveByPillar[pillar] ?? null)
+    const lastKey = lastActiveByPillar[pillar]
+    if (lastKey) {
+      setActiveSkillKey(lastKey)
+    } else {
+      const firstSkill = getSkillsByPillar(pillar)[0]
+      const firstKey = firstSkill?.key ?? null
+      setActiveSkillKey(firstKey)
+      if (firstKey) setLastActiveByPillar(prev => ({ ...prev, [pillar]: firstKey }))
+    }
   }
 
   const handleSkillActivate = (skillKey: string) => {
@@ -53,6 +62,11 @@ export function ScorecardShell({ roundId, allScores, allGuideContent }: Scorecar
   ) as Record<Pillar, { scored: number; total: number }>
 
   const skills = getSkillsByPillar(activePillar)
+
+  const pillarIndex = PILLARS.indexOf(activePillar)
+  const prevPillar = pillarIndex > 0 ? PILLARS[pillarIndex - 1] : null
+  const nextPillar = pillarIndex < PILLARS.length - 1 ? PILLARS[pillarIndex + 1] : null
+  const isLastPillar = pillarIndex === PILLARS.length - 1
 
   return (
     <div
@@ -84,6 +98,80 @@ export function ScorecardShell({ roundId, allScores, allGuideContent }: Scorecar
           onSkillActivate={handleSkillActivate}
           onScore={handleScore}
         />
+
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginTop: 24,
+            paddingBottom: 8,
+          }}
+        >
+          {prevPillar ? (
+            <button
+              onClick={() => handlePillarChange(prevPillar)}
+              style={{
+                background: '#f59e0b22',
+                border: '1px solid #f59e0b',
+                borderRadius: 8,
+                padding: '8px 14px',
+                cursor: 'pointer',
+                fontSize: 13,
+                fontWeight: 600,
+                color: '#f59e0b',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 6,
+              }}
+            >
+              ← {PILLAR_LABELS[prevPillar]}
+            </button>
+          ) : (
+            <span />
+          )}
+
+          {isLastPillar ? (
+            <Link
+              href="/dashboard"
+              style={{
+                background: '#f59e0b',
+                border: 'none',
+                borderRadius: 8,
+                padding: '8px 18px',
+                cursor: 'pointer',
+                fontSize: 13,
+                fontWeight: 600,
+                color: '#0f172a',
+                textDecoration: 'none',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 6,
+              }}
+            >
+              Show analysis →
+            </Link>
+          ) : nextPillar ? (
+            <button
+              onClick={() => handlePillarChange(nextPillar)}
+              style={{
+                background: '#f59e0b22',
+                border: '1px solid #f59e0b',
+                borderRadius: 8,
+                padding: '8px 14px',
+                cursor: 'pointer',
+                fontSize: 13,
+                fontWeight: 600,
+                color: '#f59e0b',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 6,
+              }}
+            >
+              {PILLAR_LABELS[nextPillar]} →
+            </button>
+          ) : null}
+        </div>
       </div>
       <GuidePanel activeSkillKey={activeSkillKey} allGuideContent={allGuideContent} />
     </div>
