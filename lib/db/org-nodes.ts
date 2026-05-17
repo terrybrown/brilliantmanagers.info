@@ -7,7 +7,7 @@ interface RawNodeRow {
   name: string
   node_type: string | null
   created_at: string
-  org_node_members: { user_id: string; profiles: { email: string | null; display_name: string | null } | null }[]
+  org_node_members: { user_id: string; profiles: { email: string | null; display_name: string | null }[] }[]
 }
 
 interface RawNodeInsertRow {
@@ -93,8 +93,8 @@ export async function getNodesForOrg(orgId: string): Promise<OrgNode[]> {
     created_at: node.created_at,
     members: node.org_node_members.map(m => ({
       user_id: m.user_id,
-      email: m.profiles?.email ?? null,
-      display_name: m.profiles?.display_name ?? null,
+      email: m.profiles?.[0]?.email ?? null,
+      display_name: m.profiles?.[0]?.display_name ?? null,
     })),
   }))
 }

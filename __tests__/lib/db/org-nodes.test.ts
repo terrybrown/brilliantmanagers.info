@@ -90,7 +90,7 @@ describe('getNodesForOrg', () => {
   it('returns nodes with member data', async () => {
     const nodes = [
       { id: 'n1', org_id: 'org-1', parent_id: null, name: 'Eng', node_type: 'Division', created_at: '2024-01-01',
-        org_node_members: [{ user_id: 'u1', profiles: { email: 'a@x.com', display_name: 'Alice' } }] },
+        org_node_members: [{ user_id: 'u1', profiles: [{ email: 'a@x.com', display_name: 'Alice' }] }] },
     ]
     const order = vi.fn().mockResolvedValue({ data: nodes, error: null })
     const eq = vi.fn().mockReturnValue({ order })
@@ -105,7 +105,7 @@ describe('getNodesForOrg', () => {
   it('handles null profiles in node members', async () => {
     const nodes = [
       { id: 'n1', org_id: 'org-1', parent_id: null, name: 'Eng', node_type: null, created_at: '2024-01-01',
-        org_node_members: [{ user_id: 'u1', profiles: null }] },
+        org_node_members: [{ user_id: 'u1', profiles: [] }] },
     ]
     const order = vi.fn().mockResolvedValue({ data: nodes, error: null })
     const eq = vi.fn().mockReturnValue({ order })

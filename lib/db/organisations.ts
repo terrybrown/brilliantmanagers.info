@@ -27,10 +27,12 @@ export async function getOrgsForUser(userId: string): Promise<Org[]> {
     .select('role, organisations(id, name, created_by, created_at)')
     .eq('user_id', userId)
   if (error) throw error
-  return ((data ?? []) as { role: string; organisations: { id: string; name: string; created_by: string; created_at: string } | null }[]).flatMap(row => {
-    if (!row.organisations) return []
+  type RawRow = { role: string; organisations: { id: string; name: string; created_by: string; created_at: string }[] | null }
+  return ((data ?? []) as RawRow[]).flatMap(row => {
+    const org = Array.isArray(row.organisations) ? row.organisations[0] : row.organisations
+    if (!org) return []
     return [{
-      ...row.organisations,
+      ...org,
       userRole: row.role === 'org_admin' ? 'org_admin' : 'member',
     }]
   })

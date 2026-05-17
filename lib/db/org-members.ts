@@ -47,10 +47,11 @@ export async function getOrgMembers(orgId: string): Promise<OrgMember[]> {
     .select('user_id, role, profiles(email, display_name)')
     .eq('org_id', orgId)
   if (error) throw error
-  return ((data ?? []) as { user_id: string; role: string; profiles: { email: string | null; display_name: string | null } | null }[]).map(row => ({
+  type RawRow = { user_id: string; role: string; profiles: { email: string | null; display_name: string | null }[] }
+  return ((data ?? []) as RawRow[]).map(row => ({
     user_id: row.user_id,
     role: row.role === 'org_admin' ? 'org_admin' : 'member',
-    email: row.profiles?.email ?? null,
-    display_name: row.profiles?.display_name ?? null,
+    email: row.profiles?.[0]?.email ?? null,
+    display_name: row.profiles?.[0]?.display_name ?? null,
   }))
 }

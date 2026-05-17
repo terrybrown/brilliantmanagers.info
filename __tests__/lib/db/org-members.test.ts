@@ -56,8 +56,8 @@ describe('setOrgRole', () => {
 describe('getOrgMembers', () => {
   it('returns members with profile data', async () => {
     const members = [
-      { user_id: 'u1', role: 'org_admin', profiles: { email: 'a@x.com', display_name: 'Alice' } },
-      { user_id: 'u2', role: 'member', profiles: { email: 'b@x.com', display_name: 'Bob' } },
+      { user_id: 'u1', role: 'org_admin', profiles: [{ email: 'a@x.com', display_name: 'Alice' }] },
+      { user_id: 'u2', role: 'member', profiles: [{ email: 'b@x.com', display_name: 'Bob' }] },
     ]
     const eq = vi.fn().mockResolvedValue({ data: members, error: null })
     const select = vi.fn().mockReturnValue({ eq })
