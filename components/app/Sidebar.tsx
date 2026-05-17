@@ -58,8 +58,6 @@ export function Sidebar({ isExpanded, onToggle, isSuperAdmin = false }: SidebarP
         />
       ))}
 
-      <div style={{ flex: 1 }} />
-
       {isSuperAdmin && (
         <>
           <div
@@ -67,7 +65,7 @@ export function Sidebar({ isExpanded, onToggle, isSuperAdmin = false }: SidebarP
               width: '100%',
               height: 1,
               background: '#1f2937',
-              margin: '4px 0',
+              margin: '12px 0 4px',
               flexShrink: 0,
             }}
           />
