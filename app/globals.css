@@ -259,3 +259,57 @@ body {
   border-top: 1px solid var(--color-border);
   margin: 2rem 0;
 }
+
+/* ── driver.js spotlight tour — dark theme ────────────────────────────────── */
+
+.bm-tour-popover {
+  background: #1e293b !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-radius: 12px !important;
+  padding: 20px !important;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5) !important;
+  color: #fff !important;
+}
+
+.bm-tour-popover .driver-popover-title {
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  color: #fff !important;
+  margin-bottom: 8px;
+}
+
+.bm-tour-popover .driver-popover-description {
+  font-size: 12px !important;
+  color: rgba(255, 255, 255, 0.55) !important;
+  line-height: 1.65 !important;
+}
+
+.bm-tour-popover .driver-popover-progress-text {
+  font-size: 10px !important;
+  font-weight: 700 !important;
+  color: #f59e0b !important;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.bm-tour-popover button.driver-popover-next-btn {
+  background: #f59e0b !important;
+  color: #1a2a3a !important;
+  border: none !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  border-radius: 6px !important;
+  padding: 6px 16px !important;
+  cursor: pointer;
+}
+
+.bm-tour-popover button.driver-popover-prev-btn,
+.bm-tour-popover button.driver-popover-close-btn {
+  background: transparent !important;
+  color: rgba(255, 255, 255, 0.35) !important;
+  border: none !important;
+  font-size: 11px !important;
+  cursor: pointer;
+  text-shadow: none !important;
+  box-shadow: none !important;
+}
