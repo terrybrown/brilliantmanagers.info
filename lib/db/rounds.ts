@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { PILLARS } from '@/lib/skills'
+import type { Score } from '@/lib/db/scores'
 
 export interface Round {
   id: string
@@ -90,4 +91,38 @@ export async function getPreviousCompleteRound(
     .limit(1)
     .maybeSingle()
   return data as Round | null
+}
+
+export async function getAllCompleteRoundsWithScores(
+  userId: string
+): Promise<{ round: Round; scores: Score[] }[]> {
+  const supabase = await createClient()
+
+  const { data: rounds } = await supabase
+    .from('assessment_rounds')
+    .select('*')
+    .eq('user_id', userId)
+    .eq('status', 'complete')
+    .order('completed_at', { ascending: true })
+
+  if (!rounds || rounds.length === 0) return []
+
+  const roundIds = (rounds as Round[]).map(r => r.id)
+
+  const { data: allScores } = await supabase
+    .from('scores')
+    .select('*')
+    .in('round_id', roundIds)
+
+  const scoresByRound = new Map<string, Score[]>()
+  for (const score of (allScores ?? []) as Score[]) {
+    const bucket = scoresByRound.get(score.round_id) ?? []
+    bucket.push(score)
+    scoresByRound.set(score.round_id, bucket)
+  }
+
+  return (rounds as Round[]).map(round => ({
+    round,
+    scores: scoresByRound.get(round.id) ?? [],
+  }))
 }
