@@ -17,6 +17,7 @@ const NAV_ICONS: Record<string, React.ElementType> = {
 
 const ALWAYS_DARK_ROUTES = ['/', '/the-tool']
 
+// Keep in sync with the app router directory structure under app/(app)/
 const APP_ROUTES = [
   '/dashboard',
   '/growth',

@@ -49,4 +49,10 @@ describe('Nav', () => {
     const toolLink = screen.getByRole('link', { name: /the tool/i })
     expect(toolLink).toHaveAttribute('href', '/dashboard')
   })
+
+  it('hides the Sign in link on app routes even when not authenticated', () => {
+    vi.mocked(usePathname).mockReturnValue('/dashboard')
+    render(<Nav isAuthenticated={false} />)
+    expect(screen.queryByRole('link', { name: /sign in/i })).toBeNull()
+  })
 })
