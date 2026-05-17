@@ -22,7 +22,6 @@ export function AvatarUpload({ initialAvatarUrl, initials }: AvatarUploadProps) 
     if (!file) return
 
     const objectUrl = URL.createObjectURL(file)
-    const previousUrl = previewUrl
     setPreviewUrl(objectUrl)
     setError(null)
 
@@ -33,11 +32,11 @@ export function AvatarUpload({ initialAvatarUrl, initials }: AvatarUploadProps) 
       const result = await uploadAvatarAction(formData)
       if (result.error) {
         URL.revokeObjectURL(objectUrl)
-        setPreviewUrl(previousUrl)
+        setPreviewUrl(null)
         setError(result.error)
       } else {
-        router.refresh()
         URL.revokeObjectURL(objectUrl)
+        router.refresh()
       }
       // Reset input so the same file can be re-selected if needed
       if (inputRef.current) inputRef.current.value = ''
@@ -46,7 +45,11 @@ export function AvatarUpload({ initialAvatarUrl, initials }: AvatarUploadProps) 
 
   function handleRemove() {
     startRemove(async () => {
-      await removeAvatarAction()
+      const result = await removeAvatarAction()
+      if (result.error) {
+        setError(result.error)
+        return
+      }
       setPreviewUrl(null)
       setError(null)
       router.refresh()

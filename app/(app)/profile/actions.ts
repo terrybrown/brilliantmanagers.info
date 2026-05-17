@@ -60,23 +60,22 @@ export async function uploadAvatarAction(formData: FormData): Promise<{ error?: 
   return {}
 }
 
-export async function removeAvatarAction(): Promise<void> {
+export async function removeAvatarAction(): Promise<{ error?: string }> {
   const supabase = await createClient()
   const {
     data: { user },
   } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('avatar_path')
-    .eq('id', user.id)
-    .maybeSingle()
-
-  if (profile?.avatar_path) {
-    await supabase.storage.from('avatars').remove([profile.avatar_path])
-    await updateProfile(user.id, { avatar_path: null })
+  // Try all extensions — avoids a TOCTOU read before delete
+  const paths = ['jpg', 'png', 'webp'].map(ext => `${user.id}/avatar.${ext}`)
+  const { error: storageError } = await supabase.storage.from('avatars').remove(paths)
+  if (storageError) {
+    console.error('removeAvatarAction storage error:', storageError)
+    return { error: storageError.message }
   }
 
+  await updateProfile(user.id, { avatar_path: null })
   revalidatePath('/profile')
+  return {}
 }
