@@ -333,3 +333,16 @@ body {
   background: transparent !important;
   color: rgba(255, 255, 255, 0.75) !important;
 }
+
+/* Recharts radar: allow axis labels to extend beyond the SVG viewport,
+   and remove the browser focus ring that appears on click */
+svg.recharts-surface {
+  overflow: visible;
+}
+svg.recharts-surface:focus {
+  outline: none;
+}
+/* The recharts-wrapper div also needs to allow overflow so the labels aren't re-clipped */
+.recharts-wrapper {
+  overflow: visible !important;
+}
