@@ -1,7 +1,11 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  async redirects() {
+    return [
+      { source: '/scorecard/:pillar', destination: '/scorecard', permanent: false },
+    ]
+  },
 };
 
 export default nextConfig;

@@ -23,10 +23,16 @@ export function SkillList({
   const [, startTransition] = useTransition()
 
   const handleRate = (skill: Skill, level: Level) => {
+    const previousLevel = scores[skill.key]
     onScore(skill.key, level)
     onSkillActivate(skill.key)
     startTransition(async () => {
-      await saveScore(roundId, skill.pillar, skill.key, level)
+      try {
+        await saveScore(roundId, skill.pillar, skill.key, level)
+      } catch {
+        // Revert optimistic update on failure (only if there was a previous score to restore)
+        if (previousLevel !== undefined) onScore(skill.key, previousLevel)
+      }
     })
   }
 
