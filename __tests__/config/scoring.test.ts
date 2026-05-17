@@ -3,7 +3,7 @@ import type { ScoringLevel } from '@/config/scoring'
 
 describe('scoring config', () => {
   it('has exactly five levels in the correct order', () => {
-    expect(SCORING_LEVELS).toEqual(['Needs Improvement', 'Basic', 'Proficient', 'Advanced', 'Expert'])
+    expect(SCORING_LEVELS).toEqual(['Developing', 'Basic', 'Proficient', 'Advanced', 'Expert'])
   })
 
   it('has a description for every level', () => {

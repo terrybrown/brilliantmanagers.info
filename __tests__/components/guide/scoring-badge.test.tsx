@@ -7,13 +7,13 @@ describe('ScoringBadge', () => {
     expect(screen.getByText('Proficient')).toBeInTheDocument()
   })
 
-  it('renders Needs Improvement level without crashing', () => {
-    render(<ScoringBadge level="Needs Improvement" />)
-    expect(screen.getByText('Needs Improvement')).toBeInTheDocument()
+  it('renders Developing level without crashing', () => {
+    render(<ScoringBadge level="Developing" />)
+    expect(screen.getByText('Developing')).toBeInTheDocument()
   })
 
   it('renders all five levels without crashing', () => {
-    const levels = ['Needs Improvement', 'Basic', 'Proficient', 'Advanced', 'Expert'] as const
+    const levels = ['Developing', 'Basic', 'Proficient', 'Advanced', 'Expert'] as const
     levels.forEach((level) => {
       const { unmount } = render(<ScoringBadge level={level} />)
       expect(screen.getByText(level)).toBeInTheDocument()
