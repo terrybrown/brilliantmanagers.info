@@ -8,15 +8,10 @@ export interface Org {
   userRole: 'org_admin' | 'member'
 }
 
-export async function createOrg(userId: string, name: string): Promise<{ id: string; name: string }> {
+export async function createOrg(name: string): Promise<{ id: string; name: string }> {
   const supabase = await createClient()
-  const { data, error } = await supabase
-    .from('organisations')
-    .insert({ name, created_by: userId })
-    .select()
-    .single()
+  const { data, error } = await supabase.rpc('create_org_with_admin', { _name: name })
   if (error) throw error
-  if (!data) throw new Error('No data returned from insert')
   return data as { id: string; name: string }
 }
 

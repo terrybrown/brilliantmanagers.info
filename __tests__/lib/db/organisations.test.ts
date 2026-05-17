@@ -8,30 +8,21 @@ import { createClient } from '@/lib/supabase/server'
 const mockCreateClient = createClient as ReturnType<typeof vi.fn>
 
 describe('createOrg', () => {
-  it('inserts an organisation row and returns the new id', async () => {
-    const insert = vi.fn().mockReturnValue({
-      select: vi.fn().mockReturnValue({
-        single: vi.fn().mockResolvedValue({ data: { id: 'org-1', name: 'Acme' }, error: null }),
-      }),
-    })
-    const from = vi.fn().mockReturnValue({ insert })
-    mockCreateClient.mockResolvedValue({ from })
+  it('calls the create_org_with_admin RPC and returns id and name', async () => {
+    const rpc = vi.fn().mockResolvedValue({ data: { id: 'org-1', name: 'Acme' }, error: null })
+    mockCreateClient.mockResolvedValue({ rpc })
 
-    const result = await createOrg('user-1', 'Acme')
+    const result = await createOrg('Acme')
     expect(result.id).toBe('org-1')
-    expect(insert).toHaveBeenCalledWith({ name: 'Acme', created_by: 'user-1' })
+    expect(result.name).toBe('Acme')
+    expect(rpc).toHaveBeenCalledWith('create_org_with_admin', { _name: 'Acme' })
   })
 
-  it('throws when insert errors', async () => {
-    const insert = vi.fn().mockReturnValue({
-      select: vi.fn().mockReturnValue({
-        single: vi.fn().mockResolvedValue({ data: null, error: { message: 'db error' } }),
-      }),
-    })
-    const from = vi.fn().mockReturnValue({ insert })
-    mockCreateClient.mockResolvedValue({ from })
+  it('throws when RPC errors', async () => {
+    const rpc = vi.fn().mockResolvedValue({ data: null, error: { message: 'db error' } })
+    mockCreateClient.mockResolvedValue({ rpc })
 
-    await expect(createOrg('user-1', 'Acme')).rejects.toThrow()
+    await expect(createOrg('Acme')).rejects.toThrow()
   })
 })
 
