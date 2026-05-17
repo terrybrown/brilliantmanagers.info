@@ -24,7 +24,13 @@ export default async function ScorecardPage() {
   })
 
   const guideEntries = await Promise.all(
-    SKILLS.map(async s => [s.key, await getSkillGuideContent(s.key)] as const)
+    SKILLS.map(async s => {
+      try {
+        return [s.key, await getSkillGuideContent(s.key)] as const
+      } catch {
+        return [s.key, null] as const
+      }
+    })
   )
   const allGuideContent: Record<string, SkillGuideContent | null> = Object.fromEntries(guideEntries)
 
