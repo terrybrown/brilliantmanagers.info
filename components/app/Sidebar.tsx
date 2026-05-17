@@ -10,9 +10,9 @@ import { LogoMark } from './LogoMark'
 import { NavItem } from './NavItem'
 
 const NAV_ITEMS = [
-  { href: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
-  { href: '/growth', icon: TrendingUp, label: 'Growth' },
-  { href: '/connections', icon: Link2, label: 'Connections' },
+  { href: '/dashboard', icon: LayoutDashboard, label: 'Dashboard', id: 'nav-dashboard' },
+  { href: '/growth', icon: TrendingUp, label: 'Growth', id: 'nav-growth' },
+  { href: '/connections', icon: Link2, label: 'Connections', id: 'nav-connections' },
   { href: '/organisation', icon: Network, label: 'Organisation' },
 ] as const
 
@@ -76,6 +76,7 @@ export function Sidebar({ isExpanded, onToggle }: SidebarProps) {
           icon={item.icon}
           label={item.label}
           isExpanded={isExpanded}
+          id={'id' in item ? item.id : undefined}
         />
       ))}
 

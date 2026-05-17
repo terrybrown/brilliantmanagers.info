@@ -35,6 +35,7 @@ export function AvatarDropdown({ user }: { user: UserInfo }) {
   return (
     <div ref={ref} style={{ position: 'relative' }}>
       <button
+        id="nav-avatar"
         onClick={() => setOpen(o => !o)}
         aria-label="Open user menu"
         aria-expanded={open}
