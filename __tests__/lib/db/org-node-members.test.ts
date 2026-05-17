@@ -110,6 +110,46 @@ describe('addUserToNode', () => {
     await expect(addUserToNode({ nodeId: 'n1', userId: 'user-2', actorId: 'user-1' })).rejects.toThrow()
   })
 
+  it('throws when ancestor chain exceeds 10 levels', async () => {
+    // First org_nodes call returns the target node with a parent.
+    // Subsequent calls each return another parent, creating a chain longer than 10 levels.
+    let orgNodeCallCount = 0
+    let ancestorCallCount = 0
+
+    const from = vi.fn().mockImplementation((table: string) => {
+      if (table === 'org_nodes') {
+        orgNodeCallCount++
+        if (orgNodeCallCount === 1) {
+          // initial node fetch
+          const maybeSingle = vi.fn().mockResolvedValue({
+            data: { org_id: 'org-1', parent_id: 'p0' },
+            error: null,
+          })
+          return { select: vi.fn().mockReturnValue({ eq: vi.fn().mockReturnValue({ maybeSingle }) }) }
+        }
+        // Each ancestor node fetch returns yet another parent, infinitely deep
+        ancestorCallCount++
+        const maybeSingle = vi.fn().mockResolvedValue({
+          data: { parent_id: `p${ancestorCallCount}` },
+          error: null,
+        })
+        return { select: vi.fn().mockReturnValue({ eq: vi.fn().mockReturnValue({ maybeSingle }) }) }
+      }
+      if (table === 'org_members') return { upsert: vi.fn().mockResolvedValue({ error: null }) }
+      if (table === 'org_node_members') {
+        return {
+          insert: vi.fn().mockResolvedValue({ error: null }),
+          // Return empty members so recursion keeps walking up (no short-circuit)
+          select: vi.fn().mockReturnValue({ eq: vi.fn().mockResolvedValue({ data: [], error: null }) }),
+        }
+      }
+      return {}
+    })
+    mock.mockResolvedValue({ from })
+
+    await expect(addUserToNode({ nodeId: 'n1', userId: 'user-2', actorId: 'user-1' })).rejects.toThrow('too deep')
+  })
+
   it('throws on cycle in parent_id chain', async () => {
     // Node n1 has parent 'parent-node'; parent-node has parent 'n1' — a cycle
     let orgNodeCallCount = 0

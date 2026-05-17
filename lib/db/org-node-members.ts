@@ -41,8 +41,10 @@ async function connectToAncestor(
   ancestorNodeId: string,
   newUserId: string,
   actorId: string,
-  visited: Set<string>
+  visited: Set<string>,
+  depth = 0
 ): Promise<void> {
+  if (depth > 10) throw new Error('Org hierarchy too deep: ancestor walk exceeded 10 levels')
   if (visited.has(ancestorNodeId)) throw new Error(`Cycle detected in org_nodes parent_id at node ${ancestorNodeId}`)
   visited.add(ancestorNodeId)
 
@@ -80,7 +82,7 @@ async function connectToAncestor(
   if (!ancestorNode) return  // orphaned node — stop recursing
 
   if (ancestorNode.parent_id) {
-    await connectToAncestor(supabase, ancestorNode.parent_id, newUserId, actorId, visited)
+    await connectToAncestor(supabase, ancestorNode.parent_id, newUserId, actorId, visited, depth + 1)
   }
 }
 

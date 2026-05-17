@@ -20,7 +20,7 @@ import {
 export default async function OrganisationPage({
   searchParams,
 }: {
-  searchParams: Promise<{ org?: string }>
+  searchParams: Promise<{ org?: string; addError?: string }>
 }) {
   const supabase = await createClient()
   const {
@@ -44,6 +44,7 @@ export default async function OrganisationPage({
 
   const params = await searchParams
   const selectedOrgId = params.org ?? orgs[0].id
+  const addError = params.addError
   const selectedOrg = orgs.find(o => o.id === selectedOrgId) ?? orgs[0]
 
   const [nodes, members, role] = await Promise.all([
@@ -64,6 +65,12 @@ export default async function OrganisationPage({
       {orgs.length > 1 && <OrgPicker orgs={orgs} selectedOrgId={selectedOrg.id} />}
 
       <OrgHeader org={selectedOrg} isAdmin={isAdmin} />
+
+      {addError && (
+        <div className="mb-4 mt-4 rounded-lg bg-red-900/30 px-4 py-2 text-sm text-red-400">
+          {addError}
+        </div>
+      )}
 
       <div className="mt-6 flex flex-col gap-6 lg:flex-row">
         <section className="flex-1 min-w-0" style={{ flex: '2' }}>
@@ -296,7 +303,7 @@ function NodeCard({
                   className="rounded px-2 py-1 text-xs text-slate-500 hover:bg-red-900/30 hover:text-red-400"
                   aria-label={`Delete node ${node.name}`}
                 >
-                  Remove node
+                  Delete node & children
                 </button>
               </form>
             </div>

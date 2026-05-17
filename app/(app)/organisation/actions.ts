@@ -142,8 +142,14 @@ export async function promoteMemberAction(formData: FormData): Promise<void> {
 
 // Void wrapper — used as a plain form action in server components where the
 // error return value from addMemberToNodeAction cannot be consumed.
+// On error, redirects to the org page with an addError query param so the
+// user sees feedback rather than a silent no-op.
 export async function addMemberToNodeVoidAction(formData: FormData): Promise<void> {
-  await addMemberToNodeAction(formData)
+  const orgId = formData.get('orgId') as string
+  const result = await addMemberToNodeAction(formData)
+  if (result.error) {
+    redirect(`/organisation?org=${orgId}&addError=${encodeURIComponent(result.error)}`)
+  }
 }
 
 export async function demoteMemberAction(formData: FormData): Promise<void> {
