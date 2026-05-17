@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
 import { updateProfile } from '@/lib/db/profiles'
+import { logAudit } from '@/lib/audit'
 
 const ALLOWED_MIME_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp'])
 const EXT_MAP: Record<string, string> = {
@@ -25,6 +26,12 @@ export async function updateProfileAction(formData: FormData): Promise<void> {
   const bio = (formData.get('bio') as string).trim()
 
   await updateProfile(user.id, { display_name, job_title, bio })
+  await logAudit({
+    actorId: user.id,
+    action: 'profile.update',
+    entityType: 'profile',
+    entityId: user.id,
+  })
   revalidatePath('/profile')
 }
 
