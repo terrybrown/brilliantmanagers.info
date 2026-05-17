@@ -140,6 +140,12 @@ export async function promoteMemberAction(formData: FormData): Promise<void> {
   revalidatePath('/organisation')
 }
 
+// Void wrapper — used as a plain form action in server components where the
+// error return value from addMemberToNodeAction cannot be consumed.
+export async function addMemberToNodeVoidAction(formData: FormData): Promise<void> {
+  await addMemberToNodeAction(formData)
+}
+
 export async function demoteMemberAction(formData: FormData): Promise<void> {
   const orgId = formData.get('orgId') as string
   const userId = formData.get('userId') as string
