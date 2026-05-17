@@ -16,7 +16,7 @@ vi.mock('@/app/auth/confirm/actions', () => ({
 
 describe('AuthConfirmPage', () => {
   it('renders the complete sign-in button when a token_hash is present', async () => {
-    render(await AuthConfirmPage({ searchParams: { token_hash: 'abc123', type: 'email' } }))
+    render(await AuthConfirmPage({ searchParams: Promise.resolve({ token_hash: 'abc123', type: 'email' }) }))
     expect(screen.getByRole('heading', { name: /complete your sign-in/i })).toBeTruthy()
     expect(screen.getByRole('button', { name: /sign in/i })).toBeTruthy()
   })
@@ -24,10 +24,10 @@ describe('AuthConfirmPage', () => {
   it('renders the error state when an error param is present', async () => {
     render(
       await AuthConfirmPage({
-        searchParams: {
+        searchParams: Promise.resolve({
           error: 'access_denied',
           error_description: 'Email link is invalid or has expired',
-        },
+        }),
       })
     )
     expect(screen.getByRole('heading', { name: /link expired/i })).toBeTruthy()
@@ -36,7 +36,7 @@ describe('AuthConfirmPage', () => {
   })
 
   it('redirects to /login when neither token_hash nor error is present', async () => {
-    await expect(AuthConfirmPage({ searchParams: {} })).rejects.toThrow(
+    await expect(AuthConfirmPage({ searchParams: Promise.resolve({}) })).rejects.toThrow(
       'NEXT_REDIRECT:/login'
     )
   })
