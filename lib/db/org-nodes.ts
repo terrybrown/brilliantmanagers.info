@@ -44,7 +44,7 @@ export async function createNode(params: {
       name: params.name,
       node_type: params.nodeType ?? null,
     })
-    .select()
+    .select('id, org_id, parent_id, name, node_type, created_at')
     .single()
   if (error) throw error
   if (!data) throw new Error('No data returned from org_nodes insert')
