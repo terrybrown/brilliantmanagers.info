@@ -334,6 +334,21 @@ body {
   color: rgba(255, 255, 255, 0.75) !important;
 }
 
+/* ── Tall bounce — more vertical travel than Tailwind's default animate-bounce ── */
+@keyframes tall-bounce {
+  0%, 100% {
+    transform: translateY(-20px);
+    animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+  }
+  50% {
+    transform: translateY(0);
+    animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+  }
+}
+.animate-tall-bounce {
+  animation: tall-bounce 0.7s infinite;
+}
+
 /* Recharts radar: allow axis labels to extend beyond the SVG viewport,
    and remove the browser focus ring that appears on click */
 svg.recharts-surface {
