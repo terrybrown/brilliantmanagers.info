@@ -112,13 +112,14 @@ export function ScorecardShell({ roundId, allScores, allGuideContent }: Scorecar
             <button
               onClick={() => handlePillarChange(prevPillar)}
               style={{
-                background: 'transparent',
-                border: '1px solid #334155',
+                background: '#f59e0b22',
+                border: '1px solid #f59e0b',
                 borderRadius: 8,
                 padding: '8px 14px',
                 cursor: 'pointer',
                 fontSize: 13,
-                color: '#94a3b8',
+                fontWeight: 600,
+                color: '#f59e0b',
                 display: 'flex',
                 alignItems: 'center',
                 gap: 6,
@@ -154,13 +155,14 @@ export function ScorecardShell({ roundId, allScores, allGuideContent }: Scorecar
             <button
               onClick={() => handlePillarChange(nextPillar)}
               style={{
-                background: 'transparent',
-                border: '1px solid #334155',
+                background: '#f59e0b22',
+                border: '1px solid #f59e0b',
                 borderRadius: 8,
                 padding: '8px 14px',
                 cursor: 'pointer',
                 fontSize: 13,
-                color: '#94a3b8',
+                fontWeight: 600,
+                color: '#f59e0b',
                 display: 'flex',
                 alignItems: 'center',
                 gap: 6,
