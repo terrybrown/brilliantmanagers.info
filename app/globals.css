@@ -269,6 +269,11 @@ body {
   padding: 20px !important;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5) !important;
   color: #fff !important;
+  max-width: 360px !important;
+}
+
+.bm-tour-popover .driver-popover-arrow {
+  border-color: #1e293b !important;
 }
 
 .bm-tour-popover .driver-popover-title {
@@ -303,6 +308,11 @@ body {
   cursor: pointer;
 }
 
+.bm-tour-popover button.driver-popover-next-btn:hover,
+.bm-tour-popover button.driver-popover-next-btn:focus-visible {
+  background: #d97706 !important;
+}
+
 .bm-tour-popover button.driver-popover-prev-btn,
 .bm-tour-popover button.driver-popover-close-btn {
   background: transparent !important;
@@ -312,4 +322,12 @@ body {
   cursor: pointer;
   text-shadow: none !important;
   box-shadow: none !important;
+}
+
+.bm-tour-popover button.driver-popover-prev-btn:hover,
+.bm-tour-popover button.driver-popover-close-btn:hover,
+.bm-tour-popover button.driver-popover-prev-btn:focus-visible,
+.bm-tour-popover button.driver-popover-close-btn:focus-visible {
+  background: transparent !important;
+  color: rgba(255, 255, 255, 0.75) !important;
 }
