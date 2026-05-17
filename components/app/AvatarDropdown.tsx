@@ -9,6 +9,7 @@ interface UserInfo {
   displayName: string
   email: string
   initials: string
+  avatarUrl?: string
 }
 
 export function AvatarDropdown({ user }: { user: UserInfo }) {
@@ -53,9 +54,19 @@ export function AvatarDropdown({ user }: { user: UserInfo }) {
           color: '#f59e0b',
           cursor: 'pointer',
           transition: 'border-color 0.15s',
+          overflow: 'hidden',
+          padding: 0,
         }}
       >
-        {user.initials}
+        {user.avatarUrl ? (
+          <img
+            src={user.avatarUrl}
+            alt={user.displayName}
+            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+          />
+        ) : (
+          user.initials
+        )}
       </button>
 
       {open && (
