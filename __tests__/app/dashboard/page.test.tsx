@@ -34,11 +34,10 @@ vi.mock('@/lib/db/scheduled-rounds', () => ({
 }))
 vi.mock('next/navigation', () => ({ redirect: vi.fn() }))
 
-// DashboardTour (imported by the page) uses driver.js
-vi.mock('driver.js', () => ({
-  driver: vi.fn(() => ({ drive: vi.fn(), destroy: vi.fn() })),
+// Mock at component level — cleaner than mocking driver.js internals
+vi.mock('@/components/dashboard/DashboardTour', () => ({
+  DashboardTour: () => null,
 }))
-vi.mock('driver.js/dist/driver.css', () => ({}))
 
 describe('DashboardPage — empty state', () => {
   it('renders the headline', async () => {
