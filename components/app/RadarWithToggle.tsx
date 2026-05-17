@@ -12,9 +12,10 @@ interface PillarScore {
 interface RadarWithToggleProps {
   pillarScores: PillarScore[]
   hasManagerScores: boolean
+  onPillarClick?: (pillar: Pillar) => void
 }
 
-export function RadarWithToggle({ pillarScores, hasManagerScores }: RadarWithToggleProps) {
+export function RadarWithToggle({ pillarScores, hasManagerScores, onPillarClick }: RadarWithToggleProps) {
   const [showManager, setShowManager] = useState(false)
 
   return (
@@ -39,9 +40,11 @@ export function RadarWithToggle({ pillarScores, hasManagerScores }: RadarWithTog
           </button>
         </div>
       )}
-      <div style={{ height: 200 }}>
-        <ScorecardRadarChart pillarScores={pillarScores} showManager={showManager} />
-      </div>
+      <ScorecardRadarChart
+        pillarScores={pillarScores}
+        showManager={showManager}
+        onPillarClick={onPillarClick}
+      />
     </div>
   )
 }
