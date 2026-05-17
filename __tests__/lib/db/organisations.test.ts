@@ -8,26 +8,21 @@ import { createClient } from '@/lib/supabase/server'
 const mockCreateClient = createClient as ReturnType<typeof vi.fn>
 
 describe('createOrg', () => {
-  it('inserts an organisation row and returns the new id', async () => {
-    const insert = vi.fn().mockReturnValue({
-      select: vi.fn().mockReturnValue({
-        single: vi.fn().mockResolvedValue({ data: { id: 'org-1', name: 'Acme' }, error: null }),
-      }),
-    })
+  it('inserts an organisation row and returns the generated id and name', async () => {
+    const insert = vi.fn().mockResolvedValue({ error: null })
     const from = vi.fn().mockReturnValue({ insert })
     mockCreateClient.mockResolvedValue({ from })
 
     const result = await createOrg('user-1', 'Acme')
-    expect(result.id).toBe('org-1')
-    expect(insert).toHaveBeenCalledWith({ name: 'Acme', created_by: 'user-1' })
+    expect(typeof result.id).toBe('string')
+    expect(result.name).toBe('Acme')
+    expect(insert).toHaveBeenCalledWith(
+      expect.objectContaining({ name: 'Acme', created_by: 'user-1', id: expect.any(String) })
+    )
   })
 
   it('throws when insert errors', async () => {
-    const insert = vi.fn().mockReturnValue({
-      select: vi.fn().mockReturnValue({
-        single: vi.fn().mockResolvedValue({ data: null, error: { message: 'db error' } }),
-      }),
-    })
+    const insert = vi.fn().mockResolvedValue({ error: { message: 'db error' } })
     const from = vi.fn().mockReturnValue({ insert })
     mockCreateClient.mockResolvedValue({ from })
 
