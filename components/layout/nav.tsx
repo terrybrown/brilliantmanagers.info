@@ -38,22 +38,29 @@ export function Nav({ isAuthenticated }: { isAuthenticated: boolean }) {
   return (
     <header
       className="sticky top-0 z-50 border-b"
-      style={{ borderColor: 'var(--color-border)', background: 'var(--color-bg-base)' }}
+      style={{
+        borderColor: 'var(--color-border)',
+        background: 'color-mix(in srgb, var(--color-bg-base) 90%, black)',
+      }}
     >
       <div
-        className="mx-auto flex h-14 items-center justify-between px-6"
+        className="mx-auto flex h-14 items-center px-6"
         style={{ maxWidth: 'var(--container-width)' }}
       >
-        <Link
-          href="/"
-          className="flex items-center gap-2.5 text-xl font-bold tracking-tight"
-          style={{ fontFamily: 'var(--font-display)', color: 'var(--color-text-primary)' }}
-        >
-          <LogoMark size={36} />
-          Brilliant Managers
-        </Link>
+        {/* Left zone — flex-1 keeps brand left-anchored */}
+        <div className="flex flex-1 items-center">
+          <Link
+            href="/"
+            className="flex items-center gap-2.5 text-2xl font-bold tracking-tight"
+            style={{ fontFamily: 'var(--font-display)', color: 'var(--color-text-primary)' }}
+          >
+            <LogoMark size={36} />
+            Brilliant Managers
+          </Link>
+        </div>
 
-        <nav className="hidden items-center gap-6 md:flex">
+        {/* Centre zone — flex-none; centred because both wings are flex-1 */}
+        <nav className="hidden flex-none items-center gap-6 md:flex">
           {siteConfig.nav.map((item) => {
             const isActive = pathname === item.href || pathname.startsWith(item.href + '/')
             const Icon = NAV_ICONS[item.href]
@@ -78,12 +85,13 @@ export function Nav({ isAuthenticated }: { isAuthenticated: boolean }) {
           })}
         </nav>
 
-        <div className="flex items-center gap-3">
+        {/* Right zone — flex-1 justify-end keeps actions right-anchored */}
+        <div className="hidden flex-1 items-center justify-end gap-3 md:flex">
           {showToggle && <ThemeToggle />}
           {!isAuthenticated && !isAppRoute && (
             <Link
               href="/login"
-              className="hidden rounded-md border px-3 py-1.5 text-sm font-semibold md:block"
+              className="rounded-md border px-3 py-1.5 text-sm font-semibold"
               style={{ borderColor: 'rgba(245,158,11,0.5)', color: '#f59e0b' }}
             >
               Sign in
@@ -93,7 +101,7 @@ export function Nav({ isAuthenticated }: { isAuthenticated: boolean }) {
             href={siteConfig.githubUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="hidden rounded-md border px-3 py-1.5 text-sm font-medium md:block"
+            className="rounded-md border px-3 py-1.5 text-sm font-medium"
             style={{ borderColor: 'var(--color-border)', color: 'var(--color-text-muted)' }}
           >
             GitHub →
