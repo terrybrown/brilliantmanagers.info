@@ -6,22 +6,22 @@ import {
 describe('guide helpers', () => {
   it('GUIDE_SECTIONS lists all six sections in reading order', () => {
     expect(GUIDE_SECTIONS).toEqual([
-      'measurement',
       'self',
       'team',
       'strategy',
       'communications',
       'domain-expertise',
+      'measurement',
     ])
   })
 
   it('getPrevNextChapters returns null prev for first chapter', () => {
-    const { prev } = getPrevNextChapters(['measurement'])
+    const { prev } = getPrevNextChapters(['self'])
     expect(prev).toBeNull()
   })
 
   it('getPrevNextChapters returns null next for last chapter', () => {
-    const { next } = getPrevNextChapters(['domain-expertise'])
+    const { next } = getPrevNextChapters(['measurement'])
     expect(next).toBeNull()
   })
 

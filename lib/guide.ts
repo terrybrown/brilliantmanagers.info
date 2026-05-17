@@ -1,11 +1,11 @@
 // lib/guide.ts
 export const GUIDE_SECTIONS = [
-  'measurement',
   'self',
   'team',
   'strategy',
   'communications',
   'domain-expertise',
+  'measurement',
 ] as const
 
 export type GuideSection = (typeof GUIDE_SECTIONS)[number]
