@@ -1,5 +1,15 @@
 import { createClient } from '@/lib/supabase/server'
 
+interface RawNodeRow {
+  id: string
+  org_id: string
+  parent_id: string | null
+  name: string
+  node_type: string | null
+  created_at: string
+  org_node_members: { user_id: string; profiles: { email: string | null; display_name: string | null } | null }[]
+}
+
 export interface OrgNode {
   id: string
   org_id: string
@@ -29,10 +39,20 @@ export async function createNode(params: {
     .single()
   if (error) throw error
   if (!data) throw new Error('No data returned from org_nodes insert')
-  return { ...(data as Omit<OrgNode, 'members'>), members: [] }
+  const raw = data as Record<string, unknown>
+  return {
+    id: raw.id as string,
+    org_id: raw.org_id as string,
+    parent_id: (raw.parent_id as string | null) ?? null,
+    name: raw.name as string,
+    node_type: (raw.node_type as string | null) ?? null,
+    created_at: raw.created_at as string,
+    members: [],
+  }
 }
 
 // Caller must verify org_admin role — RLS enforces this for user-scoped clients.
+// Silent no-op if nodeId does not exist (Postgres UPDATE on zero rows is not an error).
 export async function renameNode(nodeId: string, name: string, nodeType: string | null): Promise<void> {
   const supabase = await createClient()
   const { error } = await supabase
@@ -43,6 +63,7 @@ export async function renameNode(nodeId: string, name: string, nodeType: string 
 }
 
 // Cascade on org_nodes.parent_id handles child nodes automatically.
+// Silent no-op if nodeId does not exist (Postgres DELETE on zero rows is not an error).
 export async function deleteNode(nodeId: string): Promise<void> {
   const supabase = await createClient()
   const { error } = await supabase.from('org_nodes').delete().eq('id', nodeId)
@@ -57,11 +78,7 @@ export async function getNodesForOrg(orgId: string): Promise<OrgNode[]> {
     .eq('org_id', orgId)
     .order('created_at', { ascending: true })
   if (error) throw error
-  return ((data ?? []) as {
-    id: string; org_id: string; parent_id: string | null; name: string
-    node_type: string | null; created_at: string
-    org_node_members: { user_id: string; profiles: { email: string | null; display_name: string | null } | null }[]
-  }[]).map(node => ({
+  return (data as RawNodeRow[] ?? []).map(node => ({
     id: node.id,
     org_id: node.org_id,
     parent_id: node.parent_id,
