@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 
 interface RawNodeRow {
   id: string
@@ -7,7 +8,7 @@ interface RawNodeRow {
   name: string
   node_type: string | null
   created_at: string
-  org_node_members: { user_id: string; profiles: { email: string | null; display_name: string | null }[] }[]
+  org_node_members: { user_id: string }[]
 }
 
 interface RawNodeInsertRow {
@@ -80,11 +81,25 @@ export async function getNodesForOrg(orgId: string): Promise<OrgNode[]> {
   const supabase = await createClient()
   const { data, error } = await supabase
     .from('org_nodes')
-    .select('id, org_id, parent_id, name, node_type, created_at, org_node_members(user_id, profiles(email, display_name))')
+    .select('id, org_id, parent_id, name, node_type, created_at, org_node_members(user_id)')
     .eq('org_id', orgId)
     .order('created_at', { ascending: true })
   if (error) throw error
-  return (data as RawNodeRow[] ?? []).map(node => ({
+  const nodes = (data as RawNodeRow[]) ?? []
+  if (nodes.length === 0) return []
+
+  const allUserIds = [...new Set(nodes.flatMap(n => n.org_node_members.map(m => m.user_id)))]
+  const profileMap = new Map<string, { email: string | null; display_name: string | null }>()
+  if (allUserIds.length > 0) {
+    const adminSupabase = createAdminClient()
+    const { data: profiles } = await adminSupabase
+      .from('profiles')
+      .select('id, email, display_name')
+      .in('id', allUserIds)
+    for (const p of profiles ?? []) profileMap.set(p.id, p)
+  }
+
+  return nodes.map(node => ({
     id: node.id,
     org_id: node.org_id,
     parent_id: node.parent_id,
@@ -93,8 +108,8 @@ export async function getNodesForOrg(orgId: string): Promise<OrgNode[]> {
     created_at: node.created_at,
     members: node.org_node_members.map(m => ({
       user_id: m.user_id,
-      email: m.profiles?.[0]?.email ?? null,
-      display_name: m.profiles?.[0]?.display_name ?? null,
+      email: profileMap.get(m.user_id)?.email ?? null,
+      display_name: profileMap.get(m.user_id)?.display_name ?? null,
     })),
   }))
 }

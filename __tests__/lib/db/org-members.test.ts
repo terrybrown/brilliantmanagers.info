@@ -1,11 +1,14 @@
 import { vi, describe, it, expect } from 'vitest'
 
 vi.mock('@/lib/supabase/server', () => ({ createClient: vi.fn() }))
+vi.mock('@/lib/supabase/admin', () => ({ createAdminClient: vi.fn() }))
 
 import { addOrgMember, setOrgRole, getOrgMembers } from '@/lib/db/org-members'
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 
 const mock = createClient as ReturnType<typeof vi.fn>
+const adminMock = createAdminClient as ReturnType<typeof vi.fn>
 
 describe('addOrgMember', () => {
   it('upserts a member row with given role', async () => {
@@ -56,12 +59,21 @@ describe('setOrgRole', () => {
 describe('getOrgMembers', () => {
   it('returns members with profile data', async () => {
     const members = [
-      { user_id: 'u1', role: 'org_admin', profiles: [{ email: 'a@x.com', display_name: 'Alice' }] },
-      { user_id: 'u2', role: 'member', profiles: [{ email: 'b@x.com', display_name: 'Bob' }] },
+      { user_id: 'u1', role: 'org_admin' },
+      { user_id: 'u2', role: 'member' },
     ]
     const eq = vi.fn().mockResolvedValue({ data: members, error: null })
     const select = vi.fn().mockReturnValue({ eq })
     mock.mockResolvedValue({ from: vi.fn().mockReturnValue({ select }) })
+
+    const inFn = vi.fn().mockResolvedValue({
+      data: [
+        { id: 'u1', email: 'a@x.com', display_name: 'Alice' },
+        { id: 'u2', email: 'b@x.com', display_name: 'Bob' },
+      ],
+    })
+    const adminSelect = vi.fn().mockReturnValue({ in: inFn })
+    adminMock.mockReturnValue({ from: vi.fn().mockReturnValue({ select: adminSelect }) })
 
     const result = await getOrgMembers('org-1')
     expect(result).toHaveLength(2)
@@ -76,13 +88,15 @@ describe('getOrgMembers', () => {
     await expect(getOrgMembers('org-1')).rejects.toThrow()
   })
 
-  it('handles null profiles gracefully', async () => {
-    const members = [
-      { user_id: 'u1', role: 'member', profiles: null },
-    ]
+  it('returns null profile fields when profile not found', async () => {
+    const members = [{ user_id: 'u1', role: 'member' }]
     const eq = vi.fn().mockResolvedValue({ data: members, error: null })
     const select = vi.fn().mockReturnValue({ eq })
     mock.mockResolvedValue({ from: vi.fn().mockReturnValue({ select }) })
+
+    const inFn = vi.fn().mockResolvedValue({ data: [] })
+    const adminSelect = vi.fn().mockReturnValue({ in: inFn })
+    adminMock.mockReturnValue({ from: vi.fn().mockReturnValue({ select: adminSelect }) })
 
     const result = await getOrgMembers('org-1')
     expect(result[0].email).toBeNull()

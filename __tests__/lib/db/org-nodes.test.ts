@@ -1,11 +1,14 @@
 import { vi, describe, it, expect } from 'vitest'
 
 vi.mock('@/lib/supabase/server', () => ({ createClient: vi.fn() }))
+vi.mock('@/lib/supabase/admin', () => ({ createAdminClient: vi.fn() }))
 
 import { createNode, renameNode, deleteNode, getNodesForOrg } from '@/lib/db/org-nodes'
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 
 const mock = createClient as ReturnType<typeof vi.fn>
+const adminMock = createAdminClient as ReturnType<typeof vi.fn>
 
 describe('createNode', () => {
   it('inserts a node and returns it', async () => {
@@ -87,30 +90,38 @@ describe('deleteNode', () => {
 })
 
 describe('getNodesForOrg', () => {
-  it('returns nodes with member data', async () => {
+  it('returns nodes with member data fetched via admin client', async () => {
     const nodes = [
       { id: 'n1', org_id: 'org-1', parent_id: null, name: 'Eng', node_type: 'Division', created_at: '2024-01-01',
-        org_node_members: [{ user_id: 'u1', profiles: [{ email: 'a@x.com', display_name: 'Alice' }] }] },
+        org_node_members: [{ user_id: 'u1' }] },
     ]
     const order = vi.fn().mockResolvedValue({ data: nodes, error: null })
     const eq = vi.fn().mockReturnValue({ order })
     const select = vi.fn().mockReturnValue({ eq })
     mock.mockResolvedValue({ from: vi.fn().mockReturnValue({ select }) })
+
+    const inFn = vi.fn().mockResolvedValue({ data: [{ id: 'u1', email: 'a@x.com', display_name: 'Alice' }] })
+    const adminSelect = vi.fn().mockReturnValue({ in: inFn })
+    adminMock.mockReturnValue({ from: vi.fn().mockReturnValue({ select: adminSelect }) })
 
     const result = await getNodesForOrg('org-1')
     expect(result).toHaveLength(1)
     expect(result[0].members[0].email).toBe('a@x.com')
   })
 
-  it('handles null profiles in node members', async () => {
+  it('returns null profile fields when profile not found', async () => {
     const nodes = [
       { id: 'n1', org_id: 'org-1', parent_id: null, name: 'Eng', node_type: null, created_at: '2024-01-01',
-        org_node_members: [{ user_id: 'u1', profiles: [] }] },
+        org_node_members: [{ user_id: 'u1' }] },
     ]
     const order = vi.fn().mockResolvedValue({ data: nodes, error: null })
     const eq = vi.fn().mockReturnValue({ order })
     const select = vi.fn().mockReturnValue({ eq })
     mock.mockResolvedValue({ from: vi.fn().mockReturnValue({ select }) })
+
+    const inFn = vi.fn().mockResolvedValue({ data: [] })
+    const adminSelect = vi.fn().mockReturnValue({ in: inFn })
+    adminMock.mockReturnValue({ from: vi.fn().mockReturnValue({ select: adminSelect }) })
 
     const result = await getNodesForOrg('org-1')
     expect(result[0].members[0].email).toBeNull()
