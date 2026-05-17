@@ -32,7 +32,7 @@ export default async function GrowthPage() {
   })
 
   return (
-    <div className="mx-auto max-w-2xl">
+    <div className="mx-auto max-w-5xl">
       <h1 className="mb-2 text-2xl font-bold text-white">Growth</h1>
       <p className="mb-8 text-sm text-slate-400">
         Set focused goals for the skills you want to develop.

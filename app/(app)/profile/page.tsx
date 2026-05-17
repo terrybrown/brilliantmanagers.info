@@ -13,7 +13,7 @@ export default async function ProfilePage() {
   const profile = await getProfile(user.id)
 
   return (
-    <div className="mx-auto max-w-2xl">
+    <div className="mx-auto max-w-5xl">
       <h1 className="mb-2 text-2xl font-bold text-white">Profile</h1>
       <p className="mb-8 text-sm text-slate-400">
         Update your display name, job title, and bio.

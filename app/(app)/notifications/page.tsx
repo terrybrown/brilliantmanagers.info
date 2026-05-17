@@ -10,7 +10,7 @@ export default async function NotificationsPage() {
   if (!user) redirect('/login')
 
   return (
-    <div className="mx-auto max-w-2xl">
+    <div className="mx-auto max-w-5xl">
       <h1 className="mb-2 text-2xl font-bold text-white">Notifications</h1>
       <p className="mb-8 text-sm text-slate-400">Stay up to date with activity on your account.</p>
 

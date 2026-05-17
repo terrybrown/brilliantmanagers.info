@@ -16,7 +16,7 @@ export default async function ConnectionsPage() {
   )
 
   return (
-    <div className="mx-auto max-w-2xl">
+    <div className="mx-auto max-w-5xl">
         <h1 className="mb-8 text-2xl font-bold text-white">Connections</h1>
 
         {pendingIncoming.length > 0 && (
