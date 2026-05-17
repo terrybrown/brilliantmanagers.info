@@ -14,14 +14,10 @@ vi.mock('@/lib/supabase/server', () => ({
   }),
 }))
 
-// DB functions — null round triggers the empty state branch
+// DB functions — empty array triggers the empty state branch
 vi.mock('@/lib/db/rounds', () => ({
-  getLatestCompleteRound: vi.fn().mockResolvedValue(null),
-  getPreviousCompleteRound: vi.fn().mockResolvedValue(null),
+  getAllCompleteRoundsWithScores: vi.fn().mockResolvedValue([]),
   getInProgressRound: vi.fn().mockResolvedValue(null),
-}))
-vi.mock('@/lib/db/scores', () => ({
-  getScoresForRound: vi.fn().mockResolvedValue([]),
 }))
 vi.mock('@/lib/db/manager-scores', () => ({
   getManagerScoresForDirectReport: vi.fn().mockResolvedValue([]),
