@@ -37,4 +37,12 @@ describe('AvatarDropdown', () => {
     fireEvent.click(btn)
     expect(screen.queryByText('Profile & settings')).toBeNull()
   })
+
+  it('falls back to initials when avatar image fails to load', () => {
+    render(<AvatarDropdown user={{ ...user, avatarUrl: 'https://example.com/avatar.jpg' }} />)
+    const img = screen.getByRole('img', { name: 'Terry Brown' })
+    fireEvent.error(img)
+    expect(screen.queryByRole('img')).toBeNull()
+    expect(screen.getByText('TB')).toBeTruthy()
+  })
 })
