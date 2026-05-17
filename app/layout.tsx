@@ -5,6 +5,7 @@ import { ThemeProvider } from 'next-themes'
 import { Nav } from '@/components/layout/nav'
 import { Footer } from '@/components/layout/footer'
 import { siteConfig } from '@/config/site'
+import { createClient } from '@/lib/supabase/server'
 import './globals.css'
 
 const fraunces = Fraunces({
@@ -28,13 +29,18 @@ export const metadata: Metadata = {
   description: siteConfig.description,
 }
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${fraunces.variable} ${inter.variable}`}>
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
           <div className="flex min-h-screen flex-col">
-            <Nav />
+            <Nav isAuthenticated={!!user} />
             <main className="flex-1">{children}</main>
             <Footer />
           </div>
