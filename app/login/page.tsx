@@ -1,26 +1,35 @@
 'use client'
 import { useState } from 'react'
+import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [sent, setSent] = useState(false)
   const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setError('')
-    const supabase = createClient()
-    const { error: err } = await supabase.auth.signInWithOtp({
-      email,
-      options: {
-        emailRedirectTo: `${window.location.origin}/auth/callback`,
-      },
-    })
-    if (err) {
-      setError(err.message)
-    } else {
-      setSent(true)
+    setLoading(true)
+    try {
+      const supabase = createClient()
+      const { error: err } = await supabase.auth.signInWithOtp({
+        email,
+        options: {
+          emailRedirectTo: `${window.location.origin}/auth/callback`,
+        },
+      })
+      if (err) {
+        setError(err.message)
+      } else {
+        setSent(true)
+      }
+    } catch {
+      setError('Something went wrong. Please try again.')
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -53,11 +62,22 @@ export default function LoginPage() {
           {error && <p className="text-sm text-red-500">{error}</p>}
           <button
             type="submit"
-            className="rounded-lg bg-amber-500 px-4 py-3 text-sm font-semibold text-white hover:bg-amber-400"
+            disabled={loading}
+            className="rounded-lg bg-amber-500 px-4 py-3 text-sm font-semibold text-white hover:bg-amber-400 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Send magic link
           </button>
         </form>
+        <p className="mt-5 text-center text-sm text-slate-400">
+          New here?{' '}
+          <Link
+            href="/the-tool#beta-signup"
+            className="font-medium underline"
+            style={{ color: '#f59e0b' }}
+          >
+            Sign up for the beta →
+          </Link>
+        </p>
       </div>
     </div>
   )

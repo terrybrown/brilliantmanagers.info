@@ -16,9 +16,22 @@ const NAV_ICONS: Record<string, React.ElementType> = {
 
 const ALWAYS_DARK_ROUTES = ['/', '/the-tool']
 
+const APP_ROUTES = [
+  '/dashboard',
+  '/growth',
+  '/connections',
+  '/organisation',
+  '/profile',
+  '/scorecard',
+  '/results',
+  '/manager',
+  '/notifications',
+]
+
 export function Nav() {
   const pathname = usePathname()
   const showToggle = !ALWAYS_DARK_ROUTES.includes(pathname)
+  const isAppRoute = APP_ROUTES.some(r => pathname === r || pathname.startsWith(r + '/'))
 
   return (
     <header
@@ -63,6 +76,15 @@ export function Nav() {
 
         <div className="flex items-center gap-3">
           {showToggle && <ThemeToggle />}
+          {!isAppRoute && (
+            <Link
+              href="/login"
+              className="hidden rounded-md border px-3 py-1.5 text-sm font-semibold md:block"
+              style={{ borderColor: 'rgba(245,158,11,0.5)', color: '#f59e0b' }}
+            >
+              Sign in
+            </Link>
+          )}
           <Link
             href={siteConfig.githubUrl}
             target="_blank"

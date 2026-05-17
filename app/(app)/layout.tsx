@@ -17,12 +17,6 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
   if (!user) redirect('/login')
 
-  const betaEmails = process.env.APP_BETA_EMAILS
-  if (betaEmails) {
-    const allowed = betaEmails.split(',').map(e => e.trim())
-    if (!allowed.includes(user.email ?? '')) redirect('/the-tool')
-  }
-
   const { data: profile } = await supabase
     .from('profiles')
     .select('display_name')
@@ -36,7 +30,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   return (
     <AppShell
       user={{ displayName, email, initials }}
-      showBeta={!!process.env.APP_BETA_EMAILS}
+      showBeta={true}
     >
       {children}
     </AppShell>
