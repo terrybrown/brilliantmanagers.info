@@ -1,4 +1,5 @@
 'use client'
+import { useCallback } from 'react'
 import {
   RadarChart,
   PolarGrid,
@@ -22,9 +23,9 @@ interface Props {
 }
 
 // Inverted map: display label → pillar key
-const PILLAR_LABEL_TO_KEY = Object.fromEntries(
-  Object.entries(PILLAR_LABELS).map(([k, v]) => [v, k])
-) as Record<string, Pillar>
+const PILLAR_LABEL_TO_KEY: Record<string, Pillar | undefined> = Object.fromEntries(
+  Object.entries(PILLAR_LABELS).map(([k, v]) => [v, k as Pillar])
+)
 
 // Module-level tick component — must NOT be defined inside the render function
 // so Recharts does not receive a new function reference on every render.
@@ -52,6 +53,11 @@ function PillarTick({ x = 0, y = 0, payload, textAnchor = 'middle', onPillarClic
 }
 
 export function ScorecardRadarChart({ pillarScores, showManager, onPillarClick }: Props) {
+  const tickRenderer = useCallback(
+    (props: PillarTickProps) => <PillarTick {...props} onPillarClick={onPillarClick} />,
+    [onPillarClick]
+  )
+
   const data = pillarScores.map(ps => ({
     pillar: PILLAR_LABELS[ps.pillar],
     Self: Number(ps.selfScore.toFixed(2)),
@@ -64,7 +70,7 @@ export function ScorecardRadarChart({ pillarScores, showManager, onPillarClick }
         <PolarGrid stroke="#1e293b" />
         <PolarAngleAxis
           dataKey="pillar"
-          tick={(props) => <PillarTick {...props} onPillarClick={onPillarClick} />}
+          tick={tickRenderer}
         />
         <Radar
           name="Self"
