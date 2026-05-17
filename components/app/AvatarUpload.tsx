@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useState, useTransition } from 'react'
+import { useRef, useState, useTransition, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { uploadAvatarAction, removeAvatarAction } from '@/app/(app)/profile/actions'
 
@@ -9,13 +9,21 @@ interface AvatarUploadProps {
   initials: string
 }
 
+type Toast = { message: string; type: 'success' | 'error' }
+
 export function AvatarUpload({ initialAvatarUrl, initials }: AvatarUploadProps) {
   const router = useRouter()
   const inputRef = useRef<HTMLInputElement>(null)
   const [previewUrl, setPreviewUrl] = useState<string | null>(initialAvatarUrl)
-  const [error, setError] = useState<string | null>(null)
+  const [toast, setToast] = useState<Toast | null>(null)
   const [isUploading, startUpload] = useTransition()
   const [isRemoving, startRemove] = useTransition()
+
+  useEffect(() => {
+    if (!toast) return
+    const id = setTimeout(() => setToast(null), 3000)
+    return () => clearTimeout(id)
+  }, [toast])
 
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
@@ -23,7 +31,7 @@ export function AvatarUpload({ initialAvatarUrl, initials }: AvatarUploadProps) 
 
     const objectUrl = URL.createObjectURL(file)
     setPreviewUrl(objectUrl)
-    setError(null)
+    setToast(null)
 
     const formData = new FormData()
     formData.set('avatar', file)
@@ -33,9 +41,10 @@ export function AvatarUpload({ initialAvatarUrl, initials }: AvatarUploadProps) 
       if (result.error) {
         URL.revokeObjectURL(objectUrl)
         setPreviewUrl(null)
-        setError(result.error)
+        setToast({ message: result.error, type: 'error' })
       } else {
         URL.revokeObjectURL(objectUrl)
+        setToast({ message: 'Photo updated', type: 'success' })
         router.refresh()
       }
       // Reset input so the same file can be re-selected if needed
@@ -47,11 +56,11 @@ export function AvatarUpload({ initialAvatarUrl, initials }: AvatarUploadProps) 
     startRemove(async () => {
       const result = await removeAvatarAction()
       if (result.error) {
-        setError(result.error)
+        setToast({ message: result.error, type: 'error' })
         return
       }
       setPreviewUrl(null)
-      setError(null)
+      setToast({ message: 'Photo removed', type: 'success' })
       router.refresh()
     })
   }
@@ -118,8 +127,12 @@ export function AvatarUpload({ initialAvatarUrl, initials }: AvatarUploadProps) 
               </button>
             )}
           </div>
-          {error && (
-            <p className="text-xs text-red-400">{error}</p>
+          {toast && (
+            <p
+              className={`text-xs ${toast.type === 'error' ? 'text-red-400' : 'text-emerald-400'}`}
+            >
+              {toast.message}
+            </p>
           )}
         </div>
       </div>
