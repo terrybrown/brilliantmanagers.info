@@ -42,7 +42,7 @@ export function Topbar({ user, showBeta }: { user: UserInfo; showBeta: boolean }
         flexShrink: 0,
       }}
     >
-      <span style={{ fontWeight: 600, fontSize: 15, color: '#f8fafc', flex: 1 }}>{title}</span>
+      <span style={{ fontWeight: 600, fontSize: 15, color: '#f8fafc', flex: 1, fontFamily: 'var(--font-display)' }}>{title}</span>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
         {showBeta && (
