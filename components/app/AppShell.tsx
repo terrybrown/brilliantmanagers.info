@@ -9,6 +9,7 @@ interface UserInfo {
   displayName: string
   email: string
   initials: string
+  avatarUrl?: string
 }
 
 export function AppShell({
