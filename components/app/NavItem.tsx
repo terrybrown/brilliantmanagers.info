@@ -8,14 +8,16 @@ interface NavItemProps {
   icon: LucideIcon
   label: string
   isExpanded: boolean
+  id?: string
 }
 
-export function NavItem({ href, icon: Icon, label, isExpanded }: NavItemProps) {
+export function NavItem({ href, icon: Icon, label, isExpanded, id }: NavItemProps) {
   const pathname = usePathname()
   const isActive = pathname === href || (href !== '/dashboard' && pathname.startsWith(href))
 
   return (
     <Link
+      id={id}
       href={href}
       aria-current={isActive ? 'page' : undefined}
       title={!isExpanded ? label : undefined}

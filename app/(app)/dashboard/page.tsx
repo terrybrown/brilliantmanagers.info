@@ -1,7 +1,9 @@
 // app/(app)/dashboard/page.tsx
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
+import { Lightbulb, Search, TrendingUp, MessageSquare, type LucideIcon } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
+import { DashboardTour } from '@/components/dashboard/DashboardTour'
 import { getLatestCompleteRound, getPreviousCompleteRound, getInProgressRound } from '@/lib/db/rounds'
 import { getScoresForRound } from '@/lib/db/scores'
 import { getManagerScoresForDirectReport } from '@/lib/db/manager-scores'
@@ -20,6 +22,30 @@ import { PillarAccordion } from '@/components/app/PillarAccordion'
 import type { PillarData } from '@/components/app/PillarAccordion'
 import { ScheduleWidget } from '@/components/app/ScheduleWidget'
 import { GrowthSummaryCard } from '@/components/app/GrowthSummaryCard'
+import { CheckInNudgeCard } from '@/components/app/CheckInNudgeCard'
+
+const BENEFIT_STRIPS: Array<{ Icon: LucideIcon; title: string; desc: string }> = [
+  {
+    Icon: Lightbulb,
+    title: 'See exactly where you stand',
+    desc: 'A radar across all six pillars shows your strengths and gaps at a glance.',
+  },
+  {
+    Icon: Search,
+    title: 'Know where to focus first',
+    desc: "Your lowest pillar is flagged automatically so you're never guessing what to work on.",
+  },
+  {
+    Icon: TrendingUp,
+    title: 'Track growth round to round',
+    desc: 'Rescore yourself every few months and watch your progress trend over time.',
+  },
+  {
+    Icon: MessageSquare,
+    title: 'A ready-made discussion starter with your manager',
+    desc: 'Share your scorecard snapshot — a structured starting point for a real conversation.',
+  },
+]
 
 export default async function DashboardPage() {
   const supabase = await createClient()
@@ -33,17 +59,140 @@ export default async function DashboardPage() {
   // ── Empty state ──────────────────────────────────────────────────────────────
   if (!round) {
     return (
-      <div className="flex flex-col items-start gap-4 py-16 px-4">
-        <h1 className="text-2xl font-bold text-white">Welcome to Brilliant Managers</h1>
-        <p className="text-sm text-slate-400">
-          Your dashboard will come alive once you&apos;ve completed your first self-assessment.
-        </p>
-        <Link
-          href="/scorecard"
-          className="rounded-lg bg-amber-500 px-6 py-3 text-sm font-semibold text-white hover:bg-amber-400"
-        >
-          Start your scorecard →
-        </Link>
+      <div style={{ display: 'flex', flexDirection: 'column' }}>
+        {/* CTA area */}
+        <div style={{ padding: '40px 36px 0' }}>
+          <DashboardTour />
+
+          <div style={{ marginBottom: 36 }}>
+            <p
+              style={{
+                fontSize: 11,
+                fontWeight: 700,
+                letterSpacing: '0.14em',
+                textTransform: 'uppercase',
+                color: 'rgba(255,255,255,0.3)',
+                marginBottom: 12,
+              }}
+            >
+              Your manager scorecard
+            </p>
+            <h1
+              style={{
+                fontSize: 26,
+                fontWeight: 800,
+                lineHeight: 1.2,
+                letterSpacing: '-0.02em',
+                color: '#fff',
+                marginBottom: 12,
+              }}
+            >
+              You&apos;re one short reflection away from{' '}
+              <em style={{ color: '#f59e0b', fontStyle: 'normal' }}>real clarity.</em>
+            </h1>
+            <p
+              style={{
+                fontSize: 14,
+                color: 'rgba(255,255,255,0.5)',
+                lineHeight: 1.7,
+                maxWidth: 480,
+                marginBottom: 24,
+              }}
+            >
+              Most managers guess at where they&apos;re strong and where they&apos;re not. Ten
+              minutes of honest self-assessment across six pillars gives you a structured picture
+              — and something concrete to bring to your next 1:1.
+            </p>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+              <Link
+                id="dashboard-cta-btn"
+                href="/scorecard"
+                className="hover:opacity-90 active:opacity-80"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  background: '#f59e0b',
+                  color: '#1a2a3a',
+                  fontWeight: 700,
+                  fontSize: 13,
+                  padding: '12px 22px',
+                  borderRadius: 10,
+                  textDecoration: 'none',
+                }}
+              >
+                Start your scorecard →
+              </Link>
+              <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.25)' }}>
+                ~10 minutes · no right answers
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Benefit strips — full width of main panel */}
+        <div style={{ padding: '0 36px 40px' }}>
+          <p
+            style={{
+              fontSize: 11,
+              fontWeight: 700,
+              letterSpacing: '0.12em',
+              textTransform: 'uppercase',
+              color: 'rgba(255,255,255,0.2)',
+              marginBottom: 14,
+            }}
+          >
+            What you&apos;ll unlock
+          </p>
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+              gap: 12,
+            }}
+          >
+            {BENEFIT_STRIPS.map(strip => (
+              <div
+                key={strip.title}
+                style={{
+                  background: 'rgba(255,255,255,0.03)',
+                  border: '1px solid rgba(255,255,255,0.07)',
+                  borderRadius: 10,
+                  padding: 16,
+                }}
+              >
+                <div
+                  style={{
+                    width: 32,
+                    height: 32,
+                    background: 'rgba(245,158,11,0.1)',
+                    borderRadius: 8,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    marginBottom: 12,
+                  }}
+                >
+                  <strip.Icon size={16} color="#f59e0b" strokeWidth={1.5} />
+                </div>
+                <p
+                  style={{
+                    fontSize: 12,
+                    fontWeight: 700,
+                    color: 'rgba(255,255,255,0.85)',
+                    marginBottom: 5,
+                    lineHeight: 1.3,
+                  }}
+                >
+                  {strip.title}
+                </p>
+                <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.38)', lineHeight: 1.55 }}>
+                  {strip.desc}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     )
   }
@@ -58,6 +207,13 @@ export default async function DashboardPage() {
   ])
 
   const hasManagerScores = managerScores.length > 0
+
+  const overdueCheckins = plans.filter(p => {
+    if (p.status === 'completed' || !p.checkin_frequency_weeks) return false
+    const base = p.last_checkin_at ? new Date(p.last_checkin_at) : new Date(p.created_at)
+    const nextDue = new Date(base.getTime() + p.checkin_frequency_weeks * 7 * 24 * 60 * 60 * 1000)
+    return nextDue < new Date()
+  })
 
   // ── Overall score + trend ────────────────────────────────────────────────────
   const overallAvg =
@@ -197,6 +353,7 @@ export default async function DashboardPage() {
         <aside className="flex flex-col gap-4">
           <ScheduleWidget scheduled={scheduled} />
           <GrowthSummaryCard plans={plans} />
+          <CheckInNudgeCard overdueCount={overdueCheckins.length} />
 
           {!hasManagerScores && (
             <div

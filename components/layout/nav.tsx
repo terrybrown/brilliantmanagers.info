@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation'
 import { BookOpen, Gauge, PenLine, Library, HelpCircle } from 'lucide-react'
 import { siteConfig } from '@/config/site'
 import { ThemeToggle } from './theme-toggle'
+import { LogoMark } from '@/components/app/LogoMark'
 
 const NAV_ICONS: Record<string, React.ElementType> = {
   '/the-guide': BookOpen,
@@ -28,7 +29,7 @@ const APP_ROUTES = [
   '/notifications',
 ]
 
-export function Nav() {
+export function Nav({ isAuthenticated }: { isAuthenticated: boolean }) {
   const pathname = usePathname()
   const showToggle = !ALWAYS_DARK_ROUTES.includes(pathname)
   const isAppRoute = APP_ROUTES.some(r => pathname === r || pathname.startsWith(r + '/'))
@@ -44,9 +45,10 @@ export function Nav() {
       >
         <Link
           href="/"
-          className="text-xl font-bold tracking-tight"
+          className="flex items-center gap-2.5 text-xl font-bold tracking-tight"
           style={{ fontFamily: 'var(--font-display)', color: 'var(--color-text-primary)' }}
         >
+          <LogoMark size={36} />
           Brilliant Managers
         </Link>
 
@@ -54,10 +56,11 @@ export function Nav() {
           {siteConfig.nav.map((item) => {
             const isActive = pathname === item.href || pathname.startsWith(item.href + '/')
             const Icon = NAV_ICONS[item.href]
+            const href = item.href === '/the-tool' && isAuthenticated ? '/dashboard' : item.href
             return (
               <Link
                 key={item.href}
-                href={item.href}
+                href={href}
                 className="flex items-center gap-1.5 text-sm font-medium transition-opacity hover:opacity-100"
                 style={{ color: isActive ? 'var(--color-text-primary)' : 'var(--color-text-muted)' }}
               >
@@ -76,7 +79,7 @@ export function Nav() {
 
         <div className="flex items-center gap-3">
           {showToggle && <ThemeToggle />}
-          {!isAppRoute && (
+          {!isAuthenticated && !isAppRoute && (
             <Link
               href="/login"
               className="hidden rounded-md border px-3 py-1.5 text-sm font-semibold md:block"
