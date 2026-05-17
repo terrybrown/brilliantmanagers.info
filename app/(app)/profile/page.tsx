@@ -1,7 +1,8 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { getProfile, getSignedAvatarUrl } from '@/lib/db/profiles'
-import { updateProfileAction, removeAvatarAction } from './actions'
+import { updateProfileAction } from './actions'
+import { AvatarUpload } from '@/components/app/AvatarUpload'
 
 function getInitials(name: string | null, email: string | null): string {
   const src = name ?? email ?? '?'
@@ -30,58 +31,9 @@ export default async function ProfilePage() {
         Update your display name, job title, and bio.
       </p>
 
-      <form action={updateProfileAction} className="flex flex-col gap-5">
-        {/* Avatar section */}
-        <div className="mb-1 flex items-center gap-4">
-          <div
-            style={{
-              width: 64,
-              height: 64,
-              borderRadius: '50%',
-              overflow: 'hidden',
-              background: '#1f2937',
-              border: '2px solid #334155',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              flexShrink: 0,
-            }}
-          >
-            {avatarUrl ? (
-              <img
-                src={avatarUrl}
-                alt="Profile photo"
-                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-              />
-            ) : (
-              <span style={{ color: '#f59e0b', fontWeight: 700, fontSize: 20 }}>
-                {initials}
-              </span>
-            )}
-          </div>
-          <div className="flex items-center gap-3">
-            <label className="cursor-pointer rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-xs font-semibold text-white hover:border-amber-400 hover:text-amber-400 transition-colors">
-              Change photo
-              <input
-                type="file"
-                name="avatar"
-                accept="image/jpeg,image/png,image/webp"
-                className="sr-only"
-              />
-            </label>
-            {profile?.avatar_path && (
-              <form action={removeAvatarAction}>
-                <button
-                  type="submit"
-                  className="rounded-lg border border-slate-700 px-3 py-2 text-xs font-semibold text-slate-400 hover:border-red-500 hover:text-red-400 transition-colors"
-                >
-                  Remove
-                </button>
-              </form>
-            )}
-          </div>
-        </div>
+      <AvatarUpload initialAvatarUrl={avatarUrl} initials={initials} />
 
+      <form action={updateProfileAction} className="flex flex-col gap-5">
         <div>
           <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-400">
             Display name
