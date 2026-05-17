@@ -95,6 +95,11 @@ ALTER TABLE audit_log ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "authenticated insert" ON audit_log
   FOR INSERT WITH CHECK (auth.uid() IS NOT NULL);
 
+-- Indexes on FK columns not covered by UNIQUE constraints
+CREATE INDEX ON org_nodes (org_id);
+CREATE INDEX ON org_nodes (parent_id);
+CREATE INDEX ON org_members (user_id);
+
 -- Bootstrap: grant super_admin to the site owner
 INSERT INTO user_roles (user_id, role, granted_by)
 SELECT id, 'super_admin', id
