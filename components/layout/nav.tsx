@@ -40,7 +40,7 @@ export function Nav({ isAuthenticated }: { isAuthenticated: boolean }) {
       className="sticky top-0 z-50 border-b"
       style={{
         borderColor: 'var(--color-border)',
-        background: 'color-mix(in srgb, var(--color-bg-base) 90%, black)',
+        background: 'var(--color-nav-bg)',
       }}
     >
       <div
@@ -92,7 +92,7 @@ export function Nav({ isAuthenticated }: { isAuthenticated: boolean }) {
             <Link
               href="/login"
               className="rounded-md border px-3 py-1.5 text-sm font-semibold"
-              style={{ borderColor: 'rgba(245,158,11,0.5)', color: '#f59e0b' }}
+              style={{ borderColor: 'color-mix(in srgb, var(--color-accent) 50%, transparent)', color: 'var(--color-accent)' }}
             >
               Sign in
             </Link>

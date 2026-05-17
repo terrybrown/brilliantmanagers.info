@@ -15,6 +15,7 @@
   --color-text-muted: #44403c;
   --color-accent: #d97706;
   --color-border: #e7e5e4;
+  --color-nav-bg: #e5e3de;
 
   /* ── Layout tokens ── */
   --radius: 8px;
@@ -32,6 +33,7 @@
   --color-text-muted: rgba(254, 252, 247, 0.60);
   --color-accent: #f59e0b;
   --color-border: rgba(254, 252, 247, 0.12);
+  --color-nav-bg: #16304a;
 }
 
 /* ── Base styles ── */
