@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 
 export interface OrgMember {
   user_id: string
@@ -40,18 +41,29 @@ export async function setOrgRole(
 }
 
 // Caller must verify org_admin role — RLS enforces this for user-scoped clients.
+// Profiles are fetched via the admin client because org_members.user_id has no
+// direct FK to profiles (it points to auth.users), so PostgREST can't resolve
+// the join, and the profiles SELECT policy only covers own profile.
 export async function getOrgMembers(orgId: string): Promise<OrgMember[]> {
   const supabase = await createClient()
   const { data, error } = await supabase
     .from('org_members')
-    .select('user_id, role, profiles(email, display_name)')
+    .select('user_id, role')
     .eq('org_id', orgId)
   if (error) throw error
-  type RawRow = { user_id: string; role: string; profiles: { email: string | null; display_name: string | null }[] }
-  return ((data ?? []) as RawRow[]).map(row => ({
+  if (!data || data.length === 0) return []
+
+  const adminSupabase = createAdminClient()
+  const { data: profiles } = await adminSupabase
+    .from('profiles')
+    .select('id, email, display_name')
+    .in('id', data.map(r => r.user_id))
+
+  const profileMap = new Map((profiles ?? []).map(p => [p.id, p]))
+  return data.map(row => ({
     user_id: row.user_id,
     role: row.role === 'org_admin' ? 'org_admin' : 'member',
-    email: row.profiles?.[0]?.email ?? null,
-    display_name: row.profiles?.[0]?.display_name ?? null,
+    email: profileMap.get(row.user_id)?.email ?? null,
+    display_name: profileMap.get(row.user_id)?.display_name ?? null,
   }))
 }
