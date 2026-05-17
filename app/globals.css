@@ -306,6 +306,8 @@ body {
   border-radius: 6px !important;
   padding: 6px 16px !important;
   cursor: pointer;
+  text-shadow: none !important;
+  box-shadow: none !important;
 }
 
 .bm-tour-popover button.driver-popover-next-btn:hover,
