@@ -1,11 +1,10 @@
 'use client'
-import { useState, useEffect, useTransition } from 'react'
-import { getGuideContent } from '@/app/(app)/scorecard/actions'
 import { SKILLS } from '@/lib/skills'
 import type { SkillGuideContent } from '@/lib/guide-content'
 
 interface GuidePanelProps {
   activeSkillKey: string | null
+  allGuideContent: Record<string, SkillGuideContent | null>
 }
 
 function renderBody(text: string) {
@@ -33,25 +32,9 @@ const SECTIONS: { label: string; key: keyof SkillGuideContent }[] = [
   { label: 'Pathways to Improvement', key: 'pathways' },
 ]
 
-export function GuidePanel({ activeSkillKey }: GuidePanelProps) {
-  const [content, setContent] = useState<SkillGuideContent | null>(null)
-  const [isPending, startTransition] = useTransition()
-
-  useEffect(() => {
-    if (!activeSkillKey) {
-      setContent(null)
-      return
-    }
-    setContent(null)
-    let cancelled = false
-    startTransition(async () => {
-      const result = await getGuideContent(activeSkillKey)
-      if (!cancelled) setContent(result)
-    })
-    return () => { cancelled = true }
-  }, [activeSkillKey])
-
+export function GuidePanel({ activeSkillKey, allGuideContent }: GuidePanelProps) {
   const activeSkill = SKILLS.find(s => s.key === activeSkillKey)
+  const content = activeSkillKey ? (allGuideContent[activeSkillKey] ?? null) : null
 
   if (!activeSkillKey) {
     return (
@@ -96,10 +79,6 @@ export function GuidePanel({ activeSkillKey }: GuidePanelProps) {
         {activeSkill?.label}
       </h3>
 
-      {isPending && !content && (
-        <p style={{ color: '#64748b', fontSize: 13 }}>Loading…</p>
-      )}
-
       {content && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
           {SECTIONS.map(({ label, key }) => {
@@ -127,7 +106,7 @@ export function GuidePanel({ activeSkillKey }: GuidePanelProps) {
         </div>
       )}
 
-      {!isPending && !content && activeSkill && (
+      {!content && activeSkill && (
         <p style={{ fontSize: 13, color: '#94a3b8', lineHeight: 1.6 }}>
           {activeSkill.description}
         </p>

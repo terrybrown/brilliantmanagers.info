@@ -1,6 +1,7 @@
 'use client'
 import { useState } from 'react'
 import { PILLARS, getSkillsByPillar, type Pillar, type Level } from '@/lib/skills'
+import type { SkillGuideContent } from '@/lib/guide-content'
 import { PillarNav } from './PillarNav'
 import { SkillList } from './SkillList'
 import { GuidePanel } from './GuidePanel'
@@ -8,12 +9,18 @@ import { GuidePanel } from './GuidePanel'
 interface ScorecardShellProps {
   roundId: string
   allScores: Record<string, Level>
+  allGuideContent: Record<string, SkillGuideContent | null>
 }
 
-export function ScorecardShell({ roundId, allScores }: ScorecardShellProps) {
+export function ScorecardShell({ roundId, allScores, allGuideContent }: ScorecardShellProps) {
+  const firstSelfSkill = getSkillsByPillar('self')[0]
   const [activePillar, setActivePillar] = useState<Pillar>('self')
-  const [activeSkillKey, setActiveSkillKey] = useState<string | null>(null)
-  const [lastActiveByPillar, setLastActiveByPillar] = useState<Partial<Record<Pillar, string>>>({})
+  const [activeSkillKey, setActiveSkillKey] = useState<string | null>(
+    firstSelfSkill?.key ?? null
+  )
+  const [lastActiveByPillar, setLastActiveByPillar] = useState<Partial<Record<Pillar, string>>>(
+    firstSelfSkill ? { self: firstSelfSkill.key } : {}
+  )
   const [scores, setScores] = useState<Record<string, Level>>(allScores)
 
   const handlePillarChange = (pillar: Pillar) => {
@@ -78,7 +85,7 @@ export function ScorecardShell({ roundId, allScores }: ScorecardShellProps) {
           onScore={handleScore}
         />
       </div>
-      <GuidePanel activeSkillKey={activeSkillKey} />
+      <GuidePanel activeSkillKey={activeSkillKey} allGuideContent={allGuideContent} />
     </div>
   )
 }
