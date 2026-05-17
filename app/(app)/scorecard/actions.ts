@@ -13,17 +13,16 @@ export async function saveScore(
 ): Promise<void> {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('Not authenticated')
 
   await upsertScore(roundId, pillar, skillKey, level)
   await maybeCompleteRound(roundId)
 
-  if (user) {
-    await logAudit({
-      actorId: user.id,
-      action: 'scorecard.submit',
-      entityType: 'score',
-      entityId: roundId,
-      metadata: { pillar, skillKey, level },
-    })
-  }
+  await logAudit({
+    actorId: user.id,
+    action: 'scorecard.submit',
+    entityType: 'score',
+    entityId: roundId,
+    metadata: { pillar, skillKey, level },
+  })
 }

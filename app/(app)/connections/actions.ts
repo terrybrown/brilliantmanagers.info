@@ -32,15 +32,14 @@ export async function acceptConnectionAction(connectionId: string) {
   const {
     data: { user },
   } = await supabase.auth.getUser()
+  if (!user) return
 
   await acceptConnection(connectionId)
 
-  if (user) {
-    await logAudit({
-      actorId: user.id,
-      action: 'connection.accept',
-      entityType: 'connection',
-      entityId: connectionId,
-    })
-  }
+  await logAudit({
+    actorId: user.id,
+    action: 'connection.accept',
+    entityType: 'connection',
+    entityId: connectionId,
+  })
 }
