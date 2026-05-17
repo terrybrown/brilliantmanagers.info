@@ -16,11 +16,11 @@ export const PILLAR_LABELS: Record<Pillar, string> = {
   'domain-expertise': 'Domain Expertise',
 }
 
-export const LEVELS = ['Needs Improvement', 'Basic', 'Proficient', 'Advanced', 'Expert'] as const
+export const LEVELS = ['Developing', 'Basic', 'Proficient', 'Advanced', 'Expert'] as const
 export type Level = (typeof LEVELS)[number]
 
 export const LEVEL_VALUES: Record<Level, number> = {
-  'Needs Improvement': 1,
+  Developing: 1,
   Basic: 2,
   Proficient: 3,
   Advanced: 4,
@@ -28,7 +28,7 @@ export const LEVEL_VALUES: Record<Level, number> = {
 }
 
 export const LEVEL_COLORS: Record<Level, string> = {
-  'Needs Improvement': '#f87171',
+  Developing: '#f87171',
   Basic: '#fb923c',
   Proficient: '#fbbf24',
   Advanced: '#4ade80',

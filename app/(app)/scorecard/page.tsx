@@ -3,6 +3,9 @@ import { createClient } from '@/lib/supabase/server'
 import { getOrCreateActiveRound } from '@/lib/db/rounds'
 import { getScoresForRound } from '@/lib/db/scores'
 import type { Level } from '@/lib/skills'
+import { SKILLS } from '@/lib/skills'
+import { getSkillGuideContent } from '@/lib/guide-content'
+import type { SkillGuideContent } from '@/lib/guide-content'
 import { ScorecardShell } from '@/components/app/scorecard/ScorecardShell'
 
 export default async function ScorecardPage() {
@@ -20,13 +23,24 @@ export default async function ScorecardPage() {
     allScores[s.skill_key] = s.level
   })
 
+  const guideEntries = await Promise.all(
+    SKILLS.map(async s => {
+      try {
+        return [s.key, await getSkillGuideContent(s.key)] as const
+      } catch {
+        return [s.key, null] as const
+      }
+    })
+  )
+  const allGuideContent: Record<string, SkillGuideContent | null> = Object.fromEntries(guideEntries)
+
   return (
     <div>
       <h1 className="mb-2 text-2xl font-bold text-white">Your Scorecard</h1>
       <p className="mb-6 text-sm text-slate-400">
         Score yourself on each skill. Scores save automatically.
       </p>
-      <ScorecardShell roundId={round.id} allScores={allScores} />
+      <ScorecardShell roundId={round.id} allScores={allScores} allGuideContent={allGuideContent} />
     </div>
   )
 }

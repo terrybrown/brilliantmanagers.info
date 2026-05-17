@@ -1,5 +1,6 @@
 'use client'
 import { PILLARS, PILLAR_LABELS, type Pillar } from '@/lib/skills'
+import { GuideIcon } from '@/components/icons/guide-icons'
 
 interface PillarProgress {
   scored: number
@@ -51,14 +52,18 @@ export function PillarNav({ activePillar, pillarProgress, onPillarChange }: Pill
                   fontSize: 13,
                   fontWeight: 600,
                   color: isActive ? '#f1f5f9' : '#94a3b8',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 5,
                 }}
               >
+                <GuideIcon section={pillar} size={14} />
                 {PILLAR_LABELS[pillar]}
               </span>
               {isComplete ? (
                 <span style={{ color: '#4ade80', fontSize: 13 }}>✓</span>
               ) : (
-                <span style={{ fontSize: 11, color: '#64748b' }}>
+                <span style={{ fontSize: 11, color: '#94a3b8', fontWeight: 600 }}>
                   {scored}/{total}
                 </span>
               )}
