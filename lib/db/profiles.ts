@@ -36,8 +36,9 @@ export async function getSignedAvatarUrl(
   avatarPath: string
 ): Promise<string | null> {
   const supabase = await createClient()
-  const { data } = await supabase.storage
+  const { data, error } = await supabase.storage
     .from('avatars')
     .createSignedUrl(avatarPath, 3600)
+  if (error) console.error('getSignedAvatarUrl failed:', error)
   return data?.signedUrl ?? null
 }

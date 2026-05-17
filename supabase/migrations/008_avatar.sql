@@ -15,7 +15,12 @@ CREATE POLICY "avatar insert" ON storage.objects
 
 -- Owner can replace
 CREATE POLICY "avatar update" ON storage.objects
-  FOR UPDATE USING (
+  FOR UPDATE
+  USING (
+    bucket_id = 'avatars'
+    AND auth.uid()::text = (storage.foldername(name))[1]
+  )
+  WITH CHECK (
     bucket_id = 'avatars'
     AND auth.uid()::text = (storage.foldername(name))[1]
   );
