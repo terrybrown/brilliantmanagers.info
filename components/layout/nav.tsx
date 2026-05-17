@@ -64,6 +64,13 @@ export function Nav() {
         <div className="flex items-center gap-3">
           {showToggle && <ThemeToggle />}
           <Link
+            href="/login"
+            className="hidden rounded-md border px-3 py-1.5 text-sm font-semibold md:block"
+            style={{ borderColor: 'rgba(245,158,11,0.5)', color: '#f59e0b' }}
+          >
+            Sign in
+          </Link>
+          <Link
             href={siteConfig.githubUrl}
             target="_blank"
             rel="noopener noreferrer"
