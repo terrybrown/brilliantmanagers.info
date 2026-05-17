@@ -31,6 +31,8 @@ export async function createOrgAction(formData: FormData): Promise<void> {
   if (!name) return
 
   const org = await createOrg(user.id, name)
+  // Not transactional: if addOrgMember fails, the org exists with no admin.
+  // Use an RPC if atomicity is required.
   await addOrgMember(org.id, user.id, 'org_admin')
   await logAudit({ actorId: user.id, action: 'org.create', entityType: 'organisation', entityId: org.id, metadata: { name } })
   revalidatePath('/organisation')
