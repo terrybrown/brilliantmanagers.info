@@ -4,8 +4,7 @@ import { redirect } from 'next/navigation'
 import { Lightbulb, Search, TrendingUp, MessageSquare, type LucideIcon } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import { DashboardTour } from '@/components/dashboard/DashboardTour'
-import { getLatestCompleteRound, getPreviousCompleteRound, getInProgressRound } from '@/lib/db/rounds'
-import { getScoresForRound } from '@/lib/db/scores'
+import { getAllCompleteRoundsWithScores, getInProgressRound } from '@/lib/db/rounds'
 import { getManagerScoresForDirectReport } from '@/lib/db/manager-scores'
 import { getPlansForUser } from '@/lib/db/development-plans'
 import { getScheduledRound } from '@/lib/db/scheduled-rounds'
@@ -17,12 +16,9 @@ import {
   type Pillar,
   type Level,
 } from '@/lib/skills'
-import { RadarWithToggle } from '@/components/app/RadarWithToggle'
-import { PillarAccordion } from '@/components/app/PillarAccordion'
+import { DashboardResults } from '@/components/dashboard/DashboardResults'
 import type { PillarData } from '@/components/app/PillarAccordion'
-import { ScheduleWidget } from '@/components/app/ScheduleWidget'
-import { GrowthSummaryCard } from '@/components/app/GrowthSummaryCard'
-import { CheckInNudgeCard } from '@/components/app/CheckInNudgeCard'
+import type { HistoryPoint } from '@/components/app/PillarHistoryChart'
 
 const BENEFIT_STRIPS: Array<{ Icon: LucideIcon; title: string; desc: string }> = [
   {
@@ -54,10 +50,10 @@ export default async function DashboardPage() {
   } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
-  const round = await getLatestCompleteRound(user.id)
+  const allRoundsWithScores = await getAllCompleteRoundsWithScores(user.id)
 
   // ── Empty state ──────────────────────────────────────────────────────────────
-  if (!round) {
+  if (allRoundsWithScores.length === 0) {
     return (
       <div style={{ display: 'flex', flexDirection: 'column' }}>
         {/* CTA area */}
@@ -131,7 +127,7 @@ export default async function DashboardPage() {
           </div>
         </div>
 
-        {/* Benefit strips — full width of main panel */}
+        {/* Benefit strips */}
         <div style={{ padding: '0 36px 40px' }}>
           <p
             style={{
@@ -198,9 +194,11 @@ export default async function DashboardPage() {
     )
   }
 
+  // ── Latest round ─────────────────────────────────────────────────────────────
+  const { round, scores } = allRoundsWithScores[allRoundsWithScores.length - 1]
+
   // ── Parallel data fetch ───────────────────────────────────────────────────────
-  const [scores, managerScores, plans, scheduled, inProgress] = await Promise.all([
-    getScoresForRound(round.id),
+  const [managerScores, plans, scheduled, inProgress] = await Promise.all([
     getManagerScoresForDirectReport(round.id),
     getPlansForUser(user.id),
     getScheduledRound(user.id),
@@ -216,7 +214,7 @@ export default async function DashboardPage() {
     return nextDue < new Date()
   })
 
-  // ── Overall score + trend ────────────────────────────────────────────────────
+  // ── Overall score ─────────────────────────────────────────────────────────────
   const overallAvg =
     scores.length > 0
       ? scores.reduce((sum, s) => sum + LEVEL_VALUES[s.level as Level], 0) / scores.length
@@ -227,21 +225,7 @@ export default async function DashboardPage() {
     year: 'numeric',
   })
 
-  // Trend: fetch previous round's scores if it exists
-  const prevRound = round.completed_at
-    ? await getPreviousCompleteRound(user.id, round.completed_at)
-    : null
-  let trend: { delta: number } | null = null
-  if (prevRound) {
-    const prevScores = await getScoresForRound(prevRound.id)
-    if (prevScores.length > 0) {
-      const prevAvg =
-        prevScores.reduce((sum, s) => sum + LEVEL_VALUES[s.level as Level], 0) / prevScores.length
-      trend = { delta: overallAvg - prevAvg }
-    }
-  }
-
-  // ── Pillar data (radar + accordion) ─────────────────────────────────────────
+  // ── Pillar data for radar ─────────────────────────────────────────────────────
   const activePlanKeys = new Set(
     plans.filter(p => p.status === 'planned' || p.status === 'in_progress').map(p => p.skill_key)
   )
@@ -277,6 +261,26 @@ export default async function DashboardPage() {
     pillarScoreMap[p] < pillarScoreMap[lowest] ? p : lowest
   )
 
+  // ── Previous round pillar scores (for delta badges) ───────────────────────────
+  const prevRoundData =
+    allRoundsWithScores.length >= 2
+      ? allRoundsWithScores[allRoundsWithScores.length - 2]
+      : null
+
+  const prevPillarScoreMap: Record<string, number> | null = prevRoundData
+    ? Object.fromEntries(
+        PILLARS.map(pillar => {
+          const ps = prevRoundData.scores.filter(s => s.pillar === pillar)
+          const avg =
+            ps.length > 0
+              ? ps.reduce((sum, s) => sum + LEVEL_VALUES[s.level as Level], 0) / ps.length
+              : 0
+          return [pillar, avg]
+        })
+      )
+    : null
+
+  // ── Pillar accordion data ─────────────────────────────────────────────────────
   const pillarsForAccordion: PillarData[] = PILLARS.map(pillar => {
     const pillarSkills = getSkillsByPillar(pillar as Pillar)
     const pillarSelfScores = scores.filter(s => s.pillar === pillar)
@@ -287,6 +291,7 @@ export default async function DashboardPage() {
       label: PILLAR_LABELS[pillar as Pillar],
       score: selfAvg,
       isLowest: pillar === lowestPillar,
+      prevScore: prevPillarScoreMap?.[pillar],
       skills: pillarSkills.map(skill => {
         const selfScore = pillarSelfScores.find(s => s.skill_key === skill.key)
         const level = (selfScore?.level ?? 'Basic') as Level
@@ -308,82 +313,63 @@ export default async function DashboardPage() {
     }
   })
 
+  // ── Sparkline data (overall score per round) ──────────────────────────────────
+  const sparklineData = allRoundsWithScores.map(({ round: r, scores: s }) => {
+    const avg =
+      s.length > 0
+        ? s.reduce((sum, sc) => sum + LEVEL_VALUES[sc.level as Level], 0) / s.length
+        : 0
+    return {
+      date: new Date(r.completed_at ?? r.created_at).toLocaleDateString('en-US', {
+        month: 'short',
+        year: 'numeric',
+      }),
+      score: Number(avg.toFixed(2)),
+    }
+  })
+
+  // ── History chart data (per-pillar per round) ─────────────────────────────────
+  const historyData: HistoryPoint[] = allRoundsWithScores.map(({ round: r, scores: s }) => {
+    const date = new Date(r.completed_at ?? r.created_at).toLocaleDateString('en-US', {
+      month: 'short',
+      year: 'numeric',
+    })
+    const overall =
+      s.length > 0
+        ? s.reduce((sum, sc) => sum + LEVEL_VALUES[sc.level as Level], 0) / s.length
+        : 0
+    const pillarEntries = PILLARS.map(pillar => {
+      const ps = s.filter(sc => sc.pillar === pillar)
+      const avg =
+        ps.length > 0
+          ? ps.reduce((sum, sc) => sum + LEVEL_VALUES[sc.level as Level], 0) / ps.length
+          : 0
+      return [pillar, Number(avg.toFixed(2))]
+    })
+    return {
+      date,
+      overall: Number(overall.toFixed(2)),
+      ...Object.fromEntries(pillarEntries),
+    } as HistoryPoint
+  })
+
   const showStartNewRound = !inProgress
 
   return (
     <div className="p-6">
-      {/* Three-column grid, collapses to single column on medium screens */}
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-[220px_1fr_260px]">
-
-        {/* ── Left: Radar + score ──────────────────────────────────────────── */}
-        <aside className="flex flex-col gap-4">
-          <RadarWithToggle
-            pillarScores={pillarScoresForRadar}
-            hasManagerScores={hasManagerScores}
-          />
-
-          {/* Overall score chip */}
-          <div className="rounded-xl bg-slate-800 px-4 py-3 text-center">
-            <p className="text-3xl font-bold text-amber-400">{overallAvg.toFixed(1)}</p>
-            <p className="text-xs text-slate-400">Overall score</p>
-            <p className="mt-0.5 text-xs text-slate-500">{roundDate}</p>
-          </div>
-
-          {/* Trend chip */}
-          {trend !== null && (
-            <div
-              className="rounded-xl px-4 py-2 text-center text-sm font-semibold"
-              style={
-                trend.delta >= 0
-                  ? { background: 'rgba(74,222,128,0.1)', color: '#4ade80' }
-                  : { background: 'rgba(245,158,11,0.1)', color: '#f59e0b' }
-              }
-            >
-              {trend.delta >= 0 ? '+' : ''}
-              {trend.delta.toFixed(1)} {trend.delta >= 0 ? '↑' : '↓'}
-            </div>
-          )}
-        </aside>
-
-        {/* ── Centre: Pillar accordion ─────────────────────────────────────── */}
-        <main className="min-w-0">
-          <PillarAccordion pillars={pillarsForAccordion} />
-        </main>
-
-        {/* ── Right: Action cards ──────────────────────────────────────────── */}
-        <aside className="flex flex-col gap-4">
-          <ScheduleWidget scheduled={scheduled} />
-          <GrowthSummaryCard plans={plans} />
-          <CheckInNudgeCard overdueCount={overdueCheckins.length} />
-
-          {!hasManagerScores && (
-            <div
-              className="rounded-xl px-5 py-4"
-              style={{ background: '#1e3a5f', border: '1px solid rgba(245,158,11,0.2)' }}
-            >
-              <p className="mb-1 text-sm font-semibold text-white">Invite your manager</p>
-              <p className="mb-3 text-xs text-slate-400">
-                They score you independently, then you compare.
-              </p>
-              <Link
-                href="/connections"
-                className="text-xs font-semibold text-amber-400 hover:text-amber-300"
-              >
-                Connect →
-              </Link>
-            </div>
-          )}
-
-          {showStartNewRound && (
-            <Link
-              href="/scorecard"
-              className="text-center text-xs text-slate-500 hover:text-slate-300"
-            >
-              Start new round →
-            </Link>
-          )}
-        </aside>
-      </div>
+      <DashboardResults
+        pillarScoresForRadar={pillarScoresForRadar}
+        hasManagerScores={hasManagerScores}
+        pillarsForAccordion={pillarsForAccordion}
+        sparklineData={sparklineData}
+        historyData={historyData}
+        overallAvg={overallAvg}
+        roundDate={roundDate}
+        scheduled={scheduled}
+        plans={plans}
+        overdueCount={overdueCheckins.length}
+        showStartNewRound={showStartNewRound}
+      />
     </div>
   )
 }

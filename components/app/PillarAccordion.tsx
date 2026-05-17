@@ -1,5 +1,4 @@
 'use client'
-import { useState } from 'react'
 import Link from 'next/link'
 import { Lightbulb, Target, ChevronDown } from 'lucide-react'
 import { SkillChip } from './SkillChip'
@@ -22,15 +21,16 @@ export interface PillarData {
   score: number
   isLowest: boolean
   skills: SkillData[]
+  prevScore?: number
 }
 
 interface PillarAccordionProps {
   pillars: PillarData[]
+  openPillar: string | null
+  onOpenChange: (pillar: string | null) => void
 }
 
-export function PillarAccordion({ pillars }: PillarAccordionProps) {
-  const [openPillar, setOpenPillar] = useState<string | null>(null)
-
+export function PillarAccordion({ pillars, openPillar, onOpenChange }: PillarAccordionProps) {
   return (
     <div className="flex flex-col gap-3">
       {pillars.map(pillar => {
@@ -39,6 +39,8 @@ export function PillarAccordion({ pillars }: PillarAccordionProps) {
         const opportunities = pillar.skills.filter(s => s.chipType === 'opportunity')
         const goals = pillar.skills.filter(s => s.chipType === 'goal')
         const scoreWidth = `${((pillar.score - 1) / 4) * 100}%`
+        const delta =
+          pillar.prevScore !== undefined ? pillar.score - pillar.prevScore : null
 
         return (
           <div
@@ -52,7 +54,7 @@ export function PillarAccordion({ pillars }: PillarAccordionProps) {
           >
             {/* Header row */}
             <button
-              onClick={() => setOpenPillar(isOpen ? null : pillar.pillar)}
+              onClick={() => onOpenChange(isOpen ? null : pillar.pillar)}
               aria-label={pillar.label}
               className="flex w-full items-center gap-3 text-left"
             >
@@ -73,6 +75,20 @@ export function PillarAccordion({ pillars }: PillarAccordionProps) {
               <span className="w-8 text-right text-xs font-semibold text-amber-400">
                 {pillar.score.toFixed(1)}
               </span>
+              {delta !== null && delta !== 0 && (
+                <span
+                  className="flex-shrink-0 rounded font-bold"
+                  style={{
+                    background: delta > 0 ? 'rgba(74,222,128,0.15)' : 'rgba(239,68,68,0.15)',
+                    color: delta > 0 ? '#4ade80' : '#f87171',
+                    fontSize: 9,
+                    padding: '1px 5px',
+                    borderRadius: 4,
+                  }}
+                >
+                  {delta > 0 ? '+' : ''}{delta.toFixed(1)}{delta > 0 ? '↑' : '↓'}
+                </span>
+              )}
               <ChevronDown
                 size={14}
                 className={`text-slate-500 transition-transform ${isOpen ? 'rotate-180' : ''}`}

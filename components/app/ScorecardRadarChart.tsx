@@ -1,4 +1,5 @@
 'use client'
+import { useCallback } from 'react'
 import {
   RadarChart,
   PolarGrid,
@@ -18,9 +19,45 @@ interface PillarScore {
 interface Props {
   pillarScores: PillarScore[]
   showManager: boolean
+  onPillarClick?: (pillar: Pillar) => void
 }
 
-export function ScorecardRadarChart({ pillarScores, showManager }: Props) {
+// Inverted map: display label → pillar key
+const PILLAR_LABEL_TO_KEY: Record<string, Pillar | undefined> = Object.fromEntries(
+  Object.entries(PILLAR_LABELS).map(([k, v]) => [v, k as Pillar])
+)
+
+// Module-level tick component — must NOT be defined inside the render function
+// so Recharts does not receive a new function reference on every render.
+interface PillarTickProps {
+  x?: number | string
+  y?: number | string
+  payload?: { value: string }
+  textAnchor?: 'middle' | 'start' | 'end' | 'inherit'
+  onPillarClick?: (pillar: Pillar) => void
+}
+
+function PillarTick({ x = 0, y = 0, payload, textAnchor = 'middle', onPillarClick }: PillarTickProps) {
+  const label = payload?.value ?? ''
+  const pillarKey = PILLAR_LABEL_TO_KEY[label]
+  return (
+    <g
+      style={{ cursor: onPillarClick ? 'pointer' : 'default' }}
+      onClick={() => pillarKey && onPillarClick?.(pillarKey)}
+    >
+      <text x={x} y={y} fill="#94a3b8" fontSize={11} textAnchor={textAnchor} dominantBaseline="central">
+        {label}
+      </text>
+    </g>
+  )
+}
+
+export function ScorecardRadarChart({ pillarScores, showManager, onPillarClick }: Props) {
+  const tickRenderer = useCallback(
+    (props: PillarTickProps) => <PillarTick {...props} onPillarClick={onPillarClick} />,
+    [onPillarClick]
+  )
+
   const data = pillarScores.map(ps => ({
     pillar: PILLAR_LABELS[ps.pillar],
     Self: Number(ps.selfScore.toFixed(2)),
@@ -29,11 +66,11 @@ export function ScorecardRadarChart({ pillarScores, showManager }: Props) {
 
   return (
     <ResponsiveContainer width="100%" height={280}>
-      <RadarChart data={data} margin={{ top: 10, right: 30, bottom: 10, left: 30 }}>
+      <RadarChart data={data} margin={{ top: 10, right: 30, bottom: 10, left: 30 }} style={{ outline: 'none' }}>
         <PolarGrid stroke="#1e293b" />
         <PolarAngleAxis
           dataKey="pillar"
-          tick={{ fill: '#94a3b8', fontSize: 11 }}
+          tick={tickRenderer}
         />
         <Radar
           name="Self"
