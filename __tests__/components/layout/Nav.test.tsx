@@ -12,7 +12,10 @@ vi.mock('@/components/app/LogoMark', () => ({
 }))
 vi.mock('@/config/site', () => ({
   siteConfig: {
-    nav: [{ href: '/the-guide', label: 'The Guide' }],
+    nav: [
+      { href: '/the-guide', label: 'The Guide' },
+      { href: '/the-tool', label: 'The Tool' },
+    ],
     githubUrl: 'https://github.com/test',
     gaId: 'G-TEST',
   },
@@ -30,9 +33,20 @@ describe('Nav', () => {
     expect(link.getAttribute('href')).toBe('/login')
   })
 
-  it('hides the Sign in link on app routes', () => {
-    vi.mocked(usePathname).mockReturnValue('/dashboard')
-    render(<Nav isAuthenticated={false} />)
+  it('hides the Sign in link when authenticated', () => {
+    render(<Nav isAuthenticated={true} />)
     expect(screen.queryByRole('link', { name: /sign in/i })).toBeNull()
+  })
+
+  it('links The Tool to /the-tool when not authenticated', () => {
+    render(<Nav isAuthenticated={false} />)
+    const toolLink = screen.getByRole('link', { name: /the tool/i })
+    expect(toolLink).toHaveAttribute('href', '/the-tool')
+  })
+
+  it('links The Tool to /dashboard when authenticated', () => {
+    render(<Nav isAuthenticated={true} />)
+    const toolLink = screen.getByRole('link', { name: /the tool/i })
+    expect(toolLink).toHaveAttribute('href', '/dashboard')
   })
 })

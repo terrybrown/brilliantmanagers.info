@@ -79,7 +79,7 @@ export function Nav({ isAuthenticated }: { isAuthenticated: boolean }) {
 
         <div className="flex items-center gap-3">
           {showToggle && <ThemeToggle />}
-          {!isAppRoute && (
+          {!isAuthenticated && (
             <Link
               href="/login"
               className="hidden rounded-md border px-3 py-1.5 text-sm font-semibold md:block"
