@@ -69,10 +69,10 @@ export default async function ScorecardPage() {
         {hasCompleteRound && (
           <div className="mt-8 text-center">
             <Link
-              href="/results"
+              href="/dashboard"
               className="text-sm font-semibold text-amber-400 hover:text-amber-300"
             >
-              View results →
+              View dashboard →
             </Link>
           </div>
         )}
