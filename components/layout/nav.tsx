@@ -121,7 +121,7 @@ export function Nav({ isAuthenticated }: { isAuthenticated: boolean }) {
         </div>
 
         {/* Centre zone — desktop only */}
-        <nav className="hidden flex-none items-center gap-6 md:flex">
+        <nav className="hidden flex-none items-center gap-6 lg:flex">
           {siteConfig.nav.map((item) => (
             <NavLink
               key={item.href}
@@ -135,7 +135,7 @@ export function Nav({ isAuthenticated }: { isAuthenticated: boolean }) {
         </nav>
 
         {/* Right zone — desktop only */}
-        <div className="hidden flex-1 items-center justify-end gap-3 md:flex">
+        <div className="hidden flex-1 items-center justify-end gap-3 lg:flex">
           {showToggle && <ThemeToggle />}
           {!isAuthenticated && !isAppRoute && (
             <Link
@@ -158,7 +158,7 @@ export function Nav({ isAuthenticated }: { isAuthenticated: boolean }) {
         </div>
 
         {/* Hamburger button — mobile only */}
-        <div className="flex flex-1 items-center justify-end md:hidden">
+        <div className="flex flex-1 items-center justify-end lg:hidden">
           <button
             aria-label={isOpen ? 'Close menu' : 'Open menu'}
             aria-expanded={isOpen ? 'true' : 'false'}
