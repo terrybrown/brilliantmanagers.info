@@ -39,4 +39,9 @@ describe('generateICS', () => {
     const ics = generateICS('2025-06-15')
     expect(ics).toContain('UID:reflection-2025-06-15@brilliantmanagers.info')
   })
+
+  it('ends with CRLF', () => {
+    const ics = generateICS('2025-06-15')
+    expect(ics.endsWith('\r\n')).toBe(true)
+  })
 })

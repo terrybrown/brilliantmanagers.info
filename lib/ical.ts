@@ -23,5 +23,5 @@ export function generateICS(scheduledDate: string): string {
     'END:VEVENT',
     'END:VCALENDAR',
   ]
-  return lines.join('\r\n')
+  return lines.join('\r\n') + '\r\n'
 }
