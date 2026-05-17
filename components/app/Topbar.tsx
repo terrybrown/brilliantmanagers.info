@@ -23,6 +23,7 @@ interface UserInfo {
   displayName: string
   email: string
   initials: string
+  avatarUrl?: string
 }
 
 export function Topbar({ user, showBeta }: { user: UserInfo; showBeta: boolean }) {
