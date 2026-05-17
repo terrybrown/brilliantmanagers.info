@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { render, screen, fireEvent } from '@testing-library/react'
 import { usePathname } from 'next/navigation'
 import { Nav } from '@/components/layout/nav'
 
@@ -54,5 +54,27 @@ describe('Nav', () => {
     vi.mocked(usePathname).mockReturnValue('/dashboard')
     render(<Nav isAuthenticated={false} />)
     expect(screen.queryByRole('link', { name: /sign in/i })).toBeNull()
+  })
+
+  it('shows mobile menu panel when hamburger button is clicked', () => {
+    render(<Nav isAuthenticated={false} />)
+    const burger = screen.getByRole('button', { name: /open menu/i })
+    fireEvent.click(burger)
+    expect(screen.getByRole('navigation', { name: /mobile menu/i })).toBeTruthy()
+  })
+
+  it('hides mobile menu panel when close button is clicked', () => {
+    render(<Nav isAuthenticated={false} />)
+    fireEvent.click(screen.getByRole('button', { name: /open menu/i }))
+    fireEvent.click(screen.getByRole('button', { name: /close menu/i }))
+    expect(screen.queryByRole('navigation', { name: /mobile menu/i })).toBeNull()
+  })
+
+  it('hides mobile menu panel when a nav link inside it is clicked', () => {
+    render(<Nav isAuthenticated={false} />)
+    fireEvent.click(screen.getByRole('button', { name: /open menu/i }))
+    const mobileNav = screen.getByRole('navigation', { name: /mobile menu/i })
+    fireEvent.click(mobileNav.querySelector('a')!)
+    expect(screen.queryByRole('navigation', { name: /mobile menu/i })).toBeNull()
   })
 })
