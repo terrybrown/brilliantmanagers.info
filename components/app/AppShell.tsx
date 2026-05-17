@@ -15,10 +15,12 @@ interface UserInfo {
 export function AppShell({
   user,
   showBeta,
+  isSuperAdmin = false,
   children,
 }: {
   user: UserInfo
   showBeta: boolean
+  isSuperAdmin?: boolean
   children: React.ReactNode
 }) {
   const [isExpanded, setIsExpanded] = useState(false)
@@ -50,7 +52,7 @@ export function AppShell({
         background: '#0a0f1e',
       }}
     >
-      <Sidebar isExpanded={isExpanded} onToggle={handleToggle} />
+      <Sidebar isExpanded={isExpanded} onToggle={handleToggle} isSuperAdmin={isSuperAdmin} />
 
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
         <Topbar user={user} showBeta={showBeta} />

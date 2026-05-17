@@ -4,6 +4,9 @@ import {
   TrendingUp,
   Link2,
   Network,
+  Users,
+  ScrollText,
+  Building2,
 } from 'lucide-react'
 import { NavItem } from './NavItem'
 
@@ -14,12 +17,19 @@ const NAV_ITEMS = [
   { href: '/organisation', icon: Network, label: 'Organisation' },
 ] as const
 
+const ADMIN_NAV_ITEMS = [
+  { href: '/admin/users', icon: Users, label: 'Users', id: 'nav-admin-users' },
+  { href: '/admin/audit-log', icon: ScrollText, label: 'Audit Log', id: 'nav-admin-audit' },
+  { href: '/admin/organisations', icon: Building2, label: 'Organisations', id: 'nav-admin-orgs' },
+] as const
+
 interface SidebarProps {
   isExpanded: boolean
   onToggle: () => void
+  isSuperAdmin?: boolean
 }
 
-export function Sidebar({ isExpanded, onToggle }: SidebarProps) {
+export function Sidebar({ isExpanded, onToggle, isSuperAdmin = false }: SidebarProps) {
   return (
     <div
       style={{
@@ -49,6 +59,44 @@ export function Sidebar({ isExpanded, onToggle }: SidebarProps) {
       ))}
 
       <div style={{ flex: 1 }} />
+
+      {isSuperAdmin && (
+        <>
+          <div
+            style={{
+              width: '100%',
+              height: 1,
+              background: '#1f2937',
+              margin: '4px 0',
+              flexShrink: 0,
+            }}
+          />
+          {isExpanded && (
+            <span
+              style={{
+                fontSize: 10,
+                color: '#4b5563',
+                padding: '2px 10px',
+                letterSpacing: '0.08em',
+                textTransform: 'uppercase',
+                fontWeight: 600,
+              }}
+            >
+              Admin
+            </span>
+          )}
+          {ADMIN_NAV_ITEMS.map(item => (
+            <NavItem
+              key={item.href}
+              href={item.href}
+              icon={item.icon}
+              label={item.label}
+              isExpanded={isExpanded}
+              id={item.id}
+            />
+          ))}
+        </>
+      )}
 
       <button
         onClick={onToggle}
