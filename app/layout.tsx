@@ -38,8 +38,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   if (authError) console.error('[layout] auth error:', authError.message)
 
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={`${bricolage.variable} ${inter.variable}`}>
+    <html lang="en" className={`${bricolage.variable} ${inter.variable}`} suppressHydrationWarning>
+      <body>
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
           <div className="flex min-h-screen flex-col">
             <Nav isAuthenticated={!!user} />
