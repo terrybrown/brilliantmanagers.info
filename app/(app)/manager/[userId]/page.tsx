@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { getLatestCompleteRound } from '@/lib/db/rounds'
 import { getManagerScoresForRound } from '@/lib/db/manager-scores'
+import { getSignedAvatarUrl } from '@/lib/db/profiles'
 import { PILLARS, PILLAR_LABELS, getSkillsByPillar, type Pillar, type Level } from '@/lib/skills'
 import { ManagerScoringView } from '@/components/app/ManagerScoringView'
 
@@ -33,9 +34,13 @@ export default async function ManagerPage({
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('display_name, email')
+    .select('display_name, email, avatar_path')
     .eq('id', userId)
     .single()
+
+  const directReportAvatarUrl = profile?.avatar_path
+    ? await getSignedAvatarUrl(profile.avatar_path)
+    : null
 
   const round = await getLatestCompleteRound(userId)
   if (!round) {
@@ -60,9 +65,18 @@ export default async function ManagerPage({
 
     return (
       <div className="mx-auto max-w-5xl">
-        <h1 className="mb-2 text-2xl font-bold text-white">
-          Scoring {profile?.display_name ?? profile?.email}
-        </h1>
+        <div className="mb-2 flex items-center gap-3">
+          {directReportAvatarUrl && (
+            <img
+              src={directReportAvatarUrl}
+              alt={profile?.display_name ?? profile?.email ?? ''}
+              style={{ width: 40, height: 40, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }}
+            />
+          )}
+          <h1 className="text-2xl font-bold text-white">
+            Scoring {profile?.display_name ?? profile?.email}
+          </h1>
+        </div>
         <p className="mb-8 text-sm text-slate-400">Select a pillar to score.</p>
         <div className="flex flex-col gap-3">
           {PILLARS.map(p => (
