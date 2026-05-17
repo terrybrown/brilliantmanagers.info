@@ -1,4 +1,3 @@
-// components/app/Sidebar.tsx
 'use client'
 import {
   LayoutDashboard,
@@ -6,7 +5,6 @@ import {
   Link2,
   Network,
 } from 'lucide-react'
-import { LogoMark } from './LogoMark'
 import { NavItem } from './NavItem'
 
 const NAV_ITEMS = [
@@ -39,36 +37,6 @@ export function Sidebar({ isExpanded, onToggle }: SidebarProps) {
         overflow: 'hidden',
       }}
     >
-      {/* Logo */}
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 10,
-          marginBottom: 12,
-          flexShrink: 0,
-          padding: isExpanded ? '0 4px' : 0,
-          width: isExpanded ? '100%' : 40,
-          justifyContent: isExpanded ? 'flex-start' : 'center',
-        }}
-      >
-        <LogoMark size={32} />
-        {isExpanded && (
-          <span
-            style={{
-              fontSize: 13,
-              fontWeight: 700,
-              color: '#f8fafc',
-              whiteSpace: 'nowrap',
-              letterSpacing: '-0.3px',
-            }}
-          >
-            Brilliant Managers
-          </span>
-        )}
-      </div>
-
-      {/* Nav */}
       {NAV_ITEMS.map(item => (
         <NavItem
           key={item.href}
@@ -82,7 +50,6 @@ export function Sidebar({ isExpanded, onToggle }: SidebarProps) {
 
       <div style={{ flex: 1 }} />
 
-      {/* Toggle button */}
       <button
         onClick={onToggle}
         aria-label={isExpanded ? 'Collapse sidebar' : 'Expand sidebar'}
