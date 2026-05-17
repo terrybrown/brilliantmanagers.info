@@ -107,10 +107,7 @@ export function Nav({ isAuthenticated }: { isAuthenticated: boolean }) {
         background: 'var(--color-nav-bg)',
       }}
     >
-      <div
-        className="mx-auto flex h-14 items-center px-6"
-        style={{ maxWidth: 'var(--container-width)' }}
-      >
+      <div className="flex h-14 items-center px-6">
         {/* Left zone */}
         <div className="flex flex-1 items-center">
           <Link
