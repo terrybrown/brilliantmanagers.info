@@ -85,6 +85,7 @@ export default async function DashboardPage() {
                 letterSpacing: '-0.02em',
                 color: '#fff',
                 marginBottom: 12,
+                fontFamily: 'var(--font-display)',
               }}
             >
               You&apos;re one short reflection away from{' '}
