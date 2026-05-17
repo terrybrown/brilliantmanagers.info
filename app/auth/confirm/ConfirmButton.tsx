@@ -11,10 +11,11 @@ export function ConfirmButton() {
       className="flex w-full items-center justify-center rounded-lg bg-amber-500 px-4 py-3 text-sm font-semibold text-white hover:bg-amber-400 disabled:cursor-not-allowed disabled:opacity-70"
     >
       {pending ? (
-        <span className="flex items-end gap-1">
-          <span className="block h-2 w-2 animate-bounce rounded-full bg-white" style={{ animationDelay: '0ms' }} />
-          <span className="block h-2 w-2 animate-bounce rounded-full bg-white" style={{ animationDelay: '160ms' }} />
-          <span className="block h-2 w-2 animate-bounce rounded-full bg-white" style={{ animationDelay: '320ms' }} />
+        <span className="flex items-end gap-1.5">
+          <span className="block h-2 w-2 animate-bounce rounded-full bg-white"       style={{ animationDelay: '0ms' }} />
+          <span className="block h-2 w-2 animate-bounce rounded-full bg-sky-200"     style={{ animationDelay: '150ms' }} />
+          <span className="block h-2 w-2 animate-bounce rounded-full bg-fuchsia-300" style={{ animationDelay: '300ms' }} />
+          <span className="block h-2 w-2 animate-bounce rounded-full bg-white"       style={{ animationDelay: '450ms' }} />
         </span>
       ) : (
         'Sign in →'
