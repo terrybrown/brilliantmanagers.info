@@ -77,10 +77,13 @@ export function PillarAccordion({ pillars, openPillar, onOpenChange }: PillarAcc
               </span>
               {delta !== null && delta !== 0 && (
                 <span
-                  className="flex-shrink-0 rounded px-1.5 py-0.5 text-xs font-bold"
+                  className="flex-shrink-0 rounded font-bold"
                   style={{
                     background: delta > 0 ? 'rgba(74,222,128,0.15)' : 'rgba(239,68,68,0.15)',
                     color: delta > 0 ? '#4ade80' : '#f87171',
+                    fontSize: 9,
+                    padding: '1px 5px',
+                    borderRadius: 4,
                   }}
                 >
                   {delta > 0 ? '+' : ''}{delta.toFixed(1)}{delta > 0 ? '↑' : '↓'}

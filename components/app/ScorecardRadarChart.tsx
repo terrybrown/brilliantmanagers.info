@@ -45,7 +45,7 @@ function PillarTick({ x = 0, y = 0, payload, textAnchor = 'middle', onPillarClic
       style={{ cursor: onPillarClick ? 'pointer' : 'default' }}
       onClick={() => pillarKey && onPillarClick?.(pillarKey)}
     >
-      <text x={x} y={y} fill="#94a3b8" fontSize={11} textAnchor={textAnchor}>
+      <text x={x} y={y} fill="#94a3b8" fontSize={11} textAnchor={textAnchor} dominantBaseline="central">
         {label}
       </text>
     </g>

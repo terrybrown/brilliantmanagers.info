@@ -10,15 +10,9 @@ import {
   ResponsiveContainer,
 } from 'recharts'
 
-export interface HistoryPoint {
-  date: string
-  overall: number
-  self: number
-  team: number
-  strategy: number
-  communications: number
-  'domain-expertise': number
-}
+import type { Pillar } from '@/lib/skills'
+
+export type HistoryPoint = { date: string; overall: number } & Record<Pillar, number>
 
 const PILLAR_LINES: { key: keyof HistoryPoint; label: string; color: string }[] = [
   { key: 'self', label: 'Self', color: '#3b82f6' },

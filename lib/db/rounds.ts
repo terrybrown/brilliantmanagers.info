@@ -98,13 +98,14 @@ export async function getAllCompleteRoundsWithScores(
 ): Promise<{ round: Round; scores: Score[] }[]> {
   const supabase = await createClient()
 
-  const { data: rounds } = await supabase
+  const { data: rounds, error: roundsError } = await supabase
     .from('assessment_rounds')
     .select('*')
     .eq('user_id', userId)
     .eq('status', 'complete')
     .not('completed_at', 'is', null)
     .order('completed_at', { ascending: true })
+  if (roundsError) throw roundsError
 
   if (!rounds || rounds.length === 0) return []
 
