@@ -27,12 +27,16 @@ export async function getOrgsForUser(userId: string): Promise<Org[]> {
     .select('role, organisations(id, name, created_by, created_at)')
     .eq('user_id', userId)
   if (error) throw error
-  return ((data ?? []) as { role: string; organisations: { id: string; name: string; created_by: string; created_at: string } }[]).map(row => ({
-    ...row.organisations,
-    userRole: row.role as 'org_admin' | 'member',
-  }))
+  return ((data ?? []) as { role: string; organisations: { id: string; name: string; created_by: string; created_at: string } | null }[]).flatMap(row => {
+    if (!row.organisations) return []
+    return [{
+      ...row.organisations,
+      userRole: row.role as 'org_admin' | 'member',
+    }]
+  })
 }
 
+// Caller must verify org_admin role — RLS enforces this for user-scoped clients.
 export async function updateOrgName(orgId: string, name: string): Promise<void> {
   const supabase = await createClient()
   const { error } = await supabase
