@@ -1,5 +1,6 @@
 'use client'
 import { useState } from 'react'
+import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 
 export default function LoginPage() {
@@ -58,6 +59,16 @@ export default function LoginPage() {
             Send magic link
           </button>
         </form>
+        <p className="mt-5 text-center text-sm text-slate-400">
+          New here?{' '}
+          <Link
+            href="/the-tool#beta-signup"
+            className="font-medium underline"
+            style={{ color: '#f59e0b' }}
+          >
+            Sign up for the beta →
+          </Link>
+        </p>
       </div>
     </div>
   )
