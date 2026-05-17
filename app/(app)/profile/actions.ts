@@ -24,55 +24,58 @@ export async function updateProfileAction(formData: FormData): Promise<void> {
   const job_title = (formData.get('job_title') as string).trim()
   const bio = (formData.get('bio') as string).trim()
 
-  const profileFields: Parameters<typeof updateProfile>[1] = {
-    display_name,
-    job_title,
-    bio,
-  }
-
-  const avatarFile = formData.get('avatar') as File | null
-  if (avatarFile && avatarFile.size > 0) {
-    if (!ALLOWED_MIME_TYPES.has(avatarFile.type)) {
-      throw new Error('Avatar must be a JPEG, PNG, or WebP image.')
-    }
-    if (avatarFile.size > MAX_BYTES) {
-      throw new Error('Avatar must be 2 MB or smaller.')
-    }
-
-    const ext = EXT_MAP[avatarFile.type]
-    const path = `${user.id}/avatar.${ext}`
-    const bytes = new Uint8Array(await avatarFile.arrayBuffer())
-
-    const { error: uploadError } = await supabase.storage
-      .from('avatars')
-      .upload(path, bytes, { contentType: avatarFile.type, upsert: true })
-
-    if (uploadError) throw uploadError
-
-    profileFields.avatar_path = path
-  }
-
-  await updateProfile(user.id, profileFields)
+  await updateProfile(user.id, { display_name, job_title, bio })
   revalidatePath('/profile')
 }
 
-export async function removeAvatarAction(): Promise<void> {
+export async function uploadAvatarAction(formData: FormData): Promise<{ error?: string }> {
   const supabase = await createClient()
   const {
     data: { user },
   } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('avatar_path')
-    .eq('id', user.id)
-    .maybeSingle()
+  const avatarFile = formData.get('avatar') as File | null
+  if (!avatarFile || avatarFile.size === 0) return { error: 'No file selected.' }
 
-  if (profile?.avatar_path) {
-    await supabase.storage.from('avatars').remove([profile.avatar_path])
-    await updateProfile(user.id, { avatar_path: null })
+  if (!ALLOWED_MIME_TYPES.has(avatarFile.type)) {
+    return { error: 'Avatar must be a JPEG, PNG, or WebP image.' }
+  }
+  if (avatarFile.size > MAX_BYTES) {
+    return { error: 'Avatar must be 2 MB or smaller.' }
   }
 
+  const ext = EXT_MAP[avatarFile.type]
+  const path = `${user.id}/avatar.${ext}`
+  const bytes = new Uint8Array(await avatarFile.arrayBuffer())
+
+  const { error: uploadError } = await supabase.storage
+    .from('avatars')
+    .upload(path, bytes, { contentType: avatarFile.type, upsert: true })
+
+  if (uploadError) return { error: uploadError.message }
+
+  await updateProfile(user.id, { avatar_path: path })
   revalidatePath('/profile')
+  return {}
+}
+
+export async function removeAvatarAction(): Promise<{ error?: string }> {
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+  if (!user) redirect('/login')
+
+  // Try all extensions — avoids a TOCTOU read before delete
+  const paths = ['jpg', 'png', 'webp'].map(ext => `${user.id}/avatar.${ext}`)
+  const { error: storageError } = await supabase.storage.from('avatars').remove(paths)
+  if (storageError) {
+    console.error('removeAvatarAction storage error:', storageError)
+    return { error: storageError.message }
+  }
+
+  await updateProfile(user.id, { avatar_path: null })
+  revalidatePath('/profile')
+  return {}
 }
