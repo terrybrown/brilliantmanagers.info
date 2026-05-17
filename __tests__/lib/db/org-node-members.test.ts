@@ -17,7 +17,7 @@ describe('addUserToNode', () => {
     const orgMembersUpsert = vi.fn().mockResolvedValue({ error: null })
 
     const nodeSingle = vi.fn().mockResolvedValue({ data: { org_id: 'org-1', parent_id: null }, error: null })
-    const nodeEq = vi.fn().mockReturnValue({ single: nodeSingle })
+    const nodeEq = vi.fn().mockReturnValue({ maybeSingle: nodeSingle })
     const nodeSelect = vi.fn().mockReturnValue({ eq: nodeEq })
 
     const from = makeFrom({
@@ -38,7 +38,7 @@ describe('addUserToNode', () => {
 
   it('throws when node is not found', async () => {
     const nodeSingle = vi.fn().mockResolvedValue({ data: null, error: null })
-    const nodeEq = vi.fn().mockReturnValue({ single: nodeSingle })
+    const nodeEq = vi.fn().mockReturnValue({ maybeSingle: nodeSingle })
     const nodeSelect = vi.fn().mockReturnValue({ eq: nodeEq })
 
     const from = makeFrom({ org_nodes: { select: nodeSelect } })
@@ -51,7 +51,7 @@ describe('addUserToNode', () => {
     const connectionsUpsert = vi.fn().mockResolvedValue({ error: null })
 
     const nodeSingle = vi.fn().mockResolvedValue({ data: { org_id: 'org-1', parent_id: 'parent-node' }, error: null })
-    const nodeEq = vi.fn().mockReturnValue({ single: nodeSingle })
+    const nodeEq = vi.fn().mockReturnValue({ maybeSingle: nodeSingle })
     const nodeSelect = vi.fn().mockReturnValue({ eq: nodeEq })
 
     const parentMemberEq = vi.fn().mockResolvedValue({ data: [{ user_id: 'manager-1' }], error: null })
@@ -89,7 +89,7 @@ describe('addUserToNode', () => {
 
   it('throws when fetching ancestor members errors', async () => {
     const nodeSingle = vi.fn().mockResolvedValue({ data: { org_id: 'org-1', parent_id: 'parent-node' }, error: null })
-    const nodeEq = vi.fn().mockReturnValue({ single: nodeSingle })
+    const nodeEq = vi.fn().mockReturnValue({ maybeSingle: nodeSingle })
     const nodeSelect = vi.fn().mockReturnValue({ eq: nodeEq })
 
     // ancestor member select returns an error
@@ -118,8 +118,8 @@ describe('addUserToNode', () => {
         orgNodeCallCount++
         if (orgNodeCallCount === 1) {
           // initial node fetch
-          const single = vi.fn().mockResolvedValue({ data: { org_id: 'org-1', parent_id: 'parent-node' }, error: null })
-          return { select: vi.fn().mockReturnValue({ eq: vi.fn().mockReturnValue({ single }) }) }
+          const maybeSingle = vi.fn().mockResolvedValue({ data: { org_id: 'org-1', parent_id: 'parent-node' }, error: null })
+          return { select: vi.fn().mockReturnValue({ eq: vi.fn().mockReturnValue({ maybeSingle }) }) }
         }
         // ancestor node fetch returns parent_id pointing back to n1
         const maybeSingle = vi.fn().mockResolvedValue({ data: { parent_id: 'n1' }, error: null })

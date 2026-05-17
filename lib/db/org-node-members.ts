@@ -12,7 +12,7 @@ export async function addUserToNode(params: {
     .from('org_nodes')
     .select('org_id, parent_id')
     .eq('id', params.nodeId)
-    .single()
+    .maybeSingle()
 
   if (nodeError) throw nodeError
   if (!node) throw new Error('Node not found')
@@ -85,6 +85,9 @@ async function connectToAncestor(
 }
 
 export async function removeUserFromNode(nodeId: string, userId: string): Promise<void> {
+  // Intentionally does not remove rows from `connections`.
+  // Connection lifecycle is managed separately; callers must
+  // handle connection cleanup if the user leaves the org entirely.
   const supabase = await createClient()
   const { error } = await supabase
     .from('org_node_members')
