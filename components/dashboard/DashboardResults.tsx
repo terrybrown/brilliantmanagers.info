@@ -76,13 +76,14 @@ export function DashboardResults({
           <ScoreSparkline data={sparklineData} />
         </aside>
 
-        {/* Centre: Pillar accordion */}
-        <main className="min-w-0">
+        {/* Centre: Pillar accordion + history chart */}
+        <main className="min-w-0 flex flex-col gap-4">
           <PillarAccordion
             pillars={pillarsForAccordion}
             openPillar={openPillar}
             onOpenChange={setOpenPillar}
           />
+          <PillarHistoryChart data={historyData} />
         </main>
 
         {/* Right: Action cards */}
@@ -120,8 +121,6 @@ export function DashboardResults({
         </aside>
       </div>
 
-      {/* Full-width history chart — only when ≥ 2 rounds */}
-      <PillarHistoryChart data={historyData} />
     </div>
   )
 }
