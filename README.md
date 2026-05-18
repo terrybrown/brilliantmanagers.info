@@ -54,6 +54,17 @@ npm test        # run test suite
 
 New tables in Supabase must have Row Level Security enabled with explicit policies for every operation. See the [RLS rules in CLAUDE.md](CLAUDE.md#supabase--database-rules) for the full checklist.
 
+## Roadmap
+
+Outstanding features and known gaps:
+
+- **Dashboard — pillar drill-down**: Tapping a pillar should open a deep-dive view (score history graph per section, skill breakdown) with a clear route back to the dashboard. We had per-section graphs previously; the goal is to bring that back as a drill-down rather than a separate page.
+- **Score history chart — hover/tooltip**: The all-rounds chart on the dashboard should show values on hover so users can read exact scores without guessing from the axis.
+- **Radar chart — hover/tooltip**: Hovering a vertex on the radar should surface the pillar name and score.
+- **Consolidate Connections → Organisation**: Remove the separate Connections section. The Organisation page should be the single place for team/peer relationships, with an invite flow accessible from the top of that page.
+- **Fix Organisations**: The multi-org flow has known issues that need investigation and fixing.
+- **Growth section**: The current Growth section is a placeholder — needs a full build-out (goals, skill gaps, development plans, progress tracking).
+
 ## License
 
 MIT
