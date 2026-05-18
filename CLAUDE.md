@@ -6,6 +6,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 `brilliantmanagers.info` — a Next.js 16 (App Router) application for management effectiveness scoring. Deployed via Netlify. Auth and database are handled by Supabase.
 
+## Working conventions
+
+**All new work starts on a new branch.** Never commit directly to `master` or add changes to an existing branch that already has an open or merged PR. Create a branch before touching any files.
+
 ## Commands
 
 ```bash
