@@ -49,4 +49,16 @@ describe('ScheduleWidget', () => {
     render(<ScheduleWidget scheduled={scheduled} showStartNewRound={false} />)
     expect(screen.queryByRole('link', { name: /start new round/i })).not.toBeInTheDocument()
   })
+
+  it('shows "Continue reflection" link when hasInProgressRound is true', () => {
+    render(<ScheduleWidget scheduled={null} showStartNewRound={true} hasInProgressRound={true} />)
+    expect(screen.getByRole('link', { name: /continue reflection/i })).toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: /start new round/i })).not.toBeInTheDocument()
+  })
+
+  it('shows "Start new round" link when hasInProgressRound is false', () => {
+    render(<ScheduleWidget scheduled={null} showStartNewRound={true} hasInProgressRound={false} />)
+    expect(screen.getByRole('link', { name: /start new round/i })).toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: /continue reflection/i })).not.toBeInTheDocument()
+  })
 })

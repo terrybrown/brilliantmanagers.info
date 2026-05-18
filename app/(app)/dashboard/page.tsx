@@ -353,7 +353,8 @@ export default async function DashboardPage() {
     } as HistoryPoint
   })
 
-  const showStartNewRound = !inProgress
+  const showStartNewRound = true
+  const hasInProgressRound = !!inProgress
 
   return (
     <div className="p-6">
@@ -369,6 +370,7 @@ export default async function DashboardPage() {
         plans={plans}
         overdueCount={overdueCheckins.length}
         showStartNewRound={showStartNewRound}
+        hasInProgressRound={hasInProgressRound}
       />
     </div>
   )

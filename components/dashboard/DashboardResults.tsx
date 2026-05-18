@@ -32,6 +32,7 @@ interface DashboardResultsProps {
   plans: DevelopmentPlan[]
   overdueCount: number
   showStartNewRound: boolean
+  hasInProgressRound: boolean
 }
 
 export function DashboardResults({
@@ -46,6 +47,7 @@ export function DashboardResults({
   plans,
   overdueCount,
   showStartNewRound,
+  hasInProgressRound,
 }: DashboardResultsProps) {
   const [openPillar, setOpenPillar] = useState<string | null>(null)
 
@@ -88,7 +90,7 @@ export function DashboardResults({
 
         {/* Right: Action cards */}
         <aside className="flex flex-col gap-4">
-          <ScheduleWidget scheduled={scheduled} showStartNewRound={showStartNewRound} />
+          <ScheduleWidget scheduled={scheduled} showStartNewRound={showStartNewRound} hasInProgressRound={hasInProgressRound} />
           <GrowthSummaryCard plans={plans} />
           <CheckInNudgeCard overdueCount={overdueCount} />
 
