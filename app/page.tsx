@@ -9,8 +9,7 @@ export const metadata = {
 
 export default function HomePage() {
   return (
-    // div.dark forces dark-mode token values on this page regardless of user's theme
-    <div className="dark" style={{ background: '#1a3a5c' }}>
+    <div style={{ background: '#1a3a5c' }}>
       <Hero
         eyebrow="A field guide to management"
         headline={

@@ -10,7 +10,7 @@ const GOOGLE_SHEET_URL =
 
 export default function ToolPage() {
   return (
-    <div className="dark" style={{ background: '#1a3a5c', minHeight: '100vh' }}>
+    <div style={{ background: '#1a3a5c', minHeight: '100vh' }}>
       <div
         className="mx-auto px-6 pb-20 pt-20"
         style={{ maxWidth: 'var(--container-width)' }}

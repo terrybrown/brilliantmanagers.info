@@ -1,32 +1,11 @@
 @import "tailwindcss";
 
-/* Dark mode: applies when an ancestor has the .dark class (set by next-themes) */
-@variant dark (&:is(.dark *));
-
 @theme {
   /* ── Fonts ── */
   --font-display: var(--font-jakarta), sans-serif;
   --font-body: var(--font-inter), sans-serif;
 
-  /* ── Colour tokens (light mode defaults) ── */
-  --color-bg-base: #fefcf7;
-  --color-bg-reading: #f9f8f4;
-  --color-text-primary: #1c1917;
-  --color-text-muted: #44403c;
-  --color-accent: #d97706;
-  --color-border: #e7e5e4;
-  --color-nav-bg: #e5e3de;
-
-  /* ── Layout tokens ── */
-  --radius: 8px;
-  --radius-lg: 16px;
-  --container-width: 1080px;
-  --prose-width: 680px;
-  --section-gap: 96px;
-}
-
-/* Dark mode overrides — applied when .dark class is on an ancestor */
-.dark {
+  /* ── Colour tokens ── */
   --color-bg-base: #1a3a5c;
   --color-bg-reading: #16202d;
   --color-text-primary: #fefcf7;
@@ -34,6 +13,13 @@
   --color-accent: #f59e0b;
   --color-border: rgba(254, 252, 247, 0.12);
   --color-nav-bg: #16304a;
+
+  /* ── Layout tokens ── */
+  --radius: 8px;
+  --radius-lg: 16px;
+  --container-width: 1080px;
+  --prose-width: 680px;
+  --section-gap: 96px;
 }
 
 /* ── Base styles ── */

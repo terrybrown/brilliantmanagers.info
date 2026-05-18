@@ -5,6 +5,7 @@ import { Lightbulb, Search, TrendingUp, MessageSquare, type LucideIcon } from 'l
 import { createClient } from '@/lib/supabase/server'
 import { DashboardTour } from '@/components/dashboard/DashboardTour'
 import { getAllCompleteRoundsWithScores, getInProgressRound } from '@/lib/db/rounds'
+import { getScoresForRound } from '@/lib/db/scores'
 import { getManagerScoresForDirectReport } from '@/lib/db/manager-scores'
 import { getPlansForUser } from '@/lib/db/development-plans'
 import { getScheduledRound } from '@/lib/db/scheduled-rounds'
@@ -354,7 +355,8 @@ export default async function DashboardPage() {
   })
 
   const showStartNewRound = true
-  const hasInProgressRound = !!inProgress
+  const inProgressScores = inProgress ? await getScoresForRound(inProgress.id) : []
+  const hasInProgressRound = inProgressScores.length > 0
 
   return (
     <div className="p-6">
