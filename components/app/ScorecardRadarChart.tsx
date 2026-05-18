@@ -47,6 +47,7 @@ export function ScorecardPillarTick({
   const xNum = Number(x)
   const yNum = Number(y)
   const words = label.split(' ')
+  // Only "Domain Expertise" has two words among current pillar labels; update if PILLAR_LABELS gains multi-word entries
   const isTwoLine = words.length === 2
   const rectX = textAnchor === 'end' ? xNum - 64 : textAnchor === 'start' ? xNum : xNum - 32
   const rectHeight = isTwoLine ? 28 : 20
