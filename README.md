@@ -64,6 +64,9 @@ Outstanding features and known gaps:
 - **Consolidate Connections → Organisation**: Remove the separate Connections section. The Organisation page should be the single place for team/peer relationships, with an invite flow accessible from the top of that page.
 - **Fix Organisations**: The multi-org flow has known issues that need investigation and fixing.
 - **Growth section**: The current Growth section is a placeholder — needs a full build-out (goals, skill gaps, development plans, progress tracking).
+- **User feedback**: Integrate a feedback widget (e.g. FeatureBase or equivalent) so users can submit ideas and report issues without leaving the app.
+- **Toast notifications**: Surface action confirmations and errors as toast notifications — likely [Sonner via shadcn/ui](https://ui.shadcn.com/docs/components/radix/sonner).
+- **Reflections page**: A dedicated page showing upcoming and past reflection schedules. Round creation should default the title to `QX YYYY` (based on the current quarter) with the option to edit before saving.
 
 ## License
 
