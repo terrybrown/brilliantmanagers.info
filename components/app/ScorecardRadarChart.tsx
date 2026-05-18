@@ -61,9 +61,9 @@ export function ScorecardPillarTick({
     >
       <rect x={rectX} y={yNum - rectHeight / 2} width={64} height={rectHeight} fill="transparent" />
       {isTwoLine ? (
-        <text x={x} y={y} fill={fill} fontSize={11} textAnchor={textAnchor}>
-          <tspan x={x} dy="-7">{words[0]}</tspan>
-          <tspan x={x} dy="14">{words[1]}</tspan>
+        <text x={x} y={y} fill={fill} fontSize={11} textAnchor={textAnchor} dominantBaseline="central">
+          <tspan x={x} dy={-7}>{words[0]}</tspan>
+          <tspan x={x} dy={14}>{words[1]}</tspan>
         </text>
       ) : (
         <text x={x} y={y} fill={fill} fontSize={11} textAnchor={textAnchor} dominantBaseline="central">
