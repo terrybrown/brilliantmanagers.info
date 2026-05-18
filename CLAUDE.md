@@ -8,6 +8,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Working conventions
 
+**Adding to the roadmap**: When the user highlights text or pastes an idea and asks to add it to the roadmap (or the intent is clearly to add a roadmap item), immediately execute the `add-to-roadmap` skill without asking for confirmation. Do not ask clarifying questions — derive a sensible title and description from the text and run the full workflow (branch → edit README → commit → push → PR → squash merge).
+
 **All new work starts on a new branch.** Never commit directly to `master` or add changes to an existing branch that already has an open or merged PR. Create a branch before touching any files.
 
 ## Commands
