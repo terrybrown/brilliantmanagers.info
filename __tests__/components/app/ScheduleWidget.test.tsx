@@ -38,4 +38,15 @@ describe('ScheduleWidget', () => {
     expect(link).toBeInTheDocument()
     expect(link).toHaveAttribute('href', '/scorecard')
   })
+
+  it('does not show "Start new round" link when showStartNewRound is false and a date is scheduled', () => {
+    const scheduled = {
+      id: '1',
+      user_id: 'u1',
+      scheduled_date: '2026-08-01',
+      created_at: '2026-05-01',
+    }
+    render(<ScheduleWidget scheduled={scheduled} showStartNewRound={false} />)
+    expect(screen.queryByRole('link', { name: /start new round/i })).not.toBeInTheDocument()
+  })
 })
