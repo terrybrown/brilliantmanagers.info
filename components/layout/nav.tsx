@@ -5,7 +5,6 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { BookOpen, Gauge, PenLine, Library, HelpCircle, Menu, X } from 'lucide-react'
 import { siteConfig } from '@/config/site'
-import { ThemeToggle } from './theme-toggle'
 import { LogoMark } from '@/components/app/LogoMark'
 
 const NAV_ICONS: Record<string, React.ElementType> = {
@@ -15,8 +14,6 @@ const NAV_ICONS: Record<string, React.ElementType> = {
   '/resources': Library,
   '/the-guide/faq': HelpCircle,
 }
-
-const ALWAYS_DARK_ROUTES = ['/', '/the-tool']
 
 // Keep in sync with the app router directory structure under app/(app)/
 const APP_ROUTES = [
@@ -68,7 +65,6 @@ function NavLink({
 
 export function Nav({ isAuthenticated }: { isAuthenticated: boolean }) {
   const pathname = usePathname()
-  const showToggle = !ALWAYS_DARK_ROUTES.includes(pathname)
   const isAppRoute = APP_ROUTES.some(r => pathname === r || pathname.startsWith(r + '/'))
   const [isOpen, setIsOpen] = useState(false)
   const headerRef = useRef<HTMLElement>(null)
@@ -136,7 +132,6 @@ export function Nav({ isAuthenticated }: { isAuthenticated: boolean }) {
 
         {/* Right zone — desktop only */}
         <div className="hidden flex-1 items-center justify-end gap-3 lg:flex">
-          {showToggle && <ThemeToggle />}
           {!isAuthenticated && !isAppRoute && (
             <Link
               href="/login"
@@ -205,9 +200,6 @@ export function Nav({ isAuthenticated }: { isAuthenticated: boolean }) {
                 Sign in
               </Link>
             )}
-            <div className="ml-auto">
-              {showToggle && <ThemeToggle />}
-            </div>
           </div>
         </nav>
       )}
