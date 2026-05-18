@@ -88,7 +88,7 @@ export function DashboardResults({
 
         {/* Right: Action cards */}
         <aside className="flex flex-col gap-4">
-          <ScheduleWidget scheduled={scheduled} />
+          <ScheduleWidget scheduled={scheduled} showStartNewRound={showStartNewRound} />
           <GrowthSummaryCard plans={plans} />
           <CheckInNudgeCard overdueCount={overdueCount} />
 
@@ -110,14 +110,7 @@ export function DashboardResults({
             </div>
           )}
 
-          {showStartNewRound && (
-            <Link
-              href="/scorecard"
-              className="text-center text-xs text-slate-500 hover:text-slate-300"
-            >
-              Start new round →
-            </Link>
-          )}
+
         </aside>
       </div>
 
