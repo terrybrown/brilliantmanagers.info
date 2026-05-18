@@ -4,70 +4,100 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-`brilliantmanagers.info` — a personal Gatsby v2 static site about management, derived from the Stackbit Libris theme. Deployed via Netlify (`netlify.toml`: `npm run build` → `public/`). Content is authored as Markdown files committed to git; there is no separate CMS backend.
+`brilliantmanagers.info` — a Next.js 16 (App Router) application for management effectiveness scoring. Deployed via Netlify. Auth and database are handled by Supabase.
+
+## Working conventions
+
+**All new work starts on a new branch.** Never commit directly to `master` or add changes to an existing branch that already has an open or merged PR. Create a branch before touching any files.
 
 ## Commands
 
 ```bash
-npm install           # install deps (Node + npm; uses node-sass — Node 14 is the highest version known to work without rebuilds)
-npm run develop       # local dev server at http://localhost:8000 (alias: npm start)
-npm run build         # production build with --prefix-paths
-npm run serve         # serve the built site
+npm install           # install deps (Node 18+)
+npm run dev           # local dev server at http://localhost:3000
+npm run build         # production build
+npm test              # run Vitest test suite (non-interactive)
+npm run test:watch    # Vitest in watch mode
+npm run lint          # ESLint
 ```
-
-No test runner, no linter, no formatter is configured in this repo.
 
 ## Architecture
 
-The site is data-driven Markdown → Gatsby pages, with template selection encoded in each page's frontmatter. Understanding the flow below is the difference between editing the right file and editing the wrong one.
+### Route structure
 
-### Page creation pipeline (custom plugins do the work)
+The app uses Next.js App Router. Routes are split between public pages and an authenticated app shell:
 
-Two local plugins under `plugins/` extend Gatsby's defaults:
+```
+app/
+  (app)/              # authenticated route group — middleware guards all of these
+    dashboard/
+    scorecard/
+    results/
+    connections/
+    manager/
+    organisation/
+    growth/
+    profile/
+    notifications/
+    admin/
+    layout.tsx          # app shell with sidebar nav
+  auth/               # Supabase auth callbacks (/auth/confirm, /auth/callback)
+  blog/               # public blog index + posts
+  login/              # unauthenticated entry point
+  resources/          # public resources page
+  the-guide/          # public management guide (MDX)
+  the-tool/           # public product page
+  layout.tsx          # root layout (ThemeProvider, fonts)
+  page.tsx            # marketing home page
+```
 
-- **`plugins/gatsby-source-data`** — reads every `*.yml` / `*.yaml` / `*.json` under `src/data/` (recursively) plus the root `site-metadata.json`, merges them into a single `SiteData` GraphQL node, and uses `chokidar` to hot-reload changes during `gatsby develop`. The merged tree is exposed to templates as `pageContext.site.data` (with `site-metadata` lifted to `pageContext.site.siteMetadata`).
-- **`plugins/gatsby-remark-page-creator`** — for each `MarkdownRemark` node it (a) computes URL fields from the file path, then (b) calls `createPage` with `component: src/templates/${frontmatter.template}.js`. So **every markdown file MUST declare a `template:` in its frontmatter** matching a file in `src/templates/`.
+Authentication is enforced in `middleware.ts`: any route in `APP_ROUTES` redirects to `/login` if there is no Supabase session. Authenticated users visiting `/login` are redirected to `/dashboard`.
 
-The full list of pages is passed into every page's `pageContext.pages`, which is how `blog.js`, `docs.js`, and `SectionDocs` can iterate siblings without their own GraphQL queries.
+### Content authoring
 
-### Templates (`src/templates/`)
+Static content (the guide, blog) lives in `content/` as MDX files:
 
-Pick the right one by setting `template:` in markdown frontmatter:
+- `content/guide/*.mdx` — management guide sections (one file per pillar + index)
+- `content/blog/*.mdx` — blog posts
 
-| Template | Used for | Notes |
-| --- | --- | --- |
-| `advanced` | The home page and any layout assembled from section blocks | Reads `frontmatter.sections[]` and dynamically renders one React component per entry. The component name is `_.upperFirst(_.camelCase(section.type))` — e.g. `section_hero` → `SectionHero`. Adding a new section type means adding a component **and** exporting it from `src/components/index.js`. |
-| `page` | Plain content pages (`overview.md`, `the-tool.md`, `resources.md`) | Renders frontmatter title/subtitle + the markdown HTML. |
-| `docs` | Pages under `src/pages/the-guide/` | Renders a sidebar (`DocsMenu`) plus child-page links derived from `pageContext.site.data.doc_sections` (configured in `src/data/doc_sections.yml`). |
-| `blog` | The blog index (`src/pages/blog/index.md`) | Lists every page whose URL starts with `/blog`, ordered by `frontmatter.date` desc. |
-| `post` | Individual blog posts under `src/pages/blog/` | Standard post layout with `moment-strftime` date formatting. |
+These are rendered server-side via `next-mdx-remote`. No build step or frontmatter template is required — just add an MDX file and link to it.
 
-The page templates use a `graphql` query block that exists **only to trigger Gatsby's hot reload** during `develop` — the actual data comes from `pageContext`, not GraphQL. Don't be misled into adding fields to the query expecting them to flow through.
+### Components
 
-### Content authoring locations
-
-- `src/pages/*.md` — top-level pages. Filename becomes URL slug.
-- `src/pages/the-guide/<section>/...` — the documentation guide. Section list lives in `src/data/doc_sections.yml`; child pages need a `weight` frontmatter for ordering.
-- `src/pages/blog/*.md` — blog posts. Use `template: post`.
-- `static/` — static assets copied verbatim to the build output.
-
-### Site-wide configuration
-
-- `site-metadata.json` — header nav, footer, palette choice (blue / green / navy / violet), and social links.
-- `gatsby-config.js` — wires the SASS plugin (with a custom `getPaletteKey()` function that maps the active palette's hex values into SASS), Google gtag (`G-1BSMVXG0PJ`), the Stackbit menus plugin, and both local plugins.
-- `stackbit.yaml` — content model schema for the Stackbit visual editor. Update this if you add new section types or frontmatter fields and want them editable in Stackbit.
+UI components live in `components/`. shadcn/ui components are generated there via `npx shadcn add`. Radix UI primitives and Tailwind CSS v4 are the base layer.
 
 ### Styling
 
-All styles entered through `src/sass/main.scss` (imported by `Layout.js`). The palette system is driven by `site-metadata.json` → `gatsby-config.js` → the custom `getPaletteKey()` SASS function — changing colors in palette objects flows through to compiled CSS, no separate stylesheet edit needed.
+All global styles in `app/globals.css`. Tailwind CSS v4 with `@tailwindcss/postcss`. The site is permanently dark — colour tokens are defined once in `@theme` with no light/dark switching. Do not use `dark:` Tailwind variants.
+
+### Database
+
+Supabase migrations live in `supabase/migrations/`. Run them in order against your Supabase project. Email templates are in `supabase/templates/`.
+
+### Testing
+
+Tests live in `__tests__/`, mirroring the source tree. Vitest + Testing Library. Run `npm test` before any commit.
+
+### Environment variables
+
+| Variable | Where used |
+|---|---|
+| `NEXT_PUBLIC_SUPABASE_URL` | Client + server |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Client + server |
+| `SUPABASE_SERVICE_ROLE_KEY` | Server only (API routes, server actions) |
+| `ANTHROPIC_API_KEY` | Server only |
+| `MAILGUN_API_KEY` | Server only |
+| `MAILGUN_BASE_URL` | Server only |
+| `MAILGUN_SENDING_KEY` | Server only |
+
+Never put `SUPABASE_SERVICE_ROLE_KEY` or any non-`NEXT_PUBLIC_` key in client-side code.
 
 ## Things that bite
 
-- **Gatsby pinned to 2.22.17** with **`node-sass` 4.x**. Newer Node versions break the native build. If `npm install` fails, the issue is almost always Node version.
-- The `imports/` directory referenced in some menu links does not exist in `src/pages/` — broken links are a content issue, not a code issue.
-- `gatsby-source-data` is the only thing that exposes `src/data/*.yml` to templates. If a new data file isn't showing up in `pageContext.site.data`, restart `develop` (chokidar normally handles this, but cold start is the fallback).
-- Section components rendered by `advanced.js` are resolved by **string-to-component lookup via `src/components/index.js`**. A new component file that isn't re-exported from `index.js` will silently fail to render.
-- The footer content in `site-metadata.json` still carries the Stackbit attribution copy from the original theme — edit there, not in `Footer.js`.
+- **`searchParams` is a Promise in Next.js 15+** — always `await searchParams` in page components that receive it as a prop.
+- **Supabase client creation** — use `createServerClient` (from `@supabase/ssr`) in server components and API routes; use `createBrowserClient` in client components. The browser client must not receive the service role key.
+- **Microsoft Safe Links** — the email OTP flow uses `/auth/confirm` with `token_hash` + `verifyOtp` rather than the default magic link, to prevent Safe Links from consuming the token before the user clicks.
+- **RLS on every table** — see section below. A table without RLS is either fully open or fully broken.
 
 ## Supabase / database rules
 
@@ -78,7 +108,7 @@ Every table in the `public` schema must have Row Level Security enabled and at l
 1. **Enable RLS immediately** — `ALTER TABLE <table> ENABLE ROW LEVEL SECURITY;` before any data or policies are added.
 2. **Write a policy for every operation the app performs** (SELECT, INSERT, UPDATE, DELETE). Never leave an operation uncovered and rely on "default deny" — make the intent explicit.
 3. **All policies must gate on `auth.uid()`** — the USING / WITH CHECK expression must reference `auth.uid()`, directly or via a subquery to another table. A policy with `USING (true)` is equivalent to no RLS.
-4. **Do not read `APP_BETA_EMAILS` (or any sensitive env var) in edge middleware** — Next.js inlines `process.env` into the edge bundle at build time. Keep sensitive env var reads in Node.js runtime code (server components, server actions, API routes).
+4. **Do not read sensitive env vars in edge middleware** — Next.js inlines `process.env` into the edge bundle at build time. Keep sensitive env var reads in Node.js runtime code (server components, server actions, API routes).
 5. **Never use the service role key in client code or `NEXT_PUBLIC_` variables** — it bypasses RLS entirely. Only the anon key belongs in the client bundle.
 
 ### Verifying a new table
