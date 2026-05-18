@@ -4,9 +4,6 @@ import { usePathname } from 'next/navigation'
 import { Nav } from '@/components/layout/nav'
 
 vi.mock('next/navigation', () => ({ usePathname: vi.fn() }))
-vi.mock('@/components/layout/theme-toggle', () => ({
-  ThemeToggle: () => <button>Theme</button>,
-}))
 vi.mock('@/components/app/LogoMark', () => ({
   LogoMark: () => <svg aria-hidden="true" />,
 }))
