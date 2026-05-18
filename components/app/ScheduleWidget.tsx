@@ -9,9 +9,10 @@ import { daysUntil, countdownLabel, googleCalendarUrl } from '@/lib/countdown'
 interface ScheduleWidgetProps {
   scheduled: ScheduledRound | null
   showStartNewRound?: boolean
+  hasInProgressRound?: boolean
 }
 
-export function ScheduleWidget({ scheduled, showStartNewRound = false }: ScheduleWidgetProps) {
+export function ScheduleWidget({ scheduled, showStartNewRound = false, hasInProgressRound = false }: ScheduleWidgetProps) {
   const [editing, setEditing] = useState(false)
 
   if (!scheduled || editing) {
@@ -63,7 +64,7 @@ export function ScheduleWidget({ scheduled, showStartNewRound = false }: Schedul
             href="/scorecard"
             className="mt-3 block text-xs font-semibold text-amber-400 hover:text-amber-300"
           >
-            Start new round →
+            {hasInProgressRound ? 'Continue reflection →' : 'Start new round →'}
           </Link>
         )}
       </div>
@@ -135,7 +136,7 @@ export function ScheduleWidget({ scheduled, showStartNewRound = false }: Schedul
             href="/scorecard"
             className="text-xs font-semibold text-amber-400 hover:text-amber-300"
           >
-            Start new round →
+            {hasInProgressRound ? 'Continue reflection →' : 'Start new round →'}
           </Link>
         )}
       </div>
