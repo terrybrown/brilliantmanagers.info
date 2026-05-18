@@ -363,3 +363,6 @@ svg.recharts-surface:focus {
 .recharts-wrapper {
   overflow: visible !important;
 }
+.recharts-wrapper:focus {
+  outline: none;
+}

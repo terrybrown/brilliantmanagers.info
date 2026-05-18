@@ -1,5 +1,6 @@
 'use client'
 import { useState } from 'react'
+import Link from 'next/link'
 import { Pencil, X, Calendar } from 'lucide-react'
 import type { ScheduledRound } from '@/lib/db/scheduled-rounds'
 import { setScheduledRoundAction, cancelScheduledRoundAction } from '@/app/(app)/dashboard/actions'
@@ -7,9 +8,10 @@ import { daysUntil, countdownLabel, googleCalendarUrl } from '@/lib/countdown'
 
 interface ScheduleWidgetProps {
   scheduled: ScheduledRound | null
+  showStartNewRound?: boolean
 }
 
-export function ScheduleWidget({ scheduled }: ScheduleWidgetProps) {
+export function ScheduleWidget({ scheduled, showStartNewRound = false }: ScheduleWidgetProps) {
   const [editing, setEditing] = useState(false)
 
   if (!scheduled || editing) {
@@ -56,6 +58,14 @@ export function ScheduleWidget({ scheduled }: ScheduleWidgetProps) {
             )}
           </div>
         </form>
+        {showStartNewRound && (
+          <Link
+            href="/scorecard"
+            className="mt-3 block text-xs font-semibold text-amber-400 hover:text-amber-300"
+          >
+            Start new round →
+          </Link>
+        )}
       </div>
     )
   }
@@ -120,6 +130,14 @@ export function ScheduleWidget({ scheduled }: ScheduleWidgetProps) {
         >
           Download .ics →
         </a>
+        {showStartNewRound && (
+          <Link
+            href="/scorecard"
+            className="text-xs font-semibold text-amber-400 hover:text-amber-300"
+          >
+            Start new round →
+          </Link>
+        )}
       </div>
     </div>
   )

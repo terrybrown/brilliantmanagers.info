@@ -76,18 +76,19 @@ export function DashboardResults({
           <ScoreSparkline data={sparklineData} />
         </aside>
 
-        {/* Centre: Pillar accordion */}
-        <main className="min-w-0">
+        {/* Centre: Pillar accordion + history chart */}
+        <main className="min-w-0 flex flex-col gap-4">
           <PillarAccordion
             pillars={pillarsForAccordion}
             openPillar={openPillar}
             onOpenChange={setOpenPillar}
           />
+          <PillarHistoryChart data={historyData} />
         </main>
 
         {/* Right: Action cards */}
         <aside className="flex flex-col gap-4">
-          <ScheduleWidget scheduled={scheduled} />
+          <ScheduleWidget scheduled={scheduled} showStartNewRound={showStartNewRound} />
           <GrowthSummaryCard plans={plans} />
           <CheckInNudgeCard overdueCount={overdueCount} />
 
@@ -109,19 +110,10 @@ export function DashboardResults({
             </div>
           )}
 
-          {showStartNewRound && (
-            <Link
-              href="/scorecard"
-              className="text-center text-xs text-slate-500 hover:text-slate-300"
-            >
-              Start new round →
-            </Link>
-          )}
+
         </aside>
       </div>
 
-      {/* Full-width history chart — only when ≥ 2 rounds */}
-      <PillarHistoryChart data={historyData} />
     </div>
   )
 }
