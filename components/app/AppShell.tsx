@@ -19,13 +19,11 @@ export function AppShell({
   user,
   showBeta,
   isSuperAdmin = false,
-  featurebaseJwt,
   children,
 }: {
   user: UserInfo
   showBeta: boolean
   isSuperAdmin?: boolean
-  featurebaseJwt?: string
   children: React.ReactNode
 }) {
   const [isExpanded, setIsExpanded] = useState(false)
@@ -48,8 +46,6 @@ export function AppShell({
     })
   }
 
-  const feedbackEnabled = !!FEATUREBASE_APP_ID && !!featurebaseJwt
-
   const shell = (
     <div
       style={{
@@ -68,14 +64,14 @@ export function AppShell({
         </main>
       </div>
 
-      {feedbackEnabled && <FeedbackWidget />}
+      {FEATUREBASE_APP_ID && <FeedbackWidget />}
     </div>
   )
 
-  if (!feedbackEnabled) return shell
+  if (!FEATUREBASE_APP_ID) return shell
 
   return (
-    <FeaturebaseProvider appId={FEATUREBASE_APP_ID!} featurebaseJwt={featurebaseJwt!}>
+    <FeaturebaseProvider appId={FEATUREBASE_APP_ID}>
       {shell}
     </FeaturebaseProvider>
   )
