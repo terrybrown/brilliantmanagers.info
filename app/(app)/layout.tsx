@@ -2,7 +2,6 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { getSignedAvatarUrl } from '@/lib/db/profiles'
 import { isSuperAdmin } from '@/lib/auth/roles'
-import { generateFeaturebaseJwt } from '@/lib/featurebase'
 import { AppShell } from '@/components/app/AppShell'
 
 function getInitials(displayName: string | null, email: string | null): string {
@@ -32,14 +31,11 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     ? await getSignedAvatarUrl(profile.avatar_path)
     : undefined
 
-  const featurebaseJwt = generateFeaturebaseJwt({ id: user.id, email, displayName })
-
   return (
     <AppShell
       user={{ displayName, email, initials, avatarUrl: avatarUrl ?? undefined }}
       showBeta={true}
       isSuperAdmin={superAdmin}
-      featurebaseJwt={featurebaseJwt ?? undefined}
     >
       {children}
     </AppShell>
