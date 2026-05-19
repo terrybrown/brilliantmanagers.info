@@ -12,11 +12,11 @@ describe('FeedbackWidget', () => {
     render(<FeedbackWidget />)
   })
 
-  it('calls useFeedbackWidget with dark theme, right placement, and en locale', () => {
+  it('calls useFeedbackWidget with dark theme, bottom-right placement, and en locale', () => {
     render(<FeedbackWidget />)
     expect(useFeedbackWidget).toHaveBeenCalledWith({
       theme: 'dark',
-      placement: 'right',
+      placement: 'bottom-right',
       locale: 'en',
     })
   })
