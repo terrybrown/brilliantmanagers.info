@@ -1,12 +1,11 @@
 'use client'
 import { useEffect, useState } from 'react'
-import { FeaturebaseProvider } from 'featurebase-js/react'
+import Script from 'next/script'
 import { Sidebar } from './Sidebar'
 import { Topbar } from './Topbar'
-import { FeedbackWidget } from './FeedbackWidget'
 
 const LS_KEY = 'bm_sidebar_expanded'
-const FEATUREBASE_APP_ID = process.env.NEXT_PUBLIC_FEATUREBASE_APP_ID
+const SLEEKPLAN_PRODUCT_ID = process.env.NEXT_PUBLIC_SLEEKPLAN_PRODUCT_ID
 
 interface UserInfo {
   displayName: string
@@ -46,33 +45,30 @@ export function AppShell({
     })
   }
 
-  const shell = (
-    <div
-      style={{
-        display: 'flex',
-        height: '100vh',
-        overflow: 'hidden',
-        background: '#0a0f1e',
-      }}
-    >
-      <Sidebar isExpanded={isExpanded} onToggle={handleToggle} isSuperAdmin={isSuperAdmin} />
-
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-        <Topbar user={user} showBeta={showBeta} />
-        <main style={{ flex: 1, overflowY: 'auto', padding: 24 }}>
-          {children}
-        </main>
-      </div>
-
-      {FEATUREBASE_APP_ID && <FeedbackWidget />}
-    </div>
-  )
-
-  if (!FEATUREBASE_APP_ID) return shell
-
   return (
-    <FeaturebaseProvider appId={FEATUREBASE_APP_ID}>
-      {shell}
-    </FeaturebaseProvider>
+    <>
+      {SLEEKPLAN_PRODUCT_ID && (
+        <Script id="sleekplan-widget" strategy="afterInteractive">
+          {`window.$sleek=[];window.SLEEK_PRODUCT_ID=${SLEEKPLAN_PRODUCT_ID};(function(){var d=document,s=d.createElement("script");s.src="https://client.sleekplan.com/sdk/e.js";s.async=1;d.getElementsByTagName("head")[0].appendChild(s);})();`}
+        </Script>
+      )}
+      <div
+        style={{
+          display: 'flex',
+          height: '100vh',
+          overflow: 'hidden',
+          background: '#0a0f1e',
+        }}
+      >
+        <Sidebar isExpanded={isExpanded} onToggle={handleToggle} isSuperAdmin={isSuperAdmin} />
+
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+          <Topbar user={user} showBeta={showBeta} />
+          <main style={{ flex: 1, overflowY: 'auto', padding: 24 }}>
+            {children}
+          </main>
+        </div>
+      </div>
+    </>
   )
 }
