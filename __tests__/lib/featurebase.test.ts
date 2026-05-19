@@ -20,7 +20,8 @@ describe('generateFeaturebaseJwt', () => {
       email: 'test@example.com',
       displayName: 'Test User',
     })
-    const payload = jwt.verify(token, TEST_SECRET, { algorithms: ['HS256'] }) as Record<string, unknown>
+    expect(token).not.toBeNull()
+    const payload = jwt.verify(token!, TEST_SECRET, { algorithms: ['HS256'] }) as Record<string, unknown>
     expect(payload.userId).toBe('user-123')
     expect(payload.email).toBe('test@example.com')
     expect(payload.name).toBe('Test User')
@@ -33,16 +34,14 @@ describe('generateFeaturebaseJwt', () => {
       email: 'other@example.com',
       displayName: 'Other User',
     })
+    expect(token).not.toBeNull()
     // verify() throws if the algorithm or secret is wrong
-    expect(() => jwt.verify(token, TEST_SECRET, { algorithms: ['HS256'] })).not.toThrow()
+    expect(() => jwt.verify(token!, TEST_SECRET, { algorithms: ['HS256'] })).not.toThrow()
   })
 
-  it('throws when FEATUREBASE_JWT_SECRET is not set', async () => {
+  it('returns null when FEATUREBASE_JWT_SECRET is not set', async () => {
     delete process.env.FEATUREBASE_JWT_SECRET
-    // Re-import to get fresh module (vi.resetModules() in beforeEach ensures a fresh load)
     const { generateFeaturebaseJwt } = await import('@/lib/featurebase')
-    expect(() =>
-      generateFeaturebaseJwt({ id: 'x', email: 'x@x.com', displayName: 'X' })
-    ).toThrow('FEATUREBASE_JWT_SECRET is not set')
+    expect(generateFeaturebaseJwt({ id: 'x', email: 'x@x.com', displayName: 'X' })).toBeNull()
   })
 })
