@@ -16,9 +16,10 @@ export async function getDirectReportRoundSummaries(
 ): Promise<Record<string, DirectReportRoundSummary>> {
   if (directReportIds.length === 0) return {}
 
+  const supabase = await createClient()
+
   const entries = await Promise.all(
     directReportIds.map(async (userId) => {
-      const supabase = await createClient()
       const [inProgress, scheduled] = await Promise.all([
         getInProgressRound(userId),
         getScheduledRound(userId),

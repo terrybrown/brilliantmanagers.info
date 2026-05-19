@@ -7,7 +7,7 @@ interface OrgRow {
   created_at: string
   org_members: {
     role: string
-    profiles: { email: string | null; display_name: string | null }[]
+    profiles: { email: string | null; display_name: string | null } | null
   }[]
   org_nodes: { id: string }[]
 }
@@ -22,7 +22,7 @@ export default async function AdminOrganisationsPage() {
     )
     .order('created_at', { ascending: false })
 
-  const orgs = (data ?? []) as OrgRow[]
+  const orgs = (data ?? []) as unknown as OrgRow[]
 
   // Fetch last activity per org: most recent completed_at among any org member's assessment rounds
   const lastActivityMap: Record<string, string | null> = {}
@@ -78,7 +78,7 @@ export default async function AdminOrganisationsPage() {
                   <td className="px-4 py-3 font-medium text-white">{org.name}</td>
                   <td className="px-4 py-3 text-slate-400">
                     {admins.length > 0
-                      ? admins.map(a => a.profiles[0]?.display_name ?? a.profiles[0]?.email ?? '—').join(', ')
+                      ? admins.map(a => a.profiles?.display_name ?? a.profiles?.email ?? '—').join(', ')
                       : '—'}
                   </td>
                   <td className="px-4 py-3 text-slate-400">{org.org_members.length}</td>
