@@ -1,7 +1,9 @@
 'use client'
 import { useEffect, useState } from 'react'
+import { FeaturebaseProvider } from 'featurebase-js/react'
 import { Sidebar } from './Sidebar'
 import { Topbar } from './Topbar'
+import { FeedbackWidget } from './FeedbackWidget'
 
 const LS_KEY = 'bm_sidebar_expanded'
 
@@ -16,11 +18,13 @@ export function AppShell({
   user,
   showBeta,
   isSuperAdmin = false,
+  featurebaseJwt,
   children,
 }: {
   user: UserInfo
   showBeta: boolean
   isSuperAdmin?: boolean
+  featurebaseJwt: string
   children: React.ReactNode
 }) {
   const [isExpanded, setIsExpanded] = useState(false)
@@ -44,22 +48,29 @@ export function AppShell({
   }
 
   return (
-    <div
-      style={{
-        display: 'flex',
-        height: '100vh',
-        overflow: 'hidden',
-        background: '#0a0f1e',
-      }}
+    <FeaturebaseProvider
+      appId={process.env.NEXT_PUBLIC_FEATUREBASE_APP_ID!}
+      featurebaseJwt={featurebaseJwt}
     >
-      <Sidebar isExpanded={isExpanded} onToggle={handleToggle} isSuperAdmin={isSuperAdmin} />
+      <div
+        style={{
+          display: 'flex',
+          height: '100vh',
+          overflow: 'hidden',
+          background: '#0a0f1e',
+        }}
+      >
+        <Sidebar isExpanded={isExpanded} onToggle={handleToggle} isSuperAdmin={isSuperAdmin} />
 
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-        <Topbar user={user} showBeta={showBeta} />
-        <main style={{ flex: 1, overflowY: 'auto', padding: 24 }}>
-          {children}
-        </main>
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+          <Topbar user={user} showBeta={showBeta} />
+          <main style={{ flex: 1, overflowY: 'auto', padding: 24 }}>
+            {children}
+          </main>
+        </div>
+
+        <FeedbackWidget />
       </div>
-    </div>
+    </FeaturebaseProvider>
   )
 }
