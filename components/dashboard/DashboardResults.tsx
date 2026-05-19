@@ -1,11 +1,11 @@
 'use client'
 import { useState, useCallback } from 'react'
-import Link from 'next/link'
 import { RadarWithToggle } from '@/components/app/RadarWithToggle'
 import { PillarAccordion } from '@/components/app/PillarAccordion'
 import { ScheduleWidget } from '@/components/app/ScheduleWidget'
 import { GrowthSummaryCard } from '@/components/app/GrowthSummaryCard'
 import { CheckInNudgeCard } from '@/components/app/CheckInNudgeCard'
+import { InviteManagerModal } from '@/components/people/InviteManagerModal'
 import { ScoreSparkline } from '@/components/app/ScoreSparkline'
 import { PillarHistoryChart } from '@/components/app/PillarHistoryChart'
 import type { PillarData } from '@/components/app/PillarAccordion'
@@ -103,12 +103,7 @@ export function DashboardResults({
               <p className="mb-3 text-xs text-slate-400">
                 They score you independently, then you compare.
               </p>
-              <Link
-                href="/connections"
-                className="text-xs font-semibold text-amber-400 hover:text-amber-300"
-              >
-                Connect →
-              </Link>
+              <InviteManagerModal />
             </div>
           )}
 
