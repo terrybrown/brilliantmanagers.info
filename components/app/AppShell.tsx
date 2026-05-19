@@ -6,6 +6,8 @@ import { Topbar } from './Topbar'
 import { FeedbackWidget } from './FeedbackWidget'
 
 const LS_KEY = 'bm_sidebar_expanded'
+const FEATUREBASE_APP_ID = process.env.NEXT_PUBLIC_FEATUREBASE_APP_ID
+if (!FEATUREBASE_APP_ID) throw new Error('NEXT_PUBLIC_FEATUREBASE_APP_ID is not configured')
 
 interface UserInfo {
   displayName: string
@@ -49,7 +51,7 @@ export function AppShell({
 
   return (
     <FeaturebaseProvider
-      appId={process.env.NEXT_PUBLIC_FEATUREBASE_APP_ID!}
+      appId={FEATUREBASE_APP_ID}
       featurebaseJwt={featurebaseJwt}
     >
       <div
