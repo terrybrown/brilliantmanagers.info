@@ -91,6 +91,8 @@ Tests live in `__tests__/`, mirroring the source tree. Vitest + Testing Library.
 | `MAILGUN_API_KEY` | Server only |
 | `MAILGUN_BASE_URL` | Server only |
 | `MAILGUN_SENDING_KEY` | Server only |
+| `NEXT_PUBLIC_FEATUREBASE_APP_ID` | Client + server |
+| `FEATUREBASE_JWT_SECRET` | Server only (JWT signing for Featurebase widget identity) |
 
 Never put `SUPABASE_SERVICE_ROLE_KEY` or any non-`NEXT_PUBLIC_` key in client-side code.
 
