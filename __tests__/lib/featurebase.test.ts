@@ -20,7 +20,7 @@ describe('generateFeaturebaseJwt', () => {
       email: 'test@example.com',
       displayName: 'Test User',
     })
-    const payload = jwt.decode(token) as Record<string, unknown>
+    const payload = jwt.verify(token, TEST_SECRET, { algorithms: ['HS256'] }) as Record<string, unknown>
     expect(payload.userId).toBe('user-123')
     expect(payload.email).toBe('test@example.com')
     expect(payload.name).toBe('Test User')
