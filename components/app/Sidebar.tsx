@@ -2,7 +2,6 @@
 import {
   LayoutDashboard,
   TrendingUp,
-  Link2,
   Network,
   Users,
   ScrollText,
@@ -13,8 +12,7 @@ import { NavItem } from './NavItem'
 const NAV_ITEMS = [
   { href: '/dashboard', icon: LayoutDashboard, label: 'Dashboard', id: 'nav-dashboard' },
   { href: '/growth', icon: TrendingUp, label: 'Growth', id: 'nav-growth' },
-  { href: '/connections', icon: Link2, label: 'Connections', id: 'nav-connections' },
-  { href: '/organisation', icon: Network, label: 'Organisation' },
+  { href: '/people', icon: Network, label: 'Team & Org', id: 'nav-people' },
 ] as const
 
 const ADMIN_NAV_ITEMS = [
