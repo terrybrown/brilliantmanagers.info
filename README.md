@@ -71,7 +71,7 @@ Outstanding features and known gaps:
 
 Features that have shipped:
 
-- **User feedback** *(May 2026)*: Featurebase widget integrated into all authenticated app pages. Users can submit ideas and report bugs without leaving the product. Submissions are automatically attributed via a server-signed JWT, so every piece of feedback arrives with the user's identity in the Featurebase dashboard.
+- **User feedback** *(May 2026)*: Sleekplan feedback widget integrated into all authenticated app pages. Users can submit ideas, view the roadmap, and report bugs without leaving the product.
 
 ## License
 
