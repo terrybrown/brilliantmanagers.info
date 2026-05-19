@@ -7,7 +7,6 @@ import { FeedbackWidget } from './FeedbackWidget'
 
 const LS_KEY = 'bm_sidebar_expanded'
 const FEATUREBASE_APP_ID = process.env.NEXT_PUBLIC_FEATUREBASE_APP_ID
-if (!FEATUREBASE_APP_ID) throw new Error('NEXT_PUBLIC_FEATUREBASE_APP_ID is not configured')
 
 interface UserInfo {
   displayName: string
@@ -26,7 +25,7 @@ export function AppShell({
   user: UserInfo
   showBeta: boolean
   isSuperAdmin?: boolean
-  featurebaseJwt: string
+  featurebaseJwt?: string
   children: React.ReactNode
 }) {
   const [isExpanded, setIsExpanded] = useState(false)
@@ -49,30 +48,35 @@ export function AppShell({
     })
   }
 
-  return (
-    <FeaturebaseProvider
-      appId={FEATUREBASE_APP_ID}
-      featurebaseJwt={featurebaseJwt}
+  const feedbackEnabled = !!FEATUREBASE_APP_ID && !!featurebaseJwt
+
+  const shell = (
+    <div
+      style={{
+        display: 'flex',
+        height: '100vh',
+        overflow: 'hidden',
+        background: '#0a0f1e',
+      }}
     >
-      <div
-        style={{
-          display: 'flex',
-          height: '100vh',
-          overflow: 'hidden',
-          background: '#0a0f1e',
-        }}
-      >
-        <Sidebar isExpanded={isExpanded} onToggle={handleToggle} isSuperAdmin={isSuperAdmin} />
+      <Sidebar isExpanded={isExpanded} onToggle={handleToggle} isSuperAdmin={isSuperAdmin} />
 
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-          <Topbar user={user} showBeta={showBeta} />
-          <main style={{ flex: 1, overflowY: 'auto', padding: 24 }}>
-            {children}
-          </main>
-        </div>
-
-        <FeedbackWidget />
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+        <Topbar user={user} showBeta={showBeta} />
+        <main style={{ flex: 1, overflowY: 'auto', padding: 24 }}>
+          {children}
+        </main>
       </div>
+
+      {feedbackEnabled && <FeedbackWidget />}
+    </div>
+  )
+
+  if (!feedbackEnabled) return shell
+
+  return (
+    <FeaturebaseProvider appId={FEATUREBASE_APP_ID!} featurebaseJwt={featurebaseJwt!}>
+      {shell}
     </FeaturebaseProvider>
   )
 }

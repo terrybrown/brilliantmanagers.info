@@ -39,7 +39,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       user={{ displayName, email, initials, avatarUrl: avatarUrl ?? undefined }}
       showBeta={true}
       isSuperAdmin={superAdmin}
-      featurebaseJwt={featurebaseJwt}
+      featurebaseJwt={featurebaseJwt ?? undefined}
     >
       {children}
     </AppShell>
