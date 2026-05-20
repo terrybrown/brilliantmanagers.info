@@ -10,7 +10,10 @@ const mock = createClient as ReturnType<typeof vi.fn>
 const adminMock = createAdminClient as ReturnType<typeof vi.fn>
 
 describe('createPendingOrgNodeInvitation', () => {
-  beforeEach(() => vi.clearAllMocks())
+  beforeEach(() => {
+    vi.resetModules()
+    vi.clearAllMocks()
+  })
 
   it('upserts a row using the user client', async () => {
     const upsert = vi.fn().mockResolvedValue({ error: null })
@@ -36,7 +39,10 @@ describe('createPendingOrgNodeInvitation', () => {
 })
 
 describe('getPendingOrgNodeInvitationsByEmail', () => {
-  beforeEach(() => vi.clearAllMocks())
+  beforeEach(() => {
+    vi.resetModules()
+    vi.clearAllMocks()
+  })
 
   it('returns rows using the admin client', async () => {
     const rows = [{ id: 'inv1', org_id: 'org1', node_id: 'n1' }]
@@ -62,7 +68,10 @@ describe('getPendingOrgNodeInvitationsByEmail', () => {
 })
 
 describe('deletePendingOrgNodeInvitationsByEmail', () => {
-  beforeEach(() => vi.clearAllMocks())
+  beforeEach(() => {
+    vi.resetModules()
+    vi.clearAllMocks()
+  })
 
   it('deletes by email using admin client', async () => {
     const eq = vi.fn().mockResolvedValue({ error: null })
@@ -86,7 +95,10 @@ describe('deletePendingOrgNodeInvitationsByEmail', () => {
 })
 
 describe('deletePendingOrgNodeInvitationById', () => {
-  beforeEach(() => vi.clearAllMocks())
+  beforeEach(() => {
+    vi.resetModules()
+    vi.clearAllMocks()
+  })
 
   it('deletes by id using admin client', async () => {
     const eq = vi.fn().mockResolvedValue({ error: null })
@@ -97,5 +109,14 @@ describe('deletePendingOrgNodeInvitationById', () => {
     await deletePendingOrgNodeInvitationById('inv-1')
 
     expect(eq).toHaveBeenCalledWith('id', 'inv-1')
+  })
+
+  it('throws on error', async () => {
+    const eq = vi.fn().mockResolvedValue({ error: { message: 'db error' } })
+    const del = vi.fn().mockReturnValue({ eq })
+    adminMock.mockReturnValue({ from: vi.fn().mockReturnValue({ delete: del }) })
+
+    const { deletePendingOrgNodeInvitationById } = await import('@/lib/db/pending-org-node-invitations')
+    await expect(deletePendingOrgNodeInvitationById('inv-1')).rejects.toThrow()
   })
 })
