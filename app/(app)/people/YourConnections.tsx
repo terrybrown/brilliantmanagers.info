@@ -35,6 +35,7 @@ function DirectReportCard({
   summary?: DirectReportRoundSummary
 }) {
   const dr = connection.direct_report
+  if (!dr) return null
   const statusLabel = !summary
     ? null
     : summary.roundStatus === 'in_progress'
@@ -128,6 +129,7 @@ export function YourConnections({ connections, roundSummaries, userId, pendingIn
             {pendingIncoming.map(c => {
               const isAsManager = c.manager_id === userId
               const other = isAsManager ? c.direct_report : c.manager
+              if (!other) return null
               const rel = isAsManager ? 'wants to connect as your direct report' : 'wants to connect as your manager'
               return (
                 <div
@@ -184,13 +186,13 @@ export function YourConnections({ connections, roundSummaries, userId, pendingIn
               borderRadius: 8, padding: '12px 14px',
             }}
           >
-            <Avatar name={activeManager.manager.display_name || activeManager.manager.email} color="#4f46e5" />
+            <Avatar name={activeManager.manager?.display_name || activeManager.manager?.email || ''} color="#4f46e5" />
             <div style={{ flex: 1 }}>
               <p style={{ fontWeight: 600, fontSize: 13, color: '#f1f5f9', margin: 0 }}>
-                {activeManager.manager.display_name || activeManager.manager.email}
+                {activeManager.manager?.display_name || activeManager.manager?.email}
               </p>
               <p style={{ fontSize: 11, color: '#9ca3af', margin: '2px 0 0' }}>
-                {activeManager.manager.email}
+                {activeManager.manager?.email}
               </p>
             </div>
             <span
@@ -210,10 +212,10 @@ export function YourConnections({ connections, roundSummaries, userId, pendingIn
               borderRadius: 8, padding: '12px 14px',
             }}
           >
-            <Avatar name={pendingOutboundManager.manager.email} color="#4f46e5" />
+            <Avatar name={pendingOutboundManager.manager?.email || ''} color="#4f46e5" />
             <div style={{ flex: 1 }}>
               <p style={{ fontWeight: 600, fontSize: 13, color: '#f1f5f9', margin: 0 }}>
-                {pendingOutboundManager.manager.email}
+                {pendingOutboundManager.manager?.email}
               </p>
               <p style={{ fontSize: 11, color: '#9ca3af', margin: '2px 0 0' }}>
                 Invite sent — waiting for them to accept
