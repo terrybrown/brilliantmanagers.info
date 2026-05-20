@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from '@testing-library/react'
+import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { describe, it, expect, vi } from 'vitest'
 import { AddNodeForm } from '@/components/org/AddNodeForm'
 
@@ -66,5 +66,43 @@ describe('AddNodeForm', () => {
       />
     )
     expect(container.querySelector('input[name="parentId"]')).toBeNull()
+  })
+
+  it('calls formAction with the form data on submit', async () => {
+    const formAction = vi.fn().mockResolvedValue(undefined)
+    render(
+      <AddNodeForm
+        orgId="org-1"
+        parentId="node-parent"
+        formAction={formAction}
+        onCancel={vi.fn()}
+      />
+    )
+    fireEvent.change(screen.getByPlaceholderText(/child group name/i), {
+      target: { value: 'New Team' },
+    })
+    fireEvent.submit(screen.getByRole('button', { name: /add/i }).closest('form')!)
+    await waitFor(() => expect(formAction).toHaveBeenCalledTimes(1))
+    const fd = formAction.mock.calls[0][0] as FormData
+    expect(fd.get('name')).toBe('New Team')
+    expect(fd.get('orgId')).toBe('org-1')
+    expect(fd.get('parentId')).toBe('node-parent')
+  })
+
+  it('shows an error message when formAction throws', async () => {
+    const formAction = vi.fn().mockRejectedValue(new Error('server down'))
+    render(
+      <AddNodeForm
+        orgId="org-1"
+        parentId={null}
+        formAction={formAction}
+        onCancel={vi.fn()}
+      />
+    )
+    fireEvent.change(screen.getByPlaceholderText(/child group name/i), {
+      target: { value: 'Bad Team' },
+    })
+    fireEvent.submit(screen.getByRole('button', { name: /add/i }).closest('form')!)
+    await waitFor(() => expect(screen.getByText(/failed to add group/i)).toBeInTheDocument())
   })
 })

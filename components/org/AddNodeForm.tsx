@@ -1,5 +1,5 @@
 'use client'
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import { useFormStatus } from 'react-dom'
 
 interface AddNodeFormProps {
@@ -9,6 +9,8 @@ interface AddNodeFormProps {
   onCancel: () => void
 }
 
+// Separate component required: useFormStatus only works inside a component that is
+// a descendant of the form, not the component that renders the form itself.
 function SubmitButton() {
   const { pending } = useFormStatus()
   return (
@@ -35,10 +37,16 @@ function SubmitButton() {
 
 export function AddNodeForm({ orgId, parentId, formAction, onCancel }: AddNodeFormProps) {
   const ref = useRef<HTMLFormElement>(null)
+  const [error, setError] = useState<string | null>(null)
 
   async function action(formData: FormData) {
-    await formAction(formData)
-    ref.current?.reset()
+    setError(null)
+    try {
+      await formAction(formData)
+      ref.current?.reset()
+    } catch {
+      setError('Failed to add group. Please try again.')
+    }
   }
 
   return (
@@ -89,6 +97,9 @@ export function AddNodeForm({ orgId, parentId, formAction, onCancel }: AddNodeFo
       >
         ✕
       </button>
+      {error && (
+        <p style={{ margin: '4px 0 0', fontSize: 11, color: '#ef4444' }}>{error}</p>
+      )}
     </div>
   )
 }
