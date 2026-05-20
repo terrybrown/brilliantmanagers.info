@@ -96,7 +96,7 @@ export async function getNodesForOrg(orgId: string): Promise<OrgNode[]> {
   const [profilesResult, pendingResult] = await Promise.all([
     allUserIds.length > 0
       ? adminSupabase.from('profiles').select('id, email, display_name').in('id', allUserIds)
-      : Promise.resolve({ data: [] as { id: string; email: string | null; display_name: string | null }[] }),
+      : Promise.resolve({ data: [] as { id: string; email: string | null; display_name: string | null }[], error: null }),
     adminSupabase
       .from('pending_org_node_invitations')
       .select('id, node_id, invited_email')

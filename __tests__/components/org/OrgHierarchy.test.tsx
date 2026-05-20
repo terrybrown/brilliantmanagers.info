@@ -1,5 +1,5 @@
 import React from 'react'
-import { render, screen } from '@testing-library/react'
+import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { OrgHierarchy } from '@/components/org/OrgHierarchy'
 import type { OrgNode } from '@/lib/db/org-nodes'
@@ -69,5 +69,18 @@ describe('OrgHierarchy', () => {
     render(<OrgHierarchy nodes={nodes} orgId="org-1" orgRole="org_admin" />)
     expect(screen.getByText('Engineering')).toBeInTheDocument()
     expect(screen.getByText('Frontend')).toBeInTheDocument()
+  })
+
+  it('calls createNodeAction when the top-level add-group form is submitted', async () => {
+    const { createNodeAction } = await import('@/app/(app)/organisation/actions')
+    render(<OrgHierarchy nodes={[]} orgId="org-1" orgRole="org_admin" />)
+    fireEvent.change(screen.getByPlaceholderText(/new top-level group/i), {
+      target: { value: 'Marketing' },
+    })
+    fireEvent.submit(screen.getByPlaceholderText(/new top-level group/i).closest('form')!)
+    await waitFor(() => expect(createNodeAction).toHaveBeenCalledTimes(1))
+    const fd = vi.mocked(createNodeAction).mock.calls[0][0] as FormData
+    expect(fd.get('name')).toBe('Marketing')
+    expect(fd.get('orgId')).toBe('org-1')
   })
 })

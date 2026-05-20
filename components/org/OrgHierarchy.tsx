@@ -36,6 +36,7 @@ export function OrgHierarchy({ nodes, orgId, orgRole }: Props) {
     return async (formData: FormData) => {
       const name = (formData.get('name') as string | null)?.trim()
       if (!name) return
+      if (parentId !== null) formData.set('parentId', parentId)
       startTransition(async () => {
         addOptimisticNode({
           id: `provisional-${Date.now()}`,
