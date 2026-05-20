@@ -1,7 +1,7 @@
 'use server'
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
-import { createConnection, acceptConnection } from '@/lib/db/connections'
+import { createConnection, acceptConnection, NO_ACCOUNT_ERROR } from '@/lib/db/connections'
 import { createPendingInvitation } from '@/lib/db/pending-invitations'
 import { logAudit } from '@/lib/audit'
 import { sendEmail } from '@/lib/email/mailgun'
@@ -10,7 +10,18 @@ import { buildConnectionInviteEmail } from '@/lib/email/templates/connection-inv
 
 export type InviteState = { success: boolean; error?: string }
 
-const NO_ACCOUNT_ERROR = 'No account found for that email. Ask them to sign up first.'
+async function getDisplayName(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  userId: string,
+  fallback: string
+): Promise<string> {
+  const { data } = await supabase
+    .from('profiles')
+    .select('display_name')
+    .eq('id', userId)
+    .single()
+  return data?.display_name ?? fallback
+}
 
 export async function inviteConnection(
   _prevState: InviteState,
@@ -40,12 +51,7 @@ export async function inviteConnection(
     })
     if (inviteError) return { success: false, error: inviteError }
 
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('display_name')
-      .eq('id', user.id)
-      .single()
-    const fromName = profile?.display_name ?? user.email ?? 'A colleague'
+    const fromName = await getDisplayName(supabase, user.id, user.email ?? 'A colleague')
 
     const { subject, html } = buildConnectionInviteEmail({
       fromName,
@@ -80,12 +86,7 @@ export async function inviteConnection(
   })
 
   if (role === 'direct_report') {
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('display_name')
-      .eq('id', user.id)
-      .single()
-    const fromName = profile?.display_name ?? user.email ?? 'A colleague'
+    const fromName = await getDisplayName(supabase, user.id, user.email ?? 'A colleague')
     const { subject, html } = buildManagerInviteEmail({
       fromName,
       toEmail: email,

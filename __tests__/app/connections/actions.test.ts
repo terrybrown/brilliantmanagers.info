@@ -15,10 +15,14 @@ vi.mock('@/lib/supabase/server', () => ({
   }),
 }))
 
-vi.mock('@/lib/db/connections', () => ({
-  createConnection: vi.fn().mockResolvedValue({}),
-  acceptConnection: vi.fn().mockResolvedValue({}),
-}))
+vi.mock('@/lib/db/connections', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/lib/db/connections')>()
+  return {
+    ...actual,
+    createConnection: vi.fn().mockResolvedValue({}),
+    acceptConnection: vi.fn().mockResolvedValue({}),
+  }
+})
 
 vi.mock('@/lib/db/pending-invitations', () => ({
   createPendingInvitation: vi.fn().mockResolvedValue({}),
@@ -94,6 +98,10 @@ describe('inviteConnection', () => {
       invitedEmail: 'nobody@example.com',
       inviterRole: 'direct_report',
     })
+    const { logAudit } = await import('@/lib/audit')
+    expect(vi.mocked(logAudit)).toHaveBeenCalledWith(
+      expect.objectContaining({ action: 'connection.invite_pending' })
+    )
   })
 
   it('sends the connection-invite email when no account is found', async () => {
@@ -109,7 +117,7 @@ describe('inviteConnection', () => {
     fd.set('role', 'manager')
     await inviteConnection({ success: false }, fd)
     expect(vi.mocked(buildConnectionInviteEmail)).toHaveBeenCalledWith(
-      expect.objectContaining({ inviterRole: 'manager', toEmail: 'nobody@example.com' })
+      expect.objectContaining({ fromName: 'Alice', inviterRole: 'manager', toEmail: 'nobody@example.com' })
     )
     expect(sendEmail).toHaveBeenCalledOnce()
   })

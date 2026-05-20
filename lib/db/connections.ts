@@ -1,5 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 
+export const NO_ACCOUNT_ERROR = 'No account found for that email. Ask them to sign up first.'
+
 export interface Connection {
   id: string
   manager_id: string
@@ -44,7 +46,7 @@ export async function createConnection(params: {
     .maybeSingle()
 
   if (!otherProfile) {
-    return { error: 'No account found for that email. Ask them to sign up first.' }
+    return { error: NO_ACCOUNT_ERROR }
   }
 
   const managerId =
