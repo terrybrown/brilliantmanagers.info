@@ -3,11 +3,13 @@ import { InviteManagerModal } from '@/components/people/InviteManagerModal'
 import { AddConnectionForm } from '@/components/people/AddConnectionForm'
 import { acceptConnectionAction } from '@/app/(app)/connections/actions'
 import type { EnrichedConnection, DirectReportRoundSummary } from './types'
+import type { PendingInvitation } from '@/lib/db/pending-invitations'
 
 interface Props {
   connections: { asManager: EnrichedConnection[]; asDirectReport: EnrichedConnection[] }
   roundSummaries: Record<string, DirectReportRoundSummary>
   userId: string
+  pendingInvitations: PendingInvitation[]
 }
 
 function Avatar({ name, color = '#0891b2' }: { name: string; color?: string }) {
@@ -33,6 +35,7 @@ function DirectReportCard({
   summary?: DirectReportRoundSummary
 }) {
   const dr = connection.direct_report
+  if (!dr) return null
   const statusLabel = !summary
     ? null
     : summary.roundStatus === 'in_progress'
@@ -78,7 +81,7 @@ function DirectReportCard({
   )
 }
 
-export function YourConnections({ connections, roundSummaries, userId }: Props) {
+export function YourConnections({ connections, roundSummaries, userId, pendingInvitations }: Props) {
   const pendingIncoming = [
     ...connections.asManager.filter(c => c.status === 'pending' && c.initiated_by !== userId),
     ...connections.asDirectReport.filter(c => c.status === 'pending' && c.initiated_by !== userId),
@@ -90,6 +93,9 @@ export function YourConnections({ connections, roundSummaries, userId }: Props) 
   )
 
   const activeDirectReports = connections.asManager.filter(c => c.status === 'active')
+
+  const pendingInvitedManagers = pendingInvitations.filter(p => p.inviter_role === 'direct_report')
+  const pendingInvitedDirectReports = pendingInvitations.filter(p => p.inviter_role === 'manager')
 
   return (
     <section>
@@ -123,6 +129,7 @@ export function YourConnections({ connections, roundSummaries, userId }: Props) 
             {pendingIncoming.map(c => {
               const isAsManager = c.manager_id === userId
               const other = isAsManager ? c.direct_report : c.manager
+              if (!other) return null
               const rel = isAsManager ? 'wants to connect as your direct report' : 'wants to connect as your manager'
               return (
                 <div
@@ -179,13 +186,13 @@ export function YourConnections({ connections, roundSummaries, userId }: Props) 
               borderRadius: 8, padding: '12px 14px',
             }}
           >
-            <Avatar name={activeManager.manager.display_name || activeManager.manager.email} color="#4f46e5" />
+            <Avatar name={activeManager.manager?.display_name || activeManager.manager?.email || ''} color="#4f46e5" />
             <div style={{ flex: 1 }}>
               <p style={{ fontWeight: 600, fontSize: 13, color: '#f1f5f9', margin: 0 }}>
-                {activeManager.manager.display_name || activeManager.manager.email}
+                {activeManager.manager?.display_name || activeManager.manager?.email}
               </p>
               <p style={{ fontSize: 11, color: '#9ca3af', margin: '2px 0 0' }}>
-                {activeManager.manager.email}
+                {activeManager.manager?.email}
               </p>
             </div>
             <span
@@ -205,10 +212,10 @@ export function YourConnections({ connections, roundSummaries, userId }: Props) 
               borderRadius: 8, padding: '12px 14px',
             }}
           >
-            <Avatar name={pendingOutboundManager.manager.email} color="#4f46e5" />
+            <Avatar name={pendingOutboundManager.manager?.email || ''} color="#4f46e5" />
             <div style={{ flex: 1 }}>
               <p style={{ fontWeight: 600, fontSize: 13, color: '#f1f5f9', margin: 0 }}>
-                {pendingOutboundManager.manager.email}
+                {pendingOutboundManager.manager?.email}
               </p>
               <p style={{ fontSize: 11, color: '#9ca3af', margin: '2px 0 0' }}>
                 Invite sent — waiting for them to accept
@@ -222,6 +229,37 @@ export function YourConnections({ connections, roundSummaries, userId }: Props) 
             >
               Pending
             </span>
+          </div>
+        ) : pendingInvitedManagers.length > 0 ? (
+          <div className="flex flex-col gap-3">
+            {pendingInvitedManagers.map(invite => (
+              <div
+                key={invite.id}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 10,
+                  background: 'rgba(245,158,11,0.06)',
+                  border: '1px dashed rgba(245,158,11,0.35)', borderRadius: 8, padding: '12px 14px',
+                }}
+              >
+                <Avatar name={invite.invited_email} color="#4f46e5" />
+                <div style={{ flex: 1 }}>
+                  <p style={{ fontWeight: 600, fontSize: 13, color: '#f1f5f9', margin: 0 }}>
+                    {invite.invited_email}
+                  </p>
+                  <p style={{ fontSize: 11, color: '#9ca3af', margin: '2px 0 0' }}>
+                    Invite sent — awaiting registration
+                  </p>
+                </div>
+                <span
+                  style={{
+                    fontSize: 11, background: 'rgba(245,158,11,0.12)',
+                    color: '#f59e0b', padding: '3px 8px', borderRadius: 5,
+                  }}
+                >
+                  Awaiting registration
+                </span>
+              </div>
+            ))}
           </div>
         ) : (
           <div
@@ -260,7 +298,7 @@ export function YourConnections({ connections, roundSummaries, userId }: Props) 
         >
           Your direct reports ({activeDirectReports.length})
         </p>
-        {activeDirectReports.length === 0 ? (
+        {activeDirectReports.length === 0 && pendingInvitedDirectReports.length === 0 ? (
           <p style={{ fontSize: 13, color: '#4b5563' }}>No direct reports yet.</p>
         ) : (
           <div className="flex flex-col gap-3">
@@ -268,6 +306,34 @@ export function YourConnections({ connections, roundSummaries, userId }: Props) 
               const summary = roundSummaries[c.direct_report_id]
               return <DirectReportCard key={c.id} connection={c} summary={summary} />
             })}
+            {pendingInvitedDirectReports.map(p => (
+              <div
+                key={p.id}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 10,
+                  background: 'rgba(245,158,11,0.06)',
+                  border: '1px dashed rgba(245,158,11,0.35)', borderRadius: 8, padding: '12px 14px',
+                }}
+              >
+                <Avatar name={p.invited_email} />
+                <div style={{ flex: 1 }}>
+                  <p style={{ fontWeight: 600, fontSize: 13, color: '#f1f5f9', margin: 0 }}>
+                    {p.invited_email}
+                  </p>
+                  <p style={{ fontSize: 11, color: '#9ca3af', margin: '2px 0 0' }}>
+                    Invite sent — awaiting registration
+                  </p>
+                </div>
+                <span
+                  style={{
+                    fontSize: 11, background: 'rgba(245,158,11,0.12)',
+                    color: '#f59e0b', padding: '3px 8px', borderRadius: 5,
+                  }}
+                >
+                  Awaiting registration
+                </span>
+              </div>
+            ))}
           </div>
         )}
       </div>
