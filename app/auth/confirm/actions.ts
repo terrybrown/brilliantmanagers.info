@@ -66,6 +66,41 @@ export async function confirmLogin(formData: FormData) {
         .delete()
         .eq('invited_email', user.email)
     }
+
+    // Process pending org node invitations
+    const { data: nodeInvites, error: nodeInvitesError } = await admin
+      .from('pending_org_node_invitations')
+      .select('id, org_id, node_id')
+      .eq('invited_email', user.email)
+
+    if (nodeInvitesError) {
+      console.error('Failed to fetch pending org node invitations:', nodeInvitesError)
+    } else if (nodeInvites && nodeInvites.length > 0) {
+      for (const invite of nodeInvites as { id: string; org_id: string; node_id: string }[]) {
+        const { error: orgErr } = await admin
+          .from('org_members')
+          .upsert(
+            { org_id: invite.org_id, user_id: user.id, role: 'member' },
+            { onConflict: 'org_id,user_id', ignoreDuplicates: true }
+          )
+        if (orgErr) {
+          console.error('Failed to add org member on OTP confirm:', orgErr)
+          continue
+        }
+
+        const { error: nodeErr } = await admin
+          .from('org_node_members')
+          .insert({ node_id: invite.node_id, user_id: user.id })
+        if (nodeErr && nodeErr.code !== '23505') {
+          console.error('Failed to add org node member on OTP confirm:', nodeErr)
+        }
+      }
+
+      await admin
+        .from('pending_org_node_invitations')
+        .delete()
+        .eq('invited_email', user.email)
+    }
   }
 
   redirect('/dashboard')
