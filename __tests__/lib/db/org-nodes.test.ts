@@ -100,13 +100,22 @@ describe('getNodesForOrg', () => {
     const select = vi.fn().mockReturnValue({ eq })
     mock.mockResolvedValue({ from: vi.fn().mockReturnValue({ select }) })
 
-    const inFn = vi.fn().mockResolvedValue({ data: [{ id: 'u1', email: 'a@x.com', display_name: 'Alice' }] })
-    const adminSelect = vi.fn().mockReturnValue({ in: inFn })
-    adminMock.mockReturnValue({ from: vi.fn().mockReturnValue({ select: adminSelect }) })
+    const profilesInFn = vi.fn().mockResolvedValue({ data: [{ id: 'u1', email: 'a@x.com', display_name: 'Alice' }], error: null })
+    const profilesSelectFn = vi.fn().mockReturnValue({ in: profilesInFn })
+    const pendingInFn = vi.fn().mockResolvedValue({ data: [], error: null })
+    const pendingSelectFn = vi.fn().mockReturnValue({ in: pendingInFn })
+    adminMock.mockReturnValue({
+      from: vi.fn().mockImplementation((table: string) => {
+        if (table === 'profiles') return { select: profilesSelectFn }
+        if (table === 'pending_org_node_invitations') return { select: pendingSelectFn }
+        throw new Error(`Unexpected admin table: ${table}`)
+      }),
+    })
 
     const result = await getNodesForOrg('org-1')
     expect(result).toHaveLength(1)
     expect(result[0].members[0].email).toBe('a@x.com')
+    expect(result[0].pendingInvites).toEqual([])
   })
 
   it('returns null profile fields when profile not found', async () => {
@@ -119,12 +128,21 @@ describe('getNodesForOrg', () => {
     const select = vi.fn().mockReturnValue({ eq })
     mock.mockResolvedValue({ from: vi.fn().mockReturnValue({ select }) })
 
-    const inFn = vi.fn().mockResolvedValue({ data: [] })
-    const adminSelect = vi.fn().mockReturnValue({ in: inFn })
-    adminMock.mockReturnValue({ from: vi.fn().mockReturnValue({ select: adminSelect }) })
+    const profilesInFn = vi.fn().mockResolvedValue({ data: [], error: null })
+    const profilesSelectFn = vi.fn().mockReturnValue({ in: profilesInFn })
+    const pendingInFn = vi.fn().mockResolvedValue({ data: [], error: null })
+    const pendingSelectFn = vi.fn().mockReturnValue({ in: pendingInFn })
+    adminMock.mockReturnValue({
+      from: vi.fn().mockImplementation((table: string) => {
+        if (table === 'profiles') return { select: profilesSelectFn }
+        if (table === 'pending_org_node_invitations') return { select: pendingSelectFn }
+        throw new Error(`Unexpected admin table: ${table}`)
+      }),
+    })
 
     const result = await getNodesForOrg('org-1')
     expect(result[0].members[0].email).toBeNull()
+    expect(result[0].pendingInvites).toEqual([])
   })
 
   it('throws when query errors', async () => {
@@ -132,6 +150,103 @@ describe('getNodesForOrg', () => {
     const eq = vi.fn().mockReturnValue({ order })
     const select = vi.fn().mockReturnValue({ eq })
     mock.mockResolvedValue({ from: vi.fn().mockReturnValue({ select }) })
+
+    await expect(getNodesForOrg('org-1')).rejects.toThrow()
+  })
+
+  it('attaches pendingInvites to each node', async () => {
+    const nodes = [
+      { id: 'n1', org_id: 'org-1', parent_id: null, name: 'Eng', node_type: null,
+        created_at: '2024-01-01', org_node_members: [] },
+    ]
+    const order = vi.fn().mockResolvedValue({ data: nodes, error: null })
+    const eq = vi.fn().mockReturnValue({ order })
+    const select = vi.fn().mockReturnValue({ eq })
+    mock.mockResolvedValue({ from: vi.fn().mockReturnValue({ select }) })
+
+    // No members → profiles short-circuits; only pending_org_node_invitations calls .in()
+    const pendingInFn = vi.fn().mockResolvedValue({ data: [
+      { id: 'inv-1', node_id: 'n1', invited_email: 'x@x.com' },
+    ], error: null })
+    const pendingSelectFn = vi.fn().mockReturnValue({ in: pendingInFn })
+    adminMock.mockReturnValue({
+      from: vi.fn().mockImplementation((table: string) => {
+        if (table === 'pending_org_node_invitations') return { select: pendingSelectFn }
+        return { select: vi.fn().mockReturnValue({ in: vi.fn().mockResolvedValue({ data: [], error: null }) }) }
+      }),
+    })
+
+    const result = await getNodesForOrg('org-1')
+    expect(result[0].pendingInvites).toEqual([{ id: 'inv-1', invited_email: 'x@x.com' }])
+  })
+
+  it('returns empty pendingInvites when none exist', async () => {
+    const nodes = [
+      { id: 'n1', org_id: 'org-1', parent_id: null, name: 'Eng', node_type: null,
+        created_at: '2024-01-01', org_node_members: [] },
+    ]
+    const order = vi.fn().mockResolvedValue({ data: nodes, error: null })
+    const eq = vi.fn().mockReturnValue({ order })
+    const select = vi.fn().mockReturnValue({ eq })
+    mock.mockResolvedValue({ from: vi.fn().mockReturnValue({ select }) })
+
+    // No members → profiles short-circuits; only pending_org_node_invitations calls .in()
+    const pendingInFn = vi.fn().mockResolvedValue({ data: [], error: null })
+    const pendingSelectFn = vi.fn().mockReturnValue({ in: pendingInFn })
+    adminMock.mockReturnValue({
+      from: vi.fn().mockImplementation((table: string) => {
+        if (table === 'pending_org_node_invitations') return { select: pendingSelectFn }
+        return { select: vi.fn().mockReturnValue({ in: vi.fn().mockResolvedValue({ data: [], error: null }) }) }
+      }),
+    })
+
+    const result = await getNodesForOrg('org-1')
+    expect(result[0].pendingInvites).toEqual([])
+  })
+
+  it('throws when profiles query errors', async () => {
+    const nodes = [
+      { id: 'n1', org_id: 'org-1', parent_id: null, name: 'Eng', node_type: null,
+        created_at: '2024-01-01', org_node_members: [{ user_id: 'u1' }] },
+    ]
+    const order = vi.fn().mockResolvedValue({ data: nodes, error: null })
+    const eq = vi.fn().mockReturnValue({ order })
+    const select = vi.fn().mockReturnValue({ eq })
+    mock.mockResolvedValue({ from: vi.fn().mockReturnValue({ select }) })
+
+    const profilesInFn = vi.fn().mockResolvedValue({ data: null, error: { message: 'db error' } })
+    const profilesSelectFn = vi.fn().mockReturnValue({ in: profilesInFn })
+    const pendingInFn = vi.fn().mockResolvedValue({ data: [], error: null })
+    const pendingSelectFn = vi.fn().mockReturnValue({ in: pendingInFn })
+    adminMock.mockReturnValue({
+      from: vi.fn().mockImplementation((table: string) => {
+        if (table === 'profiles') return { select: profilesSelectFn }
+        if (table === 'pending_org_node_invitations') return { select: pendingSelectFn }
+        throw new Error(`Unexpected admin table: ${table}`)
+      }),
+    })
+
+    await expect(getNodesForOrg('org-1')).rejects.toThrow()
+  })
+
+  it('throws when pending invites query errors', async () => {
+    const nodes = [
+      { id: 'n1', org_id: 'org-1', parent_id: null, name: 'Eng', node_type: null,
+        created_at: '2024-01-01', org_node_members: [] },
+    ]
+    const order = vi.fn().mockResolvedValue({ data: nodes, error: null })
+    const eq = vi.fn().mockReturnValue({ order })
+    const select = vi.fn().mockReturnValue({ eq })
+    mock.mockResolvedValue({ from: vi.fn().mockReturnValue({ select }) })
+
+    const pendingInFn = vi.fn().mockResolvedValue({ data: null, error: { message: 'db error' } })
+    const pendingSelectFn = vi.fn().mockReturnValue({ in: pendingInFn })
+    adminMock.mockReturnValue({
+      from: vi.fn().mockImplementation((table: string) => {
+        if (table === 'pending_org_node_invitations') return { select: pendingSelectFn }
+        return { select: vi.fn().mockReturnValue({ in: vi.fn().mockResolvedValue({ data: [], error: null }) }) }
+      }),
+    })
 
     await expect(getNodesForOrg('org-1')).rejects.toThrow()
   })

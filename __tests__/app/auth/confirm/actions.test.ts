@@ -6,6 +6,10 @@ const mocks = vi.hoisted(() => ({
   pendingSelect: vi.fn(),
   pendingDelete: vi.fn(),
   connectionsInsert: vi.fn(),
+  nodeInvitesSelect: vi.fn(),
+  nodeInvitesDelete: vi.fn(),
+  orgMembersUpsert: vi.fn(),
+  nodeMembersInsert: vi.fn(),
 }))
 
 vi.mock('@/lib/supabase/server', () => ({
@@ -30,6 +34,18 @@ vi.mock('@/lib/supabase/admin', () => ({
       if (table === 'connections') {
         return { insert: mocks.connectionsInsert }
       }
+      if (table === 'pending_org_node_invitations') {
+        return {
+          select: () => ({ eq: mocks.nodeInvitesSelect }),
+          delete: () => ({ eq: mocks.nodeInvitesDelete }),
+        }
+      }
+      if (table === 'org_members') {
+        return { upsert: mocks.orgMembersUpsert }
+      }
+      if (table === 'org_node_members') {
+        return { insert: mocks.nodeMembersInsert }
+      }
       return {}
     },
   }),
@@ -49,6 +65,10 @@ describe('confirmLogin', () => {
     mocks.pendingSelect.mockResolvedValue({ data: [], error: null })
     mocks.pendingDelete.mockResolvedValue({ error: null })
     mocks.connectionsInsert.mockResolvedValue({ error: null })
+    mocks.nodeInvitesSelect.mockResolvedValue({ data: [], error: null })
+    mocks.nodeInvitesDelete.mockResolvedValue({ error: null })
+    mocks.orgMembersUpsert.mockResolvedValue({ error: null })
+    mocks.nodeMembersInsert.mockResolvedValue({ error: null })
   })
 
   it('redirects to /login when token_hash is missing', async () => {
@@ -159,5 +179,120 @@ describe('confirmLogin', () => {
     await expect(confirmLogin(fd)).rejects.toThrow(
       'NEXT_REDIRECT:/auth/confirm?error=access_denied'
     )
+  })
+})
+
+describe('confirmLogin — pending_org_node_invitations processing', () => {
+  beforeEach(() => {
+    vi.resetModules()
+    vi.clearAllMocks()
+    mocks.profilesUpsert.mockResolvedValue({ error: null })
+    mocks.pendingSelect.mockResolvedValue({ data: [], error: null })
+    mocks.pendingDelete.mockResolvedValue({ error: null })
+    mocks.connectionsInsert.mockResolvedValue({ error: null })
+    mocks.nodeInvitesSelect.mockResolvedValue({ data: [], error: null })
+    mocks.nodeInvitesDelete.mockResolvedValue({ error: null })
+    mocks.orgMembersUpsert.mockResolvedValue({ error: null })
+    mocks.nodeMembersInsert.mockResolvedValue({ error: null })
+  })
+
+  it('inserts into org_members and org_node_members for each pending org node invite', async () => {
+    mocks.verifyOtp.mockResolvedValue({
+      data: { user: { id: 'new-user', email: 'new@example.com' } },
+      error: null,
+    })
+    mocks.nodeInvitesSelect.mockResolvedValue({
+      data: [{ id: 'ni-1', org_id: 'org-1', node_id: 'node-1' }],
+      error: null,
+    })
+
+    const { confirmLogin } = await import('@/app/auth/confirm/actions')
+    const fd = new FormData()
+    fd.set('token_hash', 'abc123')
+    await expect(confirmLogin(fd)).rejects.toThrow('NEXT_REDIRECT:/dashboard')
+
+    expect(mocks.orgMembersUpsert).toHaveBeenCalledWith(
+      { org_id: 'org-1', user_id: 'new-user', role: 'member' },
+      { onConflict: 'org_id,user_id', ignoreDuplicates: true }
+    )
+    expect(mocks.nodeMembersInsert).toHaveBeenCalledWith(
+      { node_id: 'node-1', user_id: 'new-user' }
+    )
+    expect(mocks.nodeInvitesDelete).toHaveBeenCalledWith('invited_email', 'new@example.com')
+  })
+
+  it('still redirects to /dashboard when node invite SELECT fails', async () => {
+    mocks.verifyOtp.mockResolvedValue({
+      data: { user: { id: 'new-user', email: 'new@example.com' } },
+      error: null,
+    })
+    mocks.nodeInvitesSelect.mockResolvedValue({ data: null, error: { message: 'DB error' } })
+
+    const { confirmLogin } = await import('@/app/auth/confirm/actions')
+    const fd = new FormData()
+    fd.set('token_hash', 'abc123')
+    await expect(confirmLogin(fd)).rejects.toThrow('NEXT_REDIRECT:/dashboard')
+    expect(mocks.nodeMembersInsert).not.toHaveBeenCalled()
+  })
+
+  it('does not delete invites when none found', async () => {
+    mocks.verifyOtp.mockResolvedValue({
+      data: { user: { id: 'new-user', email: 'new@example.com' } },
+      error: null,
+    })
+    // nodeInvitesSelect default: { data: [], error: null }
+
+    const { confirmLogin } = await import('@/app/auth/confirm/actions')
+    const fd = new FormData()
+    fd.set('token_hash', 'abc123')
+    await expect(confirmLogin(fd)).rejects.toThrow('NEXT_REDIRECT:/dashboard')
+    expect(mocks.nodeMembersInsert).not.toHaveBeenCalled()
+    expect(mocks.nodeInvitesDelete).not.toHaveBeenCalled()
+  })
+
+  it('skips node insert and continues when org_members upsert fails', async () => {
+    mocks.verifyOtp.mockResolvedValue({
+      data: { user: { id: 'new-user', email: 'new@example.com' } },
+      error: null,
+    })
+    mocks.nodeInvitesSelect.mockResolvedValue({
+      data: [
+        { id: 'ni-1', org_id: 'org-1', node_id: 'node-1' },
+        { id: 'ni-2', org_id: 'org-2', node_id: 'node-2' },
+      ],
+      error: null,
+    })
+    mocks.orgMembersUpsert.mockResolvedValueOnce({ error: { message: 'upsert failed' } })
+    mocks.orgMembersUpsert.mockResolvedValueOnce({ error: null })
+
+    const { confirmLogin } = await import('@/app/auth/confirm/actions')
+    const fd = new FormData()
+    fd.set('token_hash', 'abc123')
+    await expect(confirmLogin(fd)).rejects.toThrow('NEXT_REDIRECT:/dashboard')
+
+    // First invite: orgMembersUpsert failed → skipped nodeMembersInsert
+    // Second invite: orgMembersUpsert succeeded → nodeMembersInsert called once
+    expect(mocks.nodeMembersInsert).toHaveBeenCalledTimes(1)
+    expect(mocks.nodeMembersInsert).toHaveBeenCalledWith({ node_id: 'node-2', user_id: 'new-user' })
+  })
+
+  it('still redirects to /dashboard when org_node_members insert returns a non-23505 error', async () => {
+    mocks.verifyOtp.mockResolvedValue({
+      data: { user: { id: 'new-user', email: 'new@example.com' } },
+      error: null,
+    })
+    mocks.nodeInvitesSelect.mockResolvedValue({
+      data: [{ id: 'ni-1', org_id: 'org-1', node_id: 'node-1' }],
+      error: null,
+    })
+    mocks.nodeMembersInsert.mockResolvedValue({ error: { code: '99999', message: 'unexpected error' } })
+
+    const { confirmLogin } = await import('@/app/auth/confirm/actions')
+    const fd = new FormData()
+    fd.set('token_hash', 'abc123')
+    await expect(confirmLogin(fd)).rejects.toThrow('NEXT_REDIRECT:/dashboard')
+    expect(mocks.nodeMembersInsert).toHaveBeenCalledTimes(1)
+    // Still deletes the pending invites row even though node insert errored
+    expect(mocks.nodeInvitesDelete).toHaveBeenCalledWith('invited_email', 'new@example.com')
   })
 })
