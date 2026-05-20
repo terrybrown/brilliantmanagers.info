@@ -110,6 +110,28 @@ describe('confirmLogin', () => {
       status: 'active',
       initiated_by: 'inviter-2',
     })
+    expect(mocks.pendingDelete).toHaveBeenCalledWith('invited_email', 'new@example.com')
+  })
+
+  it('creates multiple connections and deletes once when there are multiple pending invites', async () => {
+    mocks.verifyOtp.mockResolvedValue({
+      data: { user: { id: 'new-user', email: 'new@example.com' } },
+      error: null,
+    })
+    mocks.pendingSelect.mockResolvedValue({
+      data: [
+        { id: 'inv-1', inviter_id: 'inviter-1', inviter_role: 'manager' },
+        { id: 'inv-2', inviter_id: 'inviter-2', inviter_role: 'direct_report' },
+      ],
+      error: null,
+    })
+    const { confirmLogin } = await import('@/app/auth/confirm/actions')
+    const fd = new FormData()
+    fd.set('token_hash', 'abc123')
+    await expect(confirmLogin(fd)).rejects.toThrow('NEXT_REDIRECT:/dashboard')
+    expect(mocks.connectionsInsert).toHaveBeenCalledTimes(2)
+    expect(mocks.pendingDelete).toHaveBeenCalledTimes(1)
+    expect(mocks.pendingDelete).toHaveBeenCalledWith('invited_email', 'new@example.com')
   })
 
   it('redirects to error page when verifyOtp fails', async () => {

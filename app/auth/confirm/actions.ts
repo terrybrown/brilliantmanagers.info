@@ -30,10 +30,14 @@ export async function confirmLogin(formData: FormData) {
     )
 
     const admin = createAdminClient()
-    const { data: invites } = await admin
+    const { data: invites, error: invitesError } = await admin
       .from('pending_invitations')
       .select('*')
       .eq('invited_email', user.email)
+
+    if (invitesError) {
+      console.error('Failed to fetch pending invitations:', invitesError)
+    }
 
     if (invites && invites.length > 0) {
       for (const invite of invites) {
@@ -51,6 +55,8 @@ export async function confirmLogin(formData: FormData) {
           console.error('Failed to activate pending connection:', error)
         }
       }
+    }
+    if (invites !== null) {
       await admin
         .from('pending_invitations')
         .delete()
