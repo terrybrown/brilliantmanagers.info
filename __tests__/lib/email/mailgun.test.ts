@@ -8,7 +8,7 @@ describe('sendEmail', () => {
   beforeEach(() => {
     vi.stubEnv('MAILGUN_DOMAIN', 'mg.example.com')
     vi.stubEnv('MAILGUN_BASE_URL', 'https://api.eu.mailgun.net')
-    vi.stubEnv('MAILGUN_SENDING_KEY', 'test-sending-key')
+    vi.stubEnv('MAILGUN_API_KEY', 'test-api-key')
     vi.stubEnv('MAILGUN_FROM_EMAIL', 'noreply@example.com')
     mockFetch.mockResolvedValue({ ok: true, text: async () => '' })
   })
@@ -23,11 +23,11 @@ describe('sendEmail', () => {
     )
   })
 
-  it('sets Basic auth header using MAILGUN_SENDING_KEY', async () => {
+  it('sets Basic auth header using MAILGUN_API_KEY', async () => {
     const { sendEmail } = await import('@/lib/email/mailgun')
     await sendEmail({ to: 'x@y.com', subject: 'S', html: '<p></p>' })
     const [, init] = mockFetch.mock.calls[0]
-    const expected = `Basic ${Buffer.from('api:test-sending-key').toString('base64')}`
+    const expected = `Basic ${Buffer.from('api:test-api-key').toString('base64')}`
     expect(init.headers['Authorization']).toBe(expected)
   })
 
