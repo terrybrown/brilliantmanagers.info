@@ -27,7 +27,7 @@ function makeConn(overrides: Partial<EnrichedConnection>): EnrichedConnection {
 
 describe('YourConnections', () => {
   it('shows Invite your manager when no manager connected', () => {
-    render(<YourConnections connections={emptyConns} roundSummaries={{}} userId="u1" />)
+    render(<YourConnections connections={emptyConns} roundSummaries={{}} userId="u1" pendingInvitations={[]} />)
     expect(screen.getByText('Invite your manager')).toBeInTheDocument()
   })
 
@@ -36,7 +36,7 @@ describe('YourConnections', () => {
     render(
       <YourConnections
         connections={{ asManager: [], asDirectReport: [conn] }}
-        roundSummaries={{}} userId="u1"
+        roundSummaries={{}} userId="u1" pendingInvitations={[]}
       />
     )
     expect(screen.getByText('The Manager')).toBeInTheDocument()
@@ -50,7 +50,7 @@ describe('YourConnections', () => {
     render(
       <YourConnections
         connections={{ asManager: [], asDirectReport: [conn] }}
-        roundSummaries={{}} userId="u1"
+        roundSummaries={{}} userId="u1" pendingInvitations={[]}
       />
     )
     expect(screen.getByText(/pending/i)).toBeInTheDocument()
@@ -65,7 +65,7 @@ describe('YourConnections', () => {
     render(
       <YourConnections
         connections={{ asManager: [conn], asDirectReport: [] }}
-        roundSummaries={{ dr1: summary }} userId="u1"
+        roundSummaries={{ dr1: summary }} userId="u1" pendingInvitations={[]}
       />
     )
     expect(screen.getByText('The Report')).toBeInTheDocument()
@@ -77,7 +77,7 @@ describe('YourConnections', () => {
     render(
       <YourConnections
         connections={{ asManager: [conn], asDirectReport: [] }}
-        roundSummaries={{}} userId="u1"
+        roundSummaries={{}} userId="u1" pendingInvitations={[]}
       />
     )
     expect(screen.getByRole('button', { name: /accept/i })).toBeInTheDocument()
