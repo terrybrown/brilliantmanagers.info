@@ -156,7 +156,7 @@ describe('cancelPendingOrgNodeInvitationAction', () => {
 
     await cancelPendingOrgNodeInvitationAction(fd)
 
-    expect(mocks.deletePendingById).toHaveBeenCalledWith('inv-1')
+    expect(mocks.deletePendingById).toHaveBeenCalledWith('inv-1', 'org-1')
     expect(mocks.revalidatePath).toHaveBeenCalledWith('/people')
   })
 

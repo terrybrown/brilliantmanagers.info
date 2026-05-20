@@ -100,23 +100,26 @@ describe('deletePendingOrgNodeInvitationById', () => {
     vi.clearAllMocks()
   })
 
-  it('deletes by id using admin client', async () => {
-    const eq = vi.fn().mockResolvedValue({ error: null })
-    const del = vi.fn().mockReturnValue({ eq })
+  it('deletes by id and org_id using admin client', async () => {
+    const eq2 = vi.fn().mockResolvedValue({ error: null })
+    const eq1 = vi.fn().mockReturnValue({ eq: eq2 })
+    const del = vi.fn().mockReturnValue({ eq: eq1 })
     adminMock.mockReturnValue({ from: vi.fn().mockReturnValue({ delete: del }) })
 
     const { deletePendingOrgNodeInvitationById } = await import('@/lib/db/pending-org-node-invitations')
-    await deletePendingOrgNodeInvitationById('inv-1')
+    await deletePendingOrgNodeInvitationById('inv-1', 'org-1')
 
-    expect(eq).toHaveBeenCalledWith('id', 'inv-1')
+    expect(eq1).toHaveBeenCalledWith('id', 'inv-1')
+    expect(eq2).toHaveBeenCalledWith('org_id', 'org-1')
   })
 
   it('throws on error', async () => {
-    const eq = vi.fn().mockResolvedValue({ error: { message: 'db error' } })
-    const del = vi.fn().mockReturnValue({ eq })
+    const eq2 = vi.fn().mockResolvedValue({ error: { message: 'db error' } })
+    const eq1 = vi.fn().mockReturnValue({ eq: eq2 })
+    const del = vi.fn().mockReturnValue({ eq: eq1 })
     adminMock.mockReturnValue({ from: vi.fn().mockReturnValue({ delete: del }) })
 
     const { deletePendingOrgNodeInvitationById } = await import('@/lib/db/pending-org-node-invitations')
-    await expect(deletePendingOrgNodeInvitationById('inv-1')).rejects.toThrow()
+    await expect(deletePendingOrgNodeInvitationById('inv-1', 'org-1')).rejects.toThrow()
   })
 })

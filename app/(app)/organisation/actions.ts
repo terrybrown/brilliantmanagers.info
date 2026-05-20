@@ -147,7 +147,7 @@ export async function cancelPendingOrgNodeInvitationAction(formData: FormData): 
   if (!orgId || !invitationId) return
 
   const actor = await requireOrgAdmin(orgId)
-  await deletePendingOrgNodeInvitationById(invitationId)
+  await deletePendingOrgNodeInvitationById(invitationId, orgId)
   await logAudit({ actorId: actor.id, action: 'org_node_invite.cancel', entityType: 'org_node', entityId: invitationId })
   revalidatePath('/people')
 }

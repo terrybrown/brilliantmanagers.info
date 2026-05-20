@@ -13,7 +13,7 @@ export async function createPendingOrgNodeInvitation(params: {
     .upsert(
       {
         inviter_id: params.inviterId,
-        invited_email: params.invitedEmail,
+        invited_email: params.invitedEmail.toLowerCase(),
         org_id: params.orgId,
         node_id: params.nodeId,
       },
@@ -43,11 +43,12 @@ export async function deletePendingOrgNodeInvitationsByEmail(email: string): Pro
   if (error) throw error
 }
 
-export async function deletePendingOrgNodeInvitationById(id: string): Promise<void> {
+export async function deletePendingOrgNodeInvitationById(id: string, orgId: string): Promise<void> {
   const admin = createAdminClient()
   const { error } = await admin
     .from('pending_org_node_invitations')
     .delete()
     .eq('id', id)
+    .eq('org_id', orgId)
   if (error) throw error
 }
