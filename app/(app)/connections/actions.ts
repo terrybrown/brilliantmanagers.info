@@ -23,6 +23,7 @@ async function getDisplayName(
   return data?.display_name ?? fallback
 }
 
+
 export async function inviteConnection(
   _prevState: InviteState,
   formData: FormData
