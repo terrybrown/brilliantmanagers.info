@@ -10,7 +10,6 @@ vi.mock('@/lib/supabase/server', () => ({
 describe('createPendingInvitation', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    vi.resetModules()
     mockFrom.mockReturnValue({ insert: mockInsert })
     mockInsert.mockResolvedValue({ error: null })
   })

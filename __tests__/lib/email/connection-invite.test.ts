@@ -38,7 +38,7 @@ describe('buildConnectionInviteEmail', () => {
       toEmail: 'bob@example.com',
       inviterRole: 'direct_report',
     })
-    expect(html).toContain('manager')
+    expect(html).toContain('invited you as their manager')
   })
 
   it('includes the personal message when provided', () => {
