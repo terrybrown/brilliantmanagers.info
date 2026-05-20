@@ -1,6 +1,7 @@
 'use server'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 
 export async function confirmLogin(formData: FormData) {
   const tokenHash = formData.get('token_hash') as string | null
@@ -27,6 +28,44 @@ export async function confirmLogin(formData: FormData) {
       },
       { onConflict: 'id' }
     )
+
+    if (!user.email) {
+      redirect('/dashboard')
+    }
+
+    const admin = createAdminClient()
+    const { data: invites, error: invitesError } = await admin
+      .from('pending_invitations')
+      .select('*')
+      .eq('invited_email', user.email)
+
+    if (invitesError) {
+      console.error('Failed to fetch pending invitations:', invitesError)
+    }
+
+    if (invites && invites.length > 0) {
+      for (const invite of invites) {
+        const managerId =
+          invite.inviter_role === 'manager' ? invite.inviter_id : user.id
+        const directReportId =
+          invite.inviter_role === 'direct_report' ? invite.inviter_id : user.id
+        const { error } = await admin.from('connections').insert({
+          manager_id: managerId,
+          direct_report_id: directReportId,
+          status: 'active',
+          initiated_by: invite.inviter_id,
+        })
+        if (error && error.code !== '23505') {
+          console.error('Failed to activate pending connection:', error)
+        }
+      }
+    }
+    if (invites !== null) {
+      await admin
+        .from('pending_invitations')
+        .delete()
+        .eq('invited_email', user.email)
+    }
   }
 
   redirect('/dashboard')
