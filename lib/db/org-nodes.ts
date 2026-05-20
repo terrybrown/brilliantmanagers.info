@@ -103,6 +103,9 @@ export async function getNodesForOrg(orgId: string): Promise<OrgNode[]> {
       .in('node_id', nodeIds),
   ])
 
+  if (profilesResult.error) throw profilesResult.error
+  if (pendingResult.error) throw pendingResult.error
+
   const profileMap = new Map<string, { email: string | null; display_name: string | null }>()
   for (const p of profilesResult.data ?? []) profileMap.set(p.id, p)
 
