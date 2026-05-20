@@ -55,7 +55,6 @@ export async function inviteConnection(
 
     const { subject, html } = buildConnectionInviteEmail({
       fromName,
-      toEmail: email,
       inviterRole: role,
       personalMessage: message || undefined,
     })

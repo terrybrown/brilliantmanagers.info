@@ -134,6 +134,20 @@ describe('confirmLogin', () => {
     expect(mocks.pendingDelete).toHaveBeenCalledWith('invited_email', 'new@example.com')
   })
 
+  it('redirects to /dashboard and does not insert connections when pending_invitations SELECT fails', async () => {
+    mocks.verifyOtp.mockResolvedValue({
+      data: { user: { id: 'user-1', email: 'user@example.com' } },
+      error: null,
+    })
+    mocks.pendingSelect.mockResolvedValue({ data: null, error: { message: 'DB error' } })
+    const { confirmLogin } = await import('@/app/auth/confirm/actions')
+    const fd = new FormData()
+    fd.set('token_hash', 'abc123')
+    await expect(confirmLogin(fd)).rejects.toThrow('NEXT_REDIRECT:/dashboard')
+    expect(mocks.connectionsInsert).not.toHaveBeenCalled()
+    expect(mocks.pendingDelete).not.toHaveBeenCalled()
+  })
+
   it('redirects to error page when verifyOtp fails', async () => {
     mocks.verifyOtp.mockResolvedValue({
       data: { user: null },

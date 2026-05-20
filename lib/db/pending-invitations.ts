@@ -11,6 +11,9 @@ export async function createPendingInvitation(params: {
     invited_email: params.invitedEmail,
     inviter_role: params.inviterRole,
   })
-  if (error) return { error: error.message }
+  if (error) {
+    if (error.code === '23505') return { error: 'You have already invited this person.' }
+    return { error: error.message }
+  }
   return {}
 }

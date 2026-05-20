@@ -40,4 +40,15 @@ describe('createPendingInvitation', () => {
     })
     expect(result).toEqual({ error: 'DB error' })
   })
+
+  it('returns a friendly error message on duplicate invite', async () => {
+    mockInsert.mockResolvedValueOnce({ error: { code: '23505', message: 'duplicate key ...' } })
+    const { createPendingInvitation } = await import('@/lib/db/pending-invitations')
+    const result = await createPendingInvitation({
+      inviterId: 'user-1',
+      invitedEmail: 'new@example.com',
+      inviterRole: 'manager',
+    })
+    expect(result).toEqual({ error: 'You have already invited this person.' })
+  })
 })

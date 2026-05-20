@@ -29,6 +29,10 @@ export async function confirmLogin(formData: FormData) {
       { onConflict: 'id' }
     )
 
+    if (!user.email) {
+      redirect('/dashboard')
+    }
+
     const admin = createAdminClient()
     const { data: invites, error: invitesError } = await admin
       .from('pending_invitations')

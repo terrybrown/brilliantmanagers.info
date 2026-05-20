@@ -117,7 +117,7 @@ describe('inviteConnection', () => {
     fd.set('role', 'manager')
     await inviteConnection({ success: false }, fd)
     expect(vi.mocked(buildConnectionInviteEmail)).toHaveBeenCalledWith(
-      expect.objectContaining({ fromName: 'Alice', inviterRole: 'manager', toEmail: 'nobody@example.com' })
+      expect.objectContaining({ fromName: 'Alice', inviterRole: 'manager' })
     )
     expect(sendEmail).toHaveBeenCalledOnce()
   })

@@ -1,7 +1,6 @@
 // lib/email/templates/connection-invite.ts
 interface ConnectionInviteEmailParams {
   fromName: string
-  toEmail: string
   inviterRole: 'manager' | 'direct_report'
   personalMessage?: string
 }
