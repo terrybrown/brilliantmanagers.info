@@ -52,9 +52,9 @@ export async function updateOrgNameAction(formData: FormData): Promise<void> {
 
 export async function createNodeAction(formData: FormData): Promise<void> {
   const orgId = formData.get('orgId') as string
-  const parentId = (formData.get('parentId') as string) || null
+  const parentId = (formData.get('parentId') as string | null) || null
   const name = (formData.get('name') as string).trim()
-  const nodeType = (formData.get('nodeType') as string).trim() || null
+  const nodeType = (formData.get('nodeType') as string | null)?.trim() || null
 
   if (!orgId || !name) return
   const user = await requireOrgAdmin(orgId)
@@ -68,7 +68,7 @@ export async function renameNodeAction(formData: FormData): Promise<void> {
   const orgId = formData.get('orgId') as string
   const nodeId = formData.get('nodeId') as string
   const name = (formData.get('name') as string).trim()
-  const nodeType = (formData.get('nodeType') as string).trim() || null
+  const nodeType = (formData.get('nodeType') as string | null)?.trim() || null
 
   if (!orgId || !nodeId || !name) return
   const user = await requireOrgAdmin(orgId)
