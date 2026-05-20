@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { getConnectionsForUser } from '@/lib/db/connections'
+import { getPendingInvitationsForInviter } from '@/lib/db/pending-invitations'
 import { getOrgsForUser } from '@/lib/db/organisations'
 import { getNodesForOrg } from '@/lib/db/org-nodes'
 import { getOrgRole } from '@/lib/auth/roles'
@@ -18,9 +19,10 @@ export default async function PeoplePage() {
   } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
-  const [connections, orgs] = await Promise.all([
+  const [connections, orgs, pendingInvitations] = await Promise.all([
     getConnectionsForUser(user.id),
     getOrgsForUser(user.id),
+    getPendingInvitationsForInviter(user.id),
   ])
 
   const directReportIds = (connections.asManager as EnrichedConnection[])
@@ -43,6 +45,7 @@ export default async function PeoplePage() {
         connections={connections as { asManager: EnrichedConnection[]; asDirectReport: EnrichedConnection[] }}
         roundSummaries={roundSummaries}
         userId={user.id}
+        pendingInvitations={pendingInvitations}
       />
 
       <div style={{ margin: '32px 0', borderTop: '1px solid rgba(255,255,255,0.07)' }} />
