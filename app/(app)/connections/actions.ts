@@ -2,11 +2,15 @@
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
 import { createConnection, acceptConnection } from '@/lib/db/connections'
+import { createPendingInvitation } from '@/lib/db/pending-invitations'
 import { logAudit } from '@/lib/audit'
 import { sendEmail } from '@/lib/email/mailgun'
 import { buildManagerInviteEmail } from '@/lib/email/templates/manager-invite'
+import { buildConnectionInviteEmail } from '@/lib/email/templates/connection-invite'
 
 export type InviteState = { success: boolean; error?: string }
+
+const NO_ACCOUNT_ERROR = 'No account found for that email. Ask them to sign up first.'
 
 export async function inviteConnection(
   _prevState: InviteState,
@@ -27,6 +31,45 @@ export async function inviteConnection(
     otherEmail: email,
     initiatorRole: role,
   })
+
+  if (error === NO_ACCOUNT_ERROR) {
+    const { error: inviteError } = await createPendingInvitation({
+      inviterId: user.id,
+      invitedEmail: email,
+      inviterRole: role,
+    })
+    if (inviteError) return { success: false, error: inviteError }
+
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('display_name')
+      .eq('id', user.id)
+      .single()
+    const fromName = profile?.display_name ?? user.email ?? 'A colleague'
+
+    const { subject, html } = buildConnectionInviteEmail({
+      fromName,
+      toEmail: email,
+      inviterRole: role,
+      personalMessage: message || undefined,
+    })
+    try {
+      await sendEmail({ to: email, subject, html })
+    } catch (e) {
+      console.error('Connection invite email failed:', e)
+    }
+
+    await logAudit({
+      actorId: user.id,
+      action: 'connection.invite_pending',
+      entityType: 'pending_invitation',
+      metadata: { otherEmail: email, inviterRole: role },
+    })
+
+    revalidatePath('/people')
+    return { success: true }
+  }
+
   if (error) return { success: false, error }
 
   await logAudit({

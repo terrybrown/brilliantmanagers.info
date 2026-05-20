@@ -20,6 +20,10 @@ vi.mock('@/lib/db/connections', () => ({
   acceptConnection: vi.fn().mockResolvedValue({}),
 }))
 
+vi.mock('@/lib/db/pending-invitations', () => ({
+  createPendingInvitation: vi.fn().mockResolvedValue({}),
+}))
+
 vi.mock('@/lib/audit', () => ({
   logAudit: vi.fn().mockResolvedValue(undefined),
 }))
@@ -32,6 +36,10 @@ vi.mock('@/lib/email/templates/manager-invite', () => ({
   buildManagerInviteEmail: vi.fn().mockReturnValue({ subject: 'S', html: '<p></p>' }),
 }))
 
+vi.mock('@/lib/email/templates/connection-invite', () => ({
+  buildConnectionInviteEmail: vi.fn().mockReturnValue({ subject: 'S', html: '<p></p>' }),
+}))
+
 vi.mock('next/cache', () => ({ revalidatePath: vi.fn() }))
 
 describe('inviteConnection', () => {
@@ -40,7 +48,7 @@ describe('inviteConnection', () => {
     vi.resetModules()
   })
 
-  it('returns { success: true } on happy path', async () => {
+  it('returns { success: true } when connection is created for an existing user', async () => {
     const { inviteConnection } = await import('@/app/(app)/connections/actions')
     const fd = new FormData()
     fd.set('email', 'boss@example.com')
@@ -49,7 +57,7 @@ describe('inviteConnection', () => {
     expect(result).toEqual({ success: true })
   })
 
-  it('calls sendEmail when role is direct_report', async () => {
+  it('calls sendEmail with the manager-invite template when role is direct_report and user exists', async () => {
     const { sendEmail } = await import('@/lib/email/mailgun')
     const { inviteConnection } = await import('@/app/(app)/connections/actions')
     const fd = new FormData()
@@ -59,7 +67,7 @@ describe('inviteConnection', () => {
     expect(sendEmail).toHaveBeenCalledOnce()
   })
 
-  it('does NOT call sendEmail when role is manager', async () => {
+  it('does NOT call sendEmail when role is manager and user exists', async () => {
     const { sendEmail } = await import('@/lib/email/mailgun')
     const { inviteConnection } = await import('@/app/(app)/connections/actions')
     const fd = new FormData()
@@ -69,15 +77,68 @@ describe('inviteConnection', () => {
     expect(sendEmail).not.toHaveBeenCalled()
   })
 
-  it('returns { success: false, error } when createConnection fails', async () => {
+  it('creates a pending invitation when no account is found, and returns success', async () => {
     const { createConnection } = await import('@/lib/db/connections')
-    vi.mocked(createConnection).mockResolvedValueOnce({ error: 'No account found for that email. Ask them to sign up first.' })
+    vi.mocked(createConnection).mockResolvedValueOnce({
+      error: 'No account found for that email. Ask them to sign up first.',
+    })
+    const { createPendingInvitation } = await import('@/lib/db/pending-invitations')
+    const { inviteConnection } = await import('@/app/(app)/connections/actions')
+    const fd = new FormData()
+    fd.set('email', 'nobody@example.com')
+    fd.set('role', 'direct_report')
+    const result = await inviteConnection({ success: false }, fd)
+    expect(result).toEqual({ success: true })
+    expect(vi.mocked(createPendingInvitation)).toHaveBeenCalledWith({
+      inviterId: 'user-1',
+      invitedEmail: 'nobody@example.com',
+      inviterRole: 'direct_report',
+    })
+  })
+
+  it('sends the connection-invite email when no account is found', async () => {
+    const { createConnection } = await import('@/lib/db/connections')
+    vi.mocked(createConnection).mockResolvedValueOnce({
+      error: 'No account found for that email. Ask them to sign up first.',
+    })
+    const { sendEmail } = await import('@/lib/email/mailgun')
+    const { buildConnectionInviteEmail } = await import('@/lib/email/templates/connection-invite')
+    const { inviteConnection } = await import('@/app/(app)/connections/actions')
+    const fd = new FormData()
+    fd.set('email', 'nobody@example.com')
+    fd.set('role', 'manager')
+    await inviteConnection({ success: false }, fd)
+    expect(vi.mocked(buildConnectionInviteEmail)).toHaveBeenCalledWith(
+      expect.objectContaining({ inviterRole: 'manager', toEmail: 'nobody@example.com' })
+    )
+    expect(sendEmail).toHaveBeenCalledOnce()
+  })
+
+  it('returns { success: false, error } for non-account errors from createConnection', async () => {
+    const { createConnection } = await import('@/lib/db/connections')
+    vi.mocked(createConnection).mockResolvedValueOnce({ error: 'Connection already exists.' })
+    const { inviteConnection } = await import('@/app/(app)/connections/actions')
+    const fd = new FormData()
+    fd.set('email', 'existing@example.com')
+    fd.set('role', 'direct_report')
+    const result = await inviteConnection({ success: false }, fd)
+    expect(result.success).toBe(false)
+    expect(result.error).toBe('Connection already exists.')
+  })
+
+  it('returns { success: false, error } when createPendingInvitation fails', async () => {
+    const { createConnection } = await import('@/lib/db/connections')
+    vi.mocked(createConnection).mockResolvedValueOnce({
+      error: 'No account found for that email. Ask them to sign up first.',
+    })
+    const { createPendingInvitation } = await import('@/lib/db/pending-invitations')
+    vi.mocked(createPendingInvitation).mockResolvedValueOnce({ error: 'DB write failed' })
     const { inviteConnection } = await import('@/app/(app)/connections/actions')
     const fd = new FormData()
     fd.set('email', 'nobody@example.com')
     fd.set('role', 'direct_report')
     const result = await inviteConnection({ success: false }, fd)
     expect(result.success).toBe(false)
-    expect(result.error).toContain('No account')
+    expect(result.error).toBe('DB write failed')
   })
 })
