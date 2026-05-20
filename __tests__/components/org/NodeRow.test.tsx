@@ -1,5 +1,5 @@
 import { render, screen, fireEvent } from '@testing-library/react'
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { NodeRow } from '@/components/org/NodeRow'
 import type { OrgNodeWithChildren } from '@/components/org/NodeRow'
 
@@ -43,6 +43,10 @@ const defaultProps = {
 }
 
 describe('NodeRow', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
   it('renders the node name', () => {
     render(<NodeRow {...defaultProps} />)
     expect(screen.getByText('Engineering')).toBeInTheDocument()
@@ -116,5 +120,35 @@ describe('NodeRow', () => {
     }
     render(<NodeRow {...defaultProps} node={nodeWithChildren} renderNode={renderNode} isCollapsed={true} />)
     expect(screen.queryByText('child-content')).toBeNull()
+  })
+
+  it('shows "saving…" indicator for provisional nodes', () => {
+    const provisionalNode: OrgNodeWithChildren = {
+      ...baseNode,
+      id: 'provisional-123',
+      name: 'New Team',
+    }
+    render(<NodeRow {...defaultProps} node={provisionalNode} />)
+    expect(screen.getByText(/saving/i)).toBeInTheDocument()
+  })
+
+  it('disables the + child button for provisional nodes', () => {
+    const provisionalNode: OrgNodeWithChildren = {
+      ...baseNode,
+      id: 'provisional-123',
+      name: 'New Team',
+    }
+    render(<NodeRow {...defaultProps} node={provisionalNode} />)
+    expect(screen.getByRole('button', { name: /\+ child/i })).toBeDisabled()
+  })
+
+  it('does not render MemberStack for provisional nodes', () => {
+    const provisionalNode: OrgNodeWithChildren = {
+      ...baseNode,
+      id: 'provisional-123',
+      name: 'New Team',
+    }
+    render(<NodeRow {...defaultProps} node={provisionalNode} />)
+    expect(screen.queryByTestId('member-stack')).toBeNull()
   })
 })

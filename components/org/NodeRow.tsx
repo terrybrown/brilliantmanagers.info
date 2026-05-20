@@ -1,4 +1,5 @@
 'use client'
+import type { ReactNode } from 'react'
 import type { OrgNode } from '@/lib/db/org-nodes'
 import { MemberStack } from './MemberStack'
 import { AddNodeForm } from './AddNodeForm'
@@ -19,7 +20,7 @@ interface NodeRowProps {
   openChildFormId: string | null
   setOpenChildFormId: (id: string | null) => void
   addNodeFormAction: (parentId: string) => (formData: FormData) => Promise<void>
-  renderNode: (node: OrgNodeWithChildren, depth: number) => React.ReactNode
+  renderNode: (node: OrgNodeWithChildren, depth: number) => ReactNode
 }
 
 export function NodeRow({
@@ -36,9 +37,9 @@ export function NodeRow({
   addNodeFormAction,
   renderNode,
 }: NodeRowProps) {
-  const isChildFormOpen = openChildFormId === node.id
-  const isMemberPanelOpen = openMemberPanelId === node.id
   const isProvisional = node.id.startsWith('provisional-')
+  const isChildFormOpen = openChildFormId === node.id && !isProvisional
+  const isMemberPanelOpen = openMemberPanelId === node.id
 
   const paddingLeft = 14 + depth * 18
 
