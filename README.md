@@ -71,6 +71,7 @@ Outstanding features and known gaps:
 
 Features that have shipped:
 
+- **Invite unregistered users** *(May 2026)*: Inviting a connection whose email has no account now sends them an invite email with a registration link. Their connection activates automatically when they verify their OTP — no manual coordination required.
 - **User feedback** *(May 2026)*: Sleekplan feedback widget integrated into all authenticated app pages. Users can submit ideas, view the roadmap, and report bugs without leaving the product.
 
 ## License
