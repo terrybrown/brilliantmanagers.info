@@ -10,6 +10,14 @@ interface EmailContent {
   html: string
 }
 
+function esc(str: string): string {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+}
+
 export function buildOrgNodeInviteEmail({
   inviterName,
   orgName,
@@ -17,6 +25,10 @@ export function buildOrgNodeInviteEmail({
 }: OrgNodeInviteEmailParams): EmailContent {
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://brilliantmanagers.info'
   const signUpUrl = `${appUrl}/login`
+
+  const escapedInviterName = esc(inviterName)
+  const escapedOrgName = esc(orgName)
+  const escapedNodeName = esc(nodeName)
 
   const html = `<!DOCTYPE html>
 <html>
@@ -30,9 +42,9 @@ export function buildOrgNodeInviteEmail({
       <div style="padding:32px;">
         <p style="margin:0 0 16px;color:#e2e8f0;font-size:16px;">Hi there,</p>
         <p style="margin:0 0 16px;color:#cbd5e1;font-size:15px;line-height:1.6;">
-          <strong style="color:#f1f5f9;">${inviterName}</strong> has added you to the
-          <strong style="color:#f1f5f9;">${nodeName}</strong> group within
-          <strong style="color:#f1f5f9;">${orgName}</strong> on Brilliant Managers.
+          <strong style="color:#f1f5f9;">${escapedInviterName}</strong> has added you to the
+          <strong style="color:#f1f5f9;">${escapedNodeName}</strong> group within
+          <strong style="color:#f1f5f9;">${escapedOrgName}</strong> on Brilliant Managers.
         </p>
         <p style="margin:0 0 24px;color:#cbd5e1;font-size:15px;line-height:1.6;">
           When you sign in, you'll be placed there automatically.
@@ -41,7 +53,7 @@ export function buildOrgNodeInviteEmail({
           <a href="${signUpUrl}"
              style="display:inline-block;padding:12px 24px;background:#4f46e5;color:#fff;
                     font-weight:600;font-size:15px;text-decoration:none;border-radius:8px;">
-            Join ${orgName} →
+            Join ${escapedOrgName} →
           </a>
         </div>
         <p style="margin:0;color:#4b5563;font-size:13px;line-height:1.5;">
