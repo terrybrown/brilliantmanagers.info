@@ -1,6 +1,7 @@
-import { render, screen, fireEvent } from '@testing-library/react'
+import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { describe, it, expect, vi } from 'vitest'
 import { MemberStack } from '@/components/org/MemberStack'
+import { addMemberToNodeAction } from '@/app/(app)/organisation/actions'
 import type { OrgNode } from '@/lib/db/org-nodes'
 
 vi.mock('@/app/(app)/organisation/actions', () => ({
@@ -118,6 +119,9 @@ describe('MemberStack', () => {
     )
     expect(screen.getByText('Alice')).toBeInTheDocument()
     expect(screen.getByPlaceholderText(/add member by email/i)).toBeInTheDocument()
+    // The confirmed member chip should have a ✕ remove button
+    const removeButtons = screen.getAllByRole('button', { name: '✕' })
+    expect(removeButtons.length).toBeGreaterThan(0)
   })
 
   it('shows pending invite chips labelled "awaiting registration"', () => {
@@ -134,5 +138,29 @@ describe('MemberStack', () => {
     )
     expect(screen.getByText('pending@x.com')).toBeInTheDocument()
     expect(screen.getByText(/awaiting registration/i)).toBeInTheDocument()
+    // The pending invite chip should have a ✕ cancel button
+    expect(screen.getByRole('button', { name: '✕' })).toBeInTheDocument()
+  })
+
+  it('shows an error message when addMemberToNodeAction returns an error', async () => {
+    vi.mocked(addMemberToNodeAction).mockResolvedValueOnce({ error: 'User not found' })
+
+    render(
+      <MemberStack
+        members={[]}
+        pendingInvites={[{ id: 'inv-1', invited_email: 'pending@x.com' }]}
+        nodeId="n1"
+        orgId="org-1"
+        isAdmin={true}
+        isOpen={true}
+        onToggle={vi.fn()}
+      />
+    )
+
+    const emailInput = screen.getByPlaceholderText(/add member by email/i)
+    fireEvent.change(emailInput, { target: { value: 'notfound@x.com' } })
+    fireEvent.submit(emailInput.closest('form')!)
+
+    await waitFor(() => expect(screen.getByText('User not found')).toBeInTheDocument())
   })
 })

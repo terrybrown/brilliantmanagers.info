@@ -110,7 +110,7 @@ export function MemberStack({
             +{overflow}
           </div>
         )}
-        {pendingInvites.length > 0 && members.length === 0 && (
+        {pendingInvites.length > 0 && (
           <div
             style={{
               width: AVATAR_SIZE,
