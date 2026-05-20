@@ -19,8 +19,7 @@ const NAV_ICONS: Record<string, React.ElementType> = {
 const APP_ROUTES = [
   '/dashboard',
   '/growth',
-  '/connections',
-  '/organisation',
+  '/people',
   '/profile',
   '/scorecard',
   '/results',

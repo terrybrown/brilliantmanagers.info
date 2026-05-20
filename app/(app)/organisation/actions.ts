@@ -19,7 +19,7 @@ async function getUser() {
 async function requireOrgAdmin(orgId: string) {
   const user = await getUser()
   const role = await getOrgRole(user.id, orgId)
-  if (role !== 'org_admin') redirect('/organisation')
+  if (role !== 'org_admin') redirect('/people')
   return user
 }
 
@@ -32,7 +32,7 @@ export async function createOrgAction(formData: FormData): Promise<void> {
 
   const org = await createOrg(name)
   await logAudit({ actorId: user.id, action: 'org.create', entityType: 'organisation', entityId: org.id, metadata: { name } })
-  revalidatePath('/organisation')
+  revalidatePath('/people')
 }
 
 // ── Org settings ─────────────────────────────────────────────────────────────
@@ -45,7 +45,7 @@ export async function updateOrgNameAction(formData: FormData): Promise<void> {
   const user = await requireOrgAdmin(orgId)
   await updateOrgName(orgId, name)
   await logAudit({ actorId: user.id, action: 'org.update', entityType: 'organisation', entityId: orgId, metadata: { name } })
-  revalidatePath('/organisation')
+  revalidatePath('/people')
 }
 
 // ── Node management ───────────────────────────────────────────────────────────
@@ -61,7 +61,7 @@ export async function createNodeAction(formData: FormData): Promise<void> {
 
   const node = await createNode({ orgId, parentId, name, nodeType })
   await logAudit({ actorId: user.id, action: 'org_node.create', entityType: 'org_node', entityId: node.id, metadata: { name, nodeType, parentId } })
-  revalidatePath('/organisation')
+  revalidatePath('/people')
 }
 
 export async function renameNodeAction(formData: FormData): Promise<void> {
@@ -75,7 +75,7 @@ export async function renameNodeAction(formData: FormData): Promise<void> {
 
   await renameNode(nodeId, orgId, name, nodeType)
   await logAudit({ actorId: user.id, action: 'org_node.update', entityType: 'org_node', entityId: nodeId, metadata: { name, nodeType } })
-  revalidatePath('/organisation')
+  revalidatePath('/people')
 }
 
 export async function deleteNodeAction(formData: FormData): Promise<void> {
@@ -86,7 +86,7 @@ export async function deleteNodeAction(formData: FormData): Promise<void> {
   const user = await requireOrgAdmin(orgId)
   await deleteNode(nodeId, orgId)
   await logAudit({ actorId: user.id, action: 'org_node.delete', entityType: 'org_node', entityId: nodeId })
-  revalidatePath('/organisation')
+  revalidatePath('/people')
 }
 
 // ── Member management ─────────────────────────────────────────────────────────
@@ -110,7 +110,7 @@ export async function addMemberToNodeAction(formData: FormData): Promise<{ error
 
   await addUserToNode({ nodeId, userId: profile.id, actorId: actor.id })
   await logAudit({ actorId: actor.id, action: 'org_node_member.add', entityType: 'org_node_member', entityId: nodeId, metadata: { email } })
-  revalidatePath('/organisation')
+  revalidatePath('/people')
   return {}
 }
 
@@ -123,7 +123,7 @@ export async function removeMemberFromNodeAction(formData: FormData): Promise<vo
   const actor = await requireOrgAdmin(orgId)
   await removeUserFromNode(nodeId, userId)
   await logAudit({ actorId: actor.id, action: 'org_node_member.remove', entityType: 'org_node_member', entityId: nodeId, metadata: { userId } })
-  revalidatePath('/organisation')
+  revalidatePath('/people')
 }
 
 export async function promoteMemberAction(formData: FormData): Promise<void> {
@@ -134,7 +134,7 @@ export async function promoteMemberAction(formData: FormData): Promise<void> {
   const actor = await requireOrgAdmin(orgId)
   await setOrgRole(orgId, userId, 'org_admin')
   await logAudit({ actorId: actor.id, action: 'org_member.promote', entityType: 'org_member', entityId: userId, metadata: { orgId } })
-  revalidatePath('/organisation')
+  revalidatePath('/people')
 }
 
 // Void wrapper — used as a plain form action in server components where the
@@ -145,7 +145,7 @@ export async function addMemberToNodeVoidAction(formData: FormData): Promise<voi
   const orgId = formData.get('orgId') as string
   const result = await addMemberToNodeAction(formData)
   if (result.error) {
-    redirect(`/organisation?org=${orgId}&addError=${encodeURIComponent(result.error)}`)
+    redirect(`/people?org=${orgId}&addError=${encodeURIComponent(result.error)}`)
   }
 }
 
@@ -158,5 +158,5 @@ export async function demoteMemberAction(formData: FormData): Promise<void> {
   if (actor.id === userId) return // Cannot demote self
   await setOrgRole(orgId, userId, 'member')
   await logAudit({ actorId: actor.id, action: 'org_member.demote', entityType: 'org_member', entityId: userId, metadata: { orgId } })
-  revalidatePath('/organisation')
+  revalidatePath('/people')
 }
