@@ -100,13 +100,16 @@ describe('getNodesForOrg', () => {
     const select = vi.fn().mockReturnValue({ eq })
     mock.mockResolvedValue({ from: vi.fn().mockReturnValue({ select }) })
 
-    const inFn = vi.fn().mockResolvedValue({ data: [{ id: 'u1', email: 'a@x.com', display_name: 'Alice' }] })
+    const inFn = vi.fn()
+      .mockResolvedValueOnce({ data: [{ id: 'u1', email: 'a@x.com', display_name: 'Alice' }] }) // profiles
+      .mockResolvedValueOnce({ data: [] })  // pending invites (empty)
     const adminSelect = vi.fn().mockReturnValue({ in: inFn })
     adminMock.mockReturnValue({ from: vi.fn().mockReturnValue({ select: adminSelect }) })
 
     const result = await getNodesForOrg('org-1')
     expect(result).toHaveLength(1)
     expect(result[0].members[0].email).toBe('a@x.com')
+    expect(result[0].pendingInvites).toEqual([])
   })
 
   it('returns null profile fields when profile not found', async () => {
@@ -119,12 +122,15 @@ describe('getNodesForOrg', () => {
     const select = vi.fn().mockReturnValue({ eq })
     mock.mockResolvedValue({ from: vi.fn().mockReturnValue({ select }) })
 
-    const inFn = vi.fn().mockResolvedValue({ data: [] })
+    const inFn = vi.fn()
+      .mockResolvedValueOnce({ data: [] })  // profiles (empty)
+      .mockResolvedValueOnce({ data: [] })  // pending invites (empty)
     const adminSelect = vi.fn().mockReturnValue({ in: inFn })
     adminMock.mockReturnValue({ from: vi.fn().mockReturnValue({ select: adminSelect }) })
 
     const result = await getNodesForOrg('org-1')
     expect(result[0].members[0].email).toBeNull()
+    expect(result[0].pendingInvites).toEqual([])
   })
 
   it('throws when query errors', async () => {
@@ -134,5 +140,47 @@ describe('getNodesForOrg', () => {
     mock.mockResolvedValue({ from: vi.fn().mockReturnValue({ select }) })
 
     await expect(getNodesForOrg('org-1')).rejects.toThrow()
+  })
+
+  it('attaches pendingInvites to each node', async () => {
+    const nodes = [
+      { id: 'n1', org_id: 'org-1', parent_id: null, name: 'Eng', node_type: null,
+        created_at: '2024-01-01', org_node_members: [] },
+    ]
+    const order = vi.fn().mockResolvedValue({ data: nodes, error: null })
+    const eq = vi.fn().mockReturnValue({ order })
+    const select = vi.fn().mockReturnValue({ eq })
+    mock.mockResolvedValue({ from: vi.fn().mockReturnValue({ select }) })
+
+    // No members → profiles short-circuits without calling .in(); only pending_org_node_invitations calls .in()
+    const inFn = vi.fn()
+      .mockResolvedValueOnce({ data: [
+        { id: 'inv-1', node_id: 'n1', invited_email: 'x@x.com' },
+      ] })  // pending invites (only .in() call)
+    const adminSelect = vi.fn().mockReturnValue({ in: inFn })
+    adminMock.mockReturnValue({ from: vi.fn().mockReturnValue({ select: adminSelect }) })
+
+    const result = await getNodesForOrg('org-1')
+    expect(result[0].pendingInvites).toEqual([{ id: 'inv-1', invited_email: 'x@x.com' }])
+  })
+
+  it('returns empty pendingInvites when none exist', async () => {
+    const nodes = [
+      { id: 'n1', org_id: 'org-1', parent_id: null, name: 'Eng', node_type: null,
+        created_at: '2024-01-01', org_node_members: [] },
+    ]
+    const order = vi.fn().mockResolvedValue({ data: nodes, error: null })
+    const eq = vi.fn().mockReturnValue({ order })
+    const select = vi.fn().mockReturnValue({ eq })
+    mock.mockResolvedValue({ from: vi.fn().mockReturnValue({ select }) })
+
+    // No members → profiles short-circuits without calling .in(); only pending_org_node_invitations calls .in()
+    const inFn = vi.fn()
+      .mockResolvedValueOnce({ data: [] })  // pending invites (only .in() call)
+    const adminSelect = vi.fn().mockReturnValue({ in: inFn })
+    adminMock.mockReturnValue({ from: vi.fn().mockReturnValue({ select: adminSelect }) })
+
+    const result = await getNodesForOrg('org-1')
+    expect(result[0].pendingInvites).toEqual([])
   })
 })

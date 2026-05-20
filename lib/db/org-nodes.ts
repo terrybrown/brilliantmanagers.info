@@ -28,6 +28,7 @@ export interface OrgNode {
   node_type: string | null
   created_at: string
   members: { user_id: string; email: string | null; display_name: string | null }[]
+  pendingInvites: { id: string; invited_email: string }[]
 }
 
 export async function createNode(params: {
@@ -50,7 +51,7 @@ export async function createNode(params: {
   if (error) throw error
   if (!data) throw new Error('No data returned from org_nodes insert')
   const raw = data as RawNodeInsertRow
-  return { ...raw, members: [] }
+  return { ...raw, members: [], pendingInvites: [] }
 }
 
 // Caller must verify org_admin role — RLS enforces this for user-scoped clients.
@@ -89,14 +90,27 @@ export async function getNodesForOrg(orgId: string): Promise<OrgNode[]> {
   if (nodes.length === 0) return []
 
   const allUserIds = [...new Set(nodes.flatMap(n => n.org_node_members.map(m => m.user_id)))]
+  const nodeIds = nodes.map(n => n.id)
+  const adminSupabase = createAdminClient()
+
+  const [profilesResult, pendingResult] = await Promise.all([
+    allUserIds.length > 0
+      ? adminSupabase.from('profiles').select('id, email, display_name').in('id', allUserIds)
+      : Promise.resolve({ data: [] as { id: string; email: string | null; display_name: string | null }[] }),
+    adminSupabase
+      .from('pending_org_node_invitations')
+      .select('id, node_id, invited_email')
+      .in('node_id', nodeIds),
+  ])
+
   const profileMap = new Map<string, { email: string | null; display_name: string | null }>()
-  if (allUserIds.length > 0) {
-    const adminSupabase = createAdminClient()
-    const { data: profiles } = await adminSupabase
-      .from('profiles')
-      .select('id, email, display_name')
-      .in('id', allUserIds)
-    for (const p of profiles ?? []) profileMap.set(p.id, p)
+  for (const p of profilesResult.data ?? []) profileMap.set(p.id, p)
+
+  const pendingByNodeId = new Map<string, { id: string; invited_email: string }[]>()
+  for (const invite of (pendingResult.data ?? []) as { id: string; node_id: string; invited_email: string }[]) {
+    const existing = pendingByNodeId.get(invite.node_id) ?? []
+    existing.push({ id: invite.id, invited_email: invite.invited_email })
+    pendingByNodeId.set(invite.node_id, existing)
   }
 
   return nodes.map(node => ({
@@ -111,5 +125,6 @@ export async function getNodesForOrg(orgId: string): Promise<OrgNode[]> {
       email: profileMap.get(m.user_id)?.email ?? null,
       display_name: profileMap.get(m.user_id)?.display_name ?? null,
     })),
+    pendingInvites: pendingByNodeId.get(node.id) ?? [],
   }))
 }
