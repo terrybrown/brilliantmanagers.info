@@ -95,4 +95,11 @@ describe('getPendingInvitationsForInviter', () => {
     const result = await getPendingInvitationsForInviter('user-1')
     expect(result).toEqual([])
   })
+
+  it('returns [] when data is null and error is null', async () => {
+    mockEq.mockResolvedValueOnce({ data: null, error: null })
+    const { getPendingInvitationsForInviter } = await import('@/lib/db/pending-invitations')
+    const result = await getPendingInvitationsForInviter('user-1')
+    expect(result).toEqual([])
+  })
 })

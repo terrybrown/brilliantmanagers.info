@@ -18,7 +18,7 @@ export async function getPendingInvitationsForInviter(inviterId: string): Promis
     console.error('getPendingInvitationsForInviter error:', error)
     return []
   }
-  return data as PendingInvitation[]
+  return (data ?? []) as PendingInvitation[]
 }
 
 export async function createPendingInvitation(params: {

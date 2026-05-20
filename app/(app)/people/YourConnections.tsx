@@ -93,7 +93,7 @@ export function YourConnections({ connections, roundSummaries, userId, pendingIn
 
   const activeDirectReports = connections.asManager.filter(c => c.status === 'active')
 
-  const pendingInvitedManager = pendingInvitations.find(p => p.inviter_role === 'direct_report')
+  const pendingInvitedManagers = pendingInvitations.filter(p => p.inviter_role === 'direct_report')
   const pendingInvitedDirectReports = pendingInvitations.filter(p => p.inviter_role === 'manager')
 
   return (
@@ -228,30 +228,36 @@ export function YourConnections({ connections, roundSummaries, userId, pendingIn
               Pending
             </span>
           </div>
-        ) : pendingInvitedManager ? (
-          <div
-            style={{
-              display: 'flex', alignItems: 'center', gap: 10,
-              background: 'rgba(245,158,11,0.06)',
-              border: '1px dashed rgba(245,158,11,0.35)', borderRadius: 8, padding: '12px 14px',
-            }}
-          >
-            <div style={{ flex: 1 }}>
-              <p style={{ fontWeight: 600, fontSize: 13, color: '#f1f5f9', margin: 0 }}>
-                {pendingInvitedManager.invited_email}
-              </p>
-              <p style={{ fontSize: 11, color: '#9ca3af', margin: '2px 0 0' }}>
-                Invite sent — awaiting registration
-              </p>
-            </div>
-            <span
-              style={{
-                fontSize: 11, background: 'rgba(245,158,11,0.12)',
-                color: '#f59e0b', padding: '3px 8px', borderRadius: 5,
-              }}
-            >
-              Awaiting registration
-            </span>
+        ) : pendingInvitedManagers.length > 0 ? (
+          <div className="flex flex-col gap-3">
+            {pendingInvitedManagers.map(invite => (
+              <div
+                key={invite.id}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 10,
+                  background: 'rgba(245,158,11,0.06)',
+                  border: '1px dashed rgba(245,158,11,0.35)', borderRadius: 8, padding: '12px 14px',
+                }}
+              >
+                <Avatar name={invite.invited_email} color="#4f46e5" />
+                <div style={{ flex: 1 }}>
+                  <p style={{ fontWeight: 600, fontSize: 13, color: '#f1f5f9', margin: 0 }}>
+                    {invite.invited_email}
+                  </p>
+                  <p style={{ fontSize: 11, color: '#9ca3af', margin: '2px 0 0' }}>
+                    Invite sent — awaiting registration
+                  </p>
+                </div>
+                <span
+                  style={{
+                    fontSize: 11, background: 'rgba(245,158,11,0.12)',
+                    color: '#f59e0b', padding: '3px 8px', borderRadius: 5,
+                  }}
+                >
+                  Awaiting registration
+                </span>
+              </div>
+            ))}
           </div>
         ) : (
           <div
@@ -307,6 +313,7 @@ export function YourConnections({ connections, roundSummaries, userId, pendingIn
                   border: '1px dashed rgba(245,158,11,0.35)', borderRadius: 8, padding: '12px 14px',
                 }}
               >
+                <Avatar name={p.invited_email} />
                 <div style={{ flex: 1 }}>
                   <p style={{ fontWeight: 600, fontSize: 13, color: '#f1f5f9', margin: 0 }}>
                     {p.invited_email}
