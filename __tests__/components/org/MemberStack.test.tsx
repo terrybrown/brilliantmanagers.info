@@ -32,6 +32,40 @@ describe('MemberStack', () => {
     expect(screen.getByText('0 people')).toBeInTheDocument()
   })
 
+  it('calls onToggle when admin clicks "0 people"', () => {
+    const onToggle = vi.fn()
+    render(
+      <MemberStack
+        members={[]}
+        pendingInvites={[]}
+        nodeId="n1"
+        orgId="org-1"
+        isAdmin={true}
+        isOpen={false}
+        onToggle={onToggle}
+      />
+    )
+    fireEvent.click(screen.getByText('0 people'))
+    expect(onToggle).toHaveBeenCalledTimes(1)
+  })
+
+  it('does not call onToggle when non-admin clicks "0 people"', () => {
+    const onToggle = vi.fn()
+    render(
+      <MemberStack
+        members={[]}
+        pendingInvites={[]}
+        nodeId="n1"
+        orgId="org-1"
+        isAdmin={false}
+        isOpen={false}
+        onToggle={onToggle}
+      />
+    )
+    fireEvent.click(screen.getByText('0 people'))
+    expect(onToggle).not.toHaveBeenCalled()
+  })
+
   it('renders avatar circles for members', () => {
     const members = [makeMember('u1', 'Alice'), makeMember('u2', 'Bob'), makeMember('u3', 'Carol')]
     render(

@@ -54,7 +54,16 @@ export function MemberStack({
 
   if (members.length === 0 && pendingInvites.length === 0) {
     return (
-      <span style={{ color: '#4b5563', fontSize: 11 }}>0 people</span>
+      <span
+        onClick={isAdmin ? onToggle : undefined}
+        style={{
+          color: '#4b5563',
+          fontSize: 11,
+          cursor: isAdmin ? 'pointer' : 'default',
+        }}
+      >
+        0 people
+      </span>
     )
   }
 
