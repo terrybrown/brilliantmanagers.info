@@ -65,13 +65,14 @@ Outstanding features and known gaps:
 - **Fix Organisations**: The multi-org flow has known issues that need investigation and fixing.
 - **Growth section — polish**: Active Goals, Top Opportunities, and the Skills Table are built. Remaining: progress tracking over time (will link to Reflections data once that ships), and goal evidence/check-in improvements.
 - **Toast notifications**: Surface action confirmations and errors as toast notifications — likely [Sonner via shadcn/ui](https://ui.shadcn.com/docs/components/radix/sonner).
-- **Reflections page**: A dedicated page showing upcoming and past reflection schedules. Round creation should default the title to `QX YYYY` (based on the current quarter) with the option to edit before saving. See [design spec](docs/superpowers/specs/2026-05-21-reflections-page-design.md).
+- **Reflection detail — skill drill-down**: The `/reflections/[id]` pillar table should expand each row to reveal individual skill scores. Each expanded pillar shows: skill name, your level/score, manager score and gap (when available), a sparkline of that skill's score across all previous rounds, and a Δ badge showing change vs the prior round. No new DB queries needed — scores are already stored at skill level.
 - **Reflection reminders — phase 2**: Email reminders for reflection rounds. One-off: email sent on a user-chosen "remind me by" date. Recurring: a cadence setting (monthly/quarterly/bi-annual) in Profile → Notifications that triggers a nudge to start a new round. The DB fields (`remind_at` on `assessment_rounds`, `reflection_cadence` on profiles) are added in the Reflections page build; this phase adds the scheduled job (Netlify cron or Supabase Edge Function) and the Profile settings UI. See [design spec](docs/superpowers/specs/2026-05-21-reflections-page-design.md#reminders-stored-not-sent--phase-2-for-delivery).
 
 ## Delivered
 
 Features that have shipped:
 
+- **Reflections page** *(May 2026)*: `/reflections` list page with active round card, 4-stat bar, trend chart with pillar tabs and manager overlay, and history table. `/reflections/[id]` detail page with radar, pillar breakdown table (your score, manager score, gap, level badge). `ScheduleWidget` replaced by `ActiveRoundCard` on the dashboard. Round creation via `CreateRoundModal` (title, remind-me date, intention).
 - **The Tool page redesign** *(May 2026)*: `/the-tool` rebuilt as the primary signup pathway — hero with "Join now" OTP form, offline fallback strip linking to Google Sheets, and three alternating feature rows with real app screenshots. Measurement pillar removed (was empty); all copy updated to five pillars.
 - **Invite unregistered users** *(May 2026)*: Inviting a connection whose email has no account now sends them an invite email with a registration link. Their connection activates automatically when they verify their OTP — no manual coordination required.
 - **User feedback** *(May 2026)*: Sleekplan feedback widget integrated into all authenticated app pages. Users can submit ideas, view the roadmap, and report bugs without leaving the product.
