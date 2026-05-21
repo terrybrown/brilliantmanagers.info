@@ -29,21 +29,26 @@ export function EvidenceLog({ planId, entries }: EvidenceLogProps) {
         <form
           action={async (fd: FormData) => {
             fd.set('plan_id', planId)
+            let succeeded = false
             try {
               await addEvidenceAction(fd)
-              trackGoalCheckin()
-              setShowForm(false)
+              succeeded = true
             } catch {
               // addEvidenceAction failed — leave the form open so the user can retry
+            }
+            if (succeeded) {
+              trackGoalCheckin()
+              setShowForm(false)
             }
           }}
           className="mb-6 rounded-xl border border-slate-700 bg-slate-800 p-4"
         >
           <div className="mb-3">
-            <label className="mb-1 block text-xs font-semibold text-slate-400">
+            <label htmlFor="what_you_did" className="mb-1 block text-xs font-semibold text-slate-400">
               What did you do?
             </label>
             <textarea
+              id="what_you_did"
               name="what_you_did"
               required
               rows={2}
@@ -51,10 +56,11 @@ export function EvidenceLog({ planId, entries }: EvidenceLogProps) {
             />
           </div>
           <div className="mb-3">
-            <label className="mb-1 block text-xs font-semibold text-slate-400">
+            <label htmlFor="impact" className="mb-1 block text-xs font-semibold text-slate-400">
               What was the impact or outcome?
             </label>
             <textarea
+              id="impact"
               name="impact"
               required
               rows={2}

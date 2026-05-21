@@ -21,16 +21,12 @@ beforeEach(() => {
 
 describe('EvidenceLog', () => {
   it('calls trackGoalCheckin after addEvidenceAction resolves', async () => {
-    const { container } = render(<EvidenceLog planId="plan-1" entries={[]} />)
+    render(<EvidenceLog planId="plan-1" entries={[]} />)
 
     fireEvent.click(screen.getByRole('button', { name: /\+ add evidence/i }))
 
-    fireEvent.change(container.querySelector('textarea[name="what_you_did"]')!, {
-      target: { value: 'Did something' },
-    })
-    fireEvent.change(container.querySelector('textarea[name="impact"]')!, {
-      target: { value: 'Positive impact' },
-    })
+    fireEvent.change(screen.getByLabelText(/what did you do/i), { target: { value: 'Did something' } })
+    fireEvent.change(screen.getByLabelText(/what was the impact/i), { target: { value: 'Positive impact' } })
 
     const form = screen.getByRole('button', { name: /^save$/i }).closest('form')!
     fireEvent.submit(form)
@@ -44,16 +40,12 @@ describe('EvidenceLog', () => {
   it('does not call trackGoalCheckin when addEvidenceAction throws', async () => {
     mockAddEvidenceAction.mockRejectedValue(new Error('server error'))
 
-    const { container } = render(<EvidenceLog planId="plan-1" entries={[]} />)
+    render(<EvidenceLog planId="plan-1" entries={[]} />)
 
     fireEvent.click(screen.getByRole('button', { name: /\+ add evidence/i }))
 
-    fireEvent.change(container.querySelector('textarea[name="what_you_did"]')!, {
-      target: { value: 'Did something' },
-    })
-    fireEvent.change(container.querySelector('textarea[name="impact"]')!, {
-      target: { value: 'Positive impact' },
-    })
+    fireEvent.change(screen.getByLabelText(/what did you do/i), { target: { value: 'Did something' } })
+    fireEvent.change(screen.getByLabelText(/what was the impact/i), { target: { value: 'Positive impact' } })
 
     const form = screen.getByRole('button', { name: /^save$/i }).closest('form')!
     fireEvent.submit(form)
