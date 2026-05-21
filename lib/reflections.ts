@@ -28,7 +28,7 @@ export interface TrendPoint {
 export interface ReflectionStats {
   totalRounds: number
   improvement: number
-  bestPillar: Pillar
+  bestPillar: Pillar | null
   managerAvg: number | null
 }
 
@@ -115,10 +115,16 @@ export function computeStats(
   managerScoresByRound: Record<string, ManagerScore[]>
 ): ReflectionStats {
   if (roundsWithScores.length === 0) {
-    return { totalRounds: 0, improvement: 0, bestPillar: 'self', managerAvg: null }
+    return { totalRounds: 0, improvement: 0, bestPillar: null, managerAvg: null }
   }
 
-  const overallByRound = roundsWithScores.map(({ scores }) =>
+  const sorted = [...roundsWithScores].sort((a, b) => {
+    const aTime = a.round.completed_at ?? a.round.created_at
+    const bTime = b.round.completed_at ?? b.round.created_at
+    return aTime.localeCompare(bTime)
+  })
+
+  const overallByRound = sorted.map(({ scores }) =>
     scores.length > 0
       ? scores.reduce((sum, s) => sum + LEVEL_VALUES[s.level as Level], 0) / scores.length
       : 0
@@ -130,7 +136,7 @@ export function computeStats(
 
   const pillarTotals: Record<string, number> = {}
   const pillarCounts: Record<string, number> = {}
-  for (const { scores } of roundsWithScores) {
+  for (const { scores } of sorted) {
     for (const pillar of PILLARS) {
       const ps = scores.filter(s => s.pillar === pillar)
       if (ps.length > 0) {
@@ -165,5 +171,5 @@ export function computeStats(
         )
       : null
 
-  return { totalRounds: roundsWithScores.length, improvement, bestPillar, managerAvg }
+  return { totalRounds: sorted.length, improvement, bestPillar, managerAvg }
 }

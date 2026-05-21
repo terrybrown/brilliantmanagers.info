@@ -24,12 +24,13 @@ function makeRound(id: string, overrides: Partial<Round> = {}): Round {
   }
 }
 
+let _idCounter = 0
 function makeScore(roundId: string, pillar: string, skillKey: string, level: 'Developing' | 'Basic' | 'Proficient' | 'Advanced' | 'Expert'): Score {
-  return { id: `s-${Math.random()}`, round_id: roundId, pillar, skill_key: skillKey, level, scored_at: '2026-03-01' }
+  return { id: `s-${++_idCounter}`, round_id: roundId, pillar, skill_key: skillKey, level, scored_at: '2026-03-01' }
 }
 
 function makeMgrScore(roundId: string, skillKey: string, level: 'Developing' | 'Basic' | 'Proficient' | 'Advanced' | 'Expert'): ManagerScore {
-  return { id: `ms-${Math.random()}`, round_id: roundId, manager_id: 'm-1', skill_key: skillKey, level, scored_at: '2026-03-01' }
+  return { id: `ms-${++_idCounter}`, round_id: roundId, manager_id: 'm-1', skill_key: skillKey, level, scored_at: '2026-03-01' }
 }
 
 describe('nextRoundTitle', () => {
@@ -96,6 +97,7 @@ describe('computeStats', () => {
     const stats = computeStats([], {})
     expect(stats.totalRounds).toBe(0)
     expect(stats.improvement).toBe(0)
+    expect(stats.bestPillar).toBeNull()
     expect(stats.managerAvg).toBeNull()
   })
 
