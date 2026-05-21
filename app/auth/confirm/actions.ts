@@ -7,11 +7,14 @@ export async function confirmLogin(formData: FormData) {
   const tokenHash = formData.get('token_hash') as string | null
   if (!tokenHash) redirect('/login')
 
+  const rawType = formData.get('type')
+  const otpType = rawType === 'signup' ? 'signup' : 'email'
+
   const supabase = await createClient()
   const {
     data: { user },
     error: verifyError,
-  } = await supabase.auth.verifyOtp({ token_hash: tokenHash, type: 'email' })
+  } = await supabase.auth.verifyOtp({ token_hash: tokenHash, type: otpType })
 
   if (verifyError) {
     redirect(

@@ -6,6 +6,7 @@ import { ConfirmButton } from './ConfirmButton'
 interface Props {
   searchParams: Promise<{
     token_hash?: string
+    code?: string
     type?: string
     error?: string
     error_description?: string
@@ -13,7 +14,14 @@ interface Props {
 }
 
 export default async function AuthConfirmPage({ searchParams }: Props) {
-  const { token_hash, error, error_description } = await searchParams
+  const { token_hash, code, type, error, error_description } = await searchParams
+
+  // PKCE signup flow: Supabase redirects here with ?code= instead of ?token_hash=
+  // Forward to /auth/callback which handles code exchange and pending invite processing
+  if (code) {
+    redirect(`/auth/callback?code=${encodeURIComponent(code)}`)
+  }
+
   if (error) {
     return (
       <div className="flex min-h-screen items-center justify-center px-4">
@@ -45,6 +53,7 @@ export default async function AuthConfirmPage({ searchParams }: Props) {
         <p className="mb-6 text-slate-500">Click below to sign in to Brilliant Managers.</p>
         <form action={confirmLogin}>
           <input type="hidden" name="token_hash" value={token_hash} />
+          <input type="hidden" name="type" value={type ?? 'email'} />
           <ConfirmButton />
         </form>
       </div>
