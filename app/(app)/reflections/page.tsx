@@ -6,6 +6,7 @@ import { getScoresForRound } from '@/lib/db/scores'
 import { getManagerScoresForAllRounds } from '@/lib/db/manager-scores'
 import { nextRoundTitle, roundLabel, computeTrendData, computeStats } from '@/lib/reflections'
 import { ActiveRoundCard } from '@/components/reflections/ActiveRoundCard'
+import { NewRoundButton } from '@/components/reflections/NewRoundButton'
 import { ReflectionsTrendChart } from '@/components/reflections/ReflectionsTrendChart'
 import { RoundsHistoryTable } from '@/components/reflections/RoundsHistoryTable'
 import type { RoundRow } from '@/components/reflections/RoundsHistoryTable'
@@ -104,6 +105,7 @@ export default async function ReflectionsPage() {
         >
           Reflections
         </h1>
+        <NewRoundButton nextRoundTitle={currentNextRoundTitle} />
       </div>
 
       {/* Active round card */}
