@@ -8,6 +8,7 @@ import { getManagerScoresForDirectReport } from '@/lib/db/manager-scores'
 import { roundLabel, computePillarScores, type RadarPillarScore } from '@/lib/reflections'
 import { ScorecardRadarChart } from '@/components/app/ScorecardRadarChart'
 import { PILLAR_LABELS, LEVELS, LEVEL_COLORS, type Level } from '@/lib/skills'
+import { ReflectionViewTracker } from '@/components/reflections/ReflectionViewTracker'
 
 export default async function ReflectionDetailPage({
   params,
@@ -52,6 +53,7 @@ export default async function ReflectionDetailPage({
 
   return (
     <div style={{ padding: '32px 36px', display: 'flex', flexDirection: 'column', gap: 24 }}>
+      <ReflectionViewTracker roundId={round.id} status={round.status} />
       {/* Breadcrumb */}
       <Link
         href="/reflections"
