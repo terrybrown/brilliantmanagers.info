@@ -1,6 +1,7 @@
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import { NextResponse, type NextRequest } from 'next/server'
+import { processPendingInvites } from '@/lib/auth/process-pending-invites'
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url)
@@ -38,6 +39,10 @@ export async function GET(request: NextRequest) {
         },
         { onConflict: 'id' }
       )
+
+      if (user.email) {
+        await processPendingInvites(user.id, user.email)
+      }
     }
   }
 
