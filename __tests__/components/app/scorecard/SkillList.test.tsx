@@ -36,6 +36,8 @@ beforeEach(() => {
   mockTrackPillarScored.mockReset()
   mockTrackScorecardCompleted.mockReset()
   mockSaveScore.mockReset()
+  ;(defaultProps.onSkillActivate as ReturnType<typeof vi.fn>).mockReset()
+  ;(defaultProps.onScore as ReturnType<typeof vi.fn>).mockReset()
 })
 
 describe('SkillList analytics', () => {
@@ -77,16 +79,13 @@ describe('SkillList analytics', () => {
 
   it('trackPillarScored NOT called when saveScore throws', async () => {
     mockSaveScore.mockRejectedValue(new Error('Server error'))
-
-    render(<SkillList {...defaultProps} />)
+    const mockOnScore = vi.fn()
+    render(<SkillList {...defaultProps} onScore={mockOnScore} />)
     fireEvent.click(screen.getByRole('button', { name: /proficient/i }))
-
-    // Wait for the async transition to settle by checking the revert callback
     await waitFor(() => {
-      expect(mockSaveScore).toHaveBeenCalled()
+      // The catch block calls onScore to revert the optimistic update
+      expect(mockOnScore).toHaveBeenCalled()
     })
-    // Give the catch block time to execute
-    await new Promise(r => setTimeout(r, 50))
     expect(mockTrackPillarScored).not.toHaveBeenCalled()
   })
 })

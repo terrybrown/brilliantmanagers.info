@@ -59,10 +59,11 @@ export async function maybeCompleteRound(roundId: string): Promise<boolean> {
 
   const scoredPillars = new Set((scores ?? []).map((s: { pillar: string }) => s.pillar))
   if (PILLARS.every(p => scoredPillars.has(p))) {
-    await supabase
+    const { error } = await supabase
       .from('assessment_rounds')
       .update({ status: 'complete', completed_at: new Date().toISOString() })
       .eq('id', roundId)
+    if (error) throw error
     return true
   }
   return false
