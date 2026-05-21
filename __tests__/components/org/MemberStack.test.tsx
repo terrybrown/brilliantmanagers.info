@@ -66,6 +66,21 @@ describe('MemberStack', () => {
     expect(onToggle).not.toHaveBeenCalled()
   })
 
+  it('shows the add-member form when admin opens the panel on an empty node', () => {
+    render(
+      <MemberStack
+        members={[]}
+        pendingInvites={[]}
+        nodeId="n1"
+        orgId="org-1"
+        isAdmin={true}
+        isOpen={true}
+        onToggle={vi.fn()}
+      />
+    )
+    expect(screen.getByPlaceholderText('Add member by email…')).toBeInTheDocument()
+  })
+
   it('renders avatar circles for members', () => {
     const members = [makeMember('u1', 'Alice'), makeMember('u2', 'Bob'), makeMember('u3', 'Carol')]
     render(
