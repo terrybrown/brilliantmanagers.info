@@ -8,6 +8,9 @@ export interface Round {
   status: 'in_progress' | 'complete'
   created_at: string
   completed_at: string | null
+  title: string | null
+  notes: string | null
+  remind_at: string | null
 }
 
 export async function getOrCreateActiveRound(userId: string): Promise<Round> {
@@ -128,4 +131,31 @@ export async function getAllCompleteRoundsWithScores(
     round,
     scores: scoresByRound.get(round.id) ?? [],
   }))
+}
+
+export async function createRound(
+  userId: string,
+  title: string,
+  notes: string | null,
+  remindAt: string | null
+): Promise<Round> {
+  const supabase = await createClient()
+  const { data, error } = await supabase
+    .from('assessment_rounds')
+    .insert({ user_id: userId, status: 'in_progress', title, notes, remind_at: remindAt })
+    .select()
+    .single()
+  if (error) throw error
+  return data as Round
+}
+
+export async function getRoundById(roundId: string, userId: string): Promise<Round | null> {
+  const supabase = await createClient()
+  const { data } = await supabase
+    .from('assessment_rounds')
+    .select('*')
+    .eq('id', roundId)
+    .eq('user_id', userId)
+    .maybeSingle()
+  return data as Round | null
 }
