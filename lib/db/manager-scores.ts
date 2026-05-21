@@ -65,7 +65,7 @@ export async function getManagerScoresForAllRounds(
     .from('manager_scores')
     .select('*')
     .in('round_id', roundIds)
-  if (error) return {}
+  if (error) throw error
   const result: Record<string, ManagerScore[]> = {}
   for (const score of (data ?? []) as ManagerScore[]) {
     const bucket = result[score.round_id] ?? []

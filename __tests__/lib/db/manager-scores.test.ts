@@ -41,10 +41,9 @@ describe('getManagerScoresForAllRounds', () => {
     expect(mockFrom).not.toHaveBeenCalled()
   })
 
-  it('returns empty record on error', async () => {
+  it('throws on DB error', async () => {
     mockIn.mockResolvedValue({ data: null, error: { message: 'DB error' } })
     const { getManagerScoresForAllRounds } = await import('@/lib/db/manager-scores')
-    const result = await getManagerScoresForAllRounds(['r-1'])
-    expect(result).toEqual({})
+    await expect(getManagerScoresForAllRounds(['r-1'])).rejects.toEqual({ message: 'DB error' })
   })
 })
