@@ -8,14 +8,17 @@ interface ActiveRoundCardProps {
   inProgressRound: Round | null
   scoredPillarCount: number
   nextRoundTitle: string
+  onNewRound?: () => void
 }
 
 export function ActiveRoundCard({
   inProgressRound,
   scoredPillarCount,
   nextRoundTitle,
+  onNewRound,
 }: ActiveRoundCardProps) {
   const [modalOpen, setModalOpen] = useState(false)
+  const handleNewRound = onNewRound ?? (() => setModalOpen(true))
 
   if (!inProgressRound) {
     return (
@@ -35,7 +38,7 @@ export function ActiveRoundCard({
             Start a new round to track your progress this quarter.
           </p>
           <button
-            onClick={() => setModalOpen(true)}
+            onClick={handleNewRound}
             aria-label={`Start ${nextRoundTitle}`}
             style={{
               display: 'inline-flex',
@@ -54,11 +57,13 @@ export function ActiveRoundCard({
             Start {nextRoundTitle} →
           </button>
         </div>
-        <CreateRoundModal
-          open={modalOpen}
-          onClose={() => setModalOpen(false)}
-          defaultTitle={nextRoundTitle}
-        />
+        {!onNewRound && (
+          <CreateRoundModal
+            open={modalOpen}
+            onClose={() => setModalOpen(false)}
+            defaultTitle={nextRoundTitle}
+          />
+        )}
       </>
     )
   }

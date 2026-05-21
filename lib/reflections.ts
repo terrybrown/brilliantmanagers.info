@@ -44,7 +44,7 @@ export function roundLabel(round: Round): string {
   return `Q${quarter} ${date.getFullYear()}`
 }
 
-function pillarAvgFromScores(scores: Score[], pillar: string): number {
+export function pillarAvgFromScores(scores: Score[], pillar: string): number {
   const ps = scores.filter(s => s.pillar === pillar)
   if (ps.length === 0) return 0
   return ps.reduce((sum, s) => sum + LEVEL_VALUES[s.level as Level], 0) / ps.length

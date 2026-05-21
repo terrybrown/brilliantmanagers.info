@@ -4,9 +4,8 @@ import { createClient } from '@/lib/supabase/server'
 import { getAllCompleteRoundsWithScores, getInProgressRound } from '@/lib/db/rounds'
 import { getScoresForRound } from '@/lib/db/scores'
 import { getManagerScoresForAllRounds } from '@/lib/db/manager-scores'
-import { nextRoundTitle, roundLabel, computeTrendData, computeStats } from '@/lib/reflections'
-import { ActiveRoundCard } from '@/components/reflections/ActiveRoundCard'
-import { NewRoundButton } from '@/components/reflections/NewRoundButton'
+import { nextRoundTitle, roundLabel, computeTrendData, computeStats, pillarAvgFromScores } from '@/lib/reflections'
+import { ReflectionsHeader } from '@/components/reflections/ReflectionsHeader'
 import { ReflectionsTrendChart } from '@/components/reflections/ReflectionsTrendChart'
 import { RoundsHistoryTable } from '@/components/reflections/RoundsHistoryTable'
 import type { RoundRow } from '@/components/reflections/RoundsHistoryTable'
@@ -57,12 +56,8 @@ export default async function ReflectionsPage() {
 
       const pillarScores = Object.fromEntries(
         PILLARS.map(pillar => {
-          const ps = scores.filter(s => s.pillar === pillar)
-          const avg =
-            ps.length > 0
-              ? ps.reduce((sum, s) => sum + LEVEL_VALUES[s.level as Level], 0) / ps.length
-              : 0
-          return [pillar, Number(avg.toFixed(1))]
+          const avg = pillarAvgFromScores(scores, pillar)
+          return [pillar, avg > 0 ? Number(avg.toFixed(1)) : undefined]
         })
       ) as Partial<Record<Pillar, number>>
 
@@ -92,24 +87,8 @@ export default async function ReflectionsPage() {
 
   return (
     <div style={{ padding: '32px 36px', display: 'flex', flexDirection: 'column', gap: 24 }}>
-      {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <h1
-          style={{
-            fontSize: 22,
-            fontWeight: 800,
-            color: '#fff',
-            letterSpacing: '-0.02em',
-            fontFamily: 'var(--font-display)',
-          }}
-        >
-          Reflections
-        </h1>
-        <NewRoundButton nextRoundTitle={currentNextRoundTitle} />
-      </div>
-
-      {/* Active round card */}
-      <ActiveRoundCard
+      {/* Header + active round card */}
+      <ReflectionsHeader
         inProgressRound={inProgressRound}
         scoredPillarCount={scoredPillarCount}
         nextRoundTitle={currentNextRoundTitle}
