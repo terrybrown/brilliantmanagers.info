@@ -4,14 +4,13 @@ import {
 } from '@/lib/guide'
 
 describe('guide helpers', () => {
-  it('GUIDE_SECTIONS lists all six sections in reading order', () => {
+  it('GUIDE_SECTIONS lists all five sections in reading order', () => {
     expect(GUIDE_SECTIONS).toEqual([
       'self',
       'team',
       'strategy',
       'communications',
       'domain-expertise',
-      'measurement',
     ])
   })
 
@@ -21,7 +20,7 @@ describe('guide helpers', () => {
   })
 
   it('getPrevNextChapters returns null next for last chapter', () => {
-    const { next } = getPrevNextChapters(['measurement'])
+    const { next } = getPrevNextChapters(['domain-expertise'])
     expect(next).toBeNull()
   })
 

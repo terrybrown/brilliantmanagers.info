@@ -1,5 +1,4 @@
 import {
-  BarChart3,
   Compass,
   Users,
   Map,
@@ -28,7 +27,6 @@ function StyledIcon({ Icon, size = 20 }: { Icon: LucideIcon; size?: number }) {
 }
 
 const SECTION_ICON_MAP: Record<string, LucideIcon> = {
-  measurement: BarChart3,
   self: Compass,
   team: Users,
   strategy: Map,

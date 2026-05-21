@@ -25,7 +25,7 @@ const BENEFIT_STRIPS: Array<{ Icon: LucideIcon; title: string; desc: string }> =
   {
     Icon: Lightbulb,
     title: 'See exactly where you stand',
-    desc: 'A radar across all six pillars shows your strengths and gaps at a glance.',
+    desc: 'A radar across all five pillars shows your strengths and gaps at a glance.',
   },
   {
     Icon: Search,
@@ -98,7 +98,7 @@ export default async function DashboardPage() {
               }}
             >
               Most managers guess at where they&apos;re strong and where they&apos;re not. Ten
-              minutes of honest self-assessment across six pillars gives you a structured picture
+              minutes of honest self-assessment across five pillars gives you a structured picture
               — and something concrete to bring to your next 1:1.
             </p>
             <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>

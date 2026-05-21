@@ -5,13 +5,11 @@ export const GUIDE_SECTIONS = [
   'strategy',
   'communications',
   'domain-expertise',
-  'measurement',
 ] as const
 
 export type GuideSection = (typeof GUIDE_SECTIONS)[number]
 
 export const GUIDE_SECTION_LABELS: Record<GuideSection, string> = {
-  measurement: 'Measurement',
   self: 'Self',
   team: 'Team',
   strategy: 'Strategy',
