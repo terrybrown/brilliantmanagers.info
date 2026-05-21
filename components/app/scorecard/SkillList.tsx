@@ -2,6 +2,7 @@
 import { useTransition } from 'react'
 import { LEVELS, LEVEL_COLORS, type Skill, type Level } from '@/lib/skills'
 import { saveScore } from '@/app/(app)/scorecard/actions'
+import { trackPillarScored, trackRoundCompleted, trackScorecardCompleted } from '@/lib/analytics'
 
 interface SkillListProps {
   skills: Skill[]
@@ -32,7 +33,12 @@ export function SkillList({
     onSkillActivate(nextSkill ? nextSkill.key : skill.key)
     startTransition(async () => {
       try {
-        await saveScore(roundId, skill.pillar, skill.key, level)
+        const { roundCompleted } = await saveScore(roundId, skill.pillar, skill.key, level)
+        trackPillarScored(skill.pillar, level)
+        if (roundCompleted) {
+          trackRoundCompleted(roundId)
+          trackScorecardCompleted()
+        }
       } catch {
         // Revert the optimistic update. previousLevel may be undefined (skill
         // was never scored); ScorecardShell.handleScore deletes the key in

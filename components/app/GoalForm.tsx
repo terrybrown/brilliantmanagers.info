@@ -5,6 +5,7 @@ import { ResourcePanel } from './ResourcePanel'
 import { saveGoalAction } from '@/app/(app)/growth/actions'
 import { SKILLS, PILLAR_LABELS, type Pillar } from '@/lib/skills'
 import type { Resource } from '@/lib/db/resources'
+import { trackGoalCreated } from '@/lib/analytics'
 
 interface GoalFormProps {
   initialSkillKey?: string
@@ -33,6 +34,7 @@ export function GoalForm({ initialSkillKey, resources, allSkillsForSelector }: G
     <form action={async (fd: FormData) => {
       fd.set('resource_ids', JSON.stringify(pinnedIds))
       if (checkinValue) fd.set('checkin_frequency_weeks', checkinValue)
+      trackGoalCreated()
       await saveGoalAction(fd)
     }}>
       <input type="hidden" name="skill_key" value={selectedSkillKey} />

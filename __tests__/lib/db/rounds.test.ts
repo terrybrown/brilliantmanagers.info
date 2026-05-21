@@ -83,6 +83,68 @@ describe('createRound', () => {
   })
 })
 
+describe('maybeCompleteRound', () => {
+  const ALL_PILLARS = ['self', 'team', 'strategy', 'communications', 'domain-expertise']
+
+  function makeScoresChain(scores: { pillar: string }[]) {
+    const scoresEq = vi.fn().mockResolvedValue({ data: scores, error: null })
+    const scoresSelect = vi.fn().mockReturnValue({ eq: scoresEq })
+    return { select: scoresSelect }
+  }
+
+  function makeUpdateChain(error: unknown) {
+    const updateEq = vi.fn().mockResolvedValue({ error })
+    const update = vi.fn().mockReturnValue({ eq: updateEq })
+    return { update }
+  }
+
+  it('returns false when not all pillars are scored', async () => {
+    vi.clearAllMocks()
+    // Only 'self' is scored — missing 4 pillars
+    mockFrom.mockImplementation((table: string) => {
+      if (table === 'scores') return makeScoresChain([{ pillar: 'self' }])
+      return makeUpdateChain(null)
+    })
+
+    const { maybeCompleteRound } = await import('@/lib/db/rounds')
+    const result = await maybeCompleteRound('round-1')
+    expect(result).toBe(false)
+  })
+
+  it('returns true and updates the round when all pillars are scored', async () => {
+    vi.clearAllMocks()
+    const allScores = ALL_PILLARS.map(pillar => ({ pillar }))
+    const updateEq = vi.fn().mockResolvedValue({ error: null })
+    const update = vi.fn().mockReturnValue({ eq: updateEq })
+
+    mockFrom.mockImplementation((table: string) => {
+      if (table === 'scores') return makeScoresChain(allScores)
+      return { update }
+    })
+
+    const { maybeCompleteRound } = await import('@/lib/db/rounds')
+    const result = await maybeCompleteRound('round-1')
+    expect(result).toBe(true)
+    expect(update).toHaveBeenCalledWith(
+      expect.objectContaining({ status: 'complete' })
+    )
+  })
+
+  it('throws when the DB update fails', async () => {
+    vi.clearAllMocks()
+    const allScores = ALL_PILLARS.map(pillar => ({ pillar }))
+    const dbError = { message: 'update failed' }
+
+    mockFrom.mockImplementation((table: string) => {
+      if (table === 'scores') return makeScoresChain(allScores)
+      return makeUpdateChain(dbError)
+    })
+
+    const { maybeCompleteRound } = await import('@/lib/db/rounds')
+    await expect(maybeCompleteRound('round-1')).rejects.toEqual(dbError)
+  })
+})
+
 describe('getRoundById', () => {
   beforeEach(() => {
     vi.clearAllMocks()

@@ -50,7 +50,7 @@ export async function getLatestCompleteRound(userId: string): Promise<Round | nu
   return data as Round | null
 }
 
-export async function maybeCompleteRound(roundId: string): Promise<void> {
+export async function maybeCompleteRound(roundId: string): Promise<boolean> {
   const supabase = await createClient()
   const { data: scores } = await supabase
     .from('scores')
@@ -59,11 +59,14 @@ export async function maybeCompleteRound(roundId: string): Promise<void> {
 
   const scoredPillars = new Set((scores ?? []).map((s: { pillar: string }) => s.pillar))
   if (PILLARS.every(p => scoredPillars.has(p))) {
-    await supabase
+    const { error } = await supabase
       .from('assessment_rounds')
       .update({ status: 'complete', completed_at: new Date().toISOString() })
       .eq('id', roundId)
+    if (error) throw error
+    return true
   }
+  return false
 }
 
 export async function getInProgressRound(userId: string): Promise<Round | null> {
