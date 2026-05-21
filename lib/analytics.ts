@@ -1,4 +1,6 @@
 // lib/analytics.ts
+import type { Pillar, Level } from '@/lib/skills'
+
 type GtagWindow = Window & { gtag?: (...args: unknown[]) => void }
 
 function gtag(event: string, params?: Record<string, unknown>) {
@@ -18,7 +20,7 @@ export function trackRoundCompleted(roundId: string) {
   gtag('reflection_round_completed', { round_id: roundId })
 }
 
-export function trackPillarScored(pillar: string, level: string) {
+export function trackPillarScored(pillar: Pillar, level: Level) {
   gtag('pillar_scored', { pillar, level })
 }
 
