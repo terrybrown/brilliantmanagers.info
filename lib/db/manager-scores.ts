@@ -55,3 +55,22 @@ export async function getManagerScoresForDirectReport(
   if (error) throw error
   return (data ?? []) as ManagerScore[]
 }
+
+export async function getManagerScoresForAllRounds(
+  roundIds: string[]
+): Promise<Record<string, ManagerScore[]>> {
+  if (roundIds.length === 0) return {}
+  const supabase = await createClient()
+  const { data, error } = await supabase
+    .from('manager_scores')
+    .select('*')
+    .in('round_id', roundIds)
+  if (error) return {}
+  const result: Record<string, ManagerScore[]> = {}
+  for (const score of (data ?? []) as ManagerScore[]) {
+    const bucket = result[score.round_id] ?? []
+    bucket.push(score)
+    result[score.round_id] = bucket
+  }
+  return result
+}
