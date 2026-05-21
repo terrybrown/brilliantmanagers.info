@@ -25,6 +25,28 @@ export interface TrendPoint {
   'mgr_domain-expertise'?: number
 }
 
+export interface RadarPillarScore {
+  pillar: Pillar
+  selfScore: number    // 0 when not scored (kept numeric for radar compatibility)
+  selfScored: boolean  // true only when user actually has scores for this pillar
+  managerScore?: number
+}
+
+export function computePillarScores(
+  scores: Score[],
+  managerScores: ManagerScore[]
+): RadarPillarScore[] {
+  return PILLARS.map(pillar => {
+    const selfAvg = pillarAvgFromScores(scores, pillar)
+    return {
+      pillar: pillar as Pillar,
+      selfScore: selfAvg,
+      selfScored: selfAvg > 0,
+      managerScore: pillarAvgFromManagerScores(managerScores, pillar as Pillar),
+    }
+  })
+}
+
 export interface ReflectionStats {
   totalRounds: number
   improvement: number

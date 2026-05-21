@@ -4,7 +4,9 @@ import {
   roundLabel,
   computeTrendData,
   computeStats,
+  computePillarScores,
 } from '@/lib/reflections'
+import { PILLARS } from '@/lib/skills'
 import type { Round } from '@/lib/db/rounds'
 import type { Score } from '@/lib/db/scores'
 import type { ManagerScore } from '@/lib/db/manager-scores'
@@ -124,5 +126,41 @@ describe('computeStats', () => {
     ]
     const stats = computeStats([{ round, scores }], { 'r-1': mgrScores })
     expect(stats.managerAvg).toBeCloseTo(4)
+  })
+})
+
+describe('computePillarScores', () => {
+  it('returns 5 entries, one per pillar', () => {
+    const result = computePillarScores([], [])
+    expect(result).toHaveLength(5)
+    expect(result.map(r => r.pillar)).toEqual(PILLARS)
+  })
+
+  it('marks pillars with no scores as selfScored: false with selfScore 0', () => {
+    const result = computePillarScores([], [])
+    expect(result.every(r => !r.selfScored && r.selfScore === 0)).toBe(true)
+  })
+
+  it('computes selfScore and sets selfScored: true for a scored pillar', () => {
+    const scores = [
+      makeScore('r-1', 'self', 'self-resilience', 'Proficient'),  // 3
+      makeScore('r-1', 'self', 'self-growth-mindset', 'Advanced'), // 4
+    ]
+    const result = computePillarScores(scores, [])
+    const selfPillar = result.find(r => r.pillar === 'self')!
+    expect(selfPillar.selfScored).toBe(true)
+    expect(selfPillar.selfScore).toBeCloseTo(3.5)
+  })
+
+  it('computes managerScore from manager scores', () => {
+    const mgrScores = [makeMgrScore('r-1', 'self-self-awareness', 'Expert')] // 5
+    const result = computePillarScores([], mgrScores)
+    const selfPillar = result.find(r => r.pillar === 'self')!
+    expect(selfPillar.managerScore).toBeCloseTo(5)
+  })
+
+  it('leaves managerScore undefined when no manager scores for that pillar', () => {
+    const result = computePillarScores([], [])
+    expect(result.every(r => r.managerScore === undefined)).toBe(true)
   })
 })
