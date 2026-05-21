@@ -54,7 +54,7 @@ export function Sidebar({ isExpanded, onToggle, isSuperAdmin = false }: SidebarP
           icon={item.icon}
           label={item.label}
           isExpanded={isExpanded}
-          id={'id' in item ? item.id : undefined}
+          id={item.id}
         />
       ))}
 

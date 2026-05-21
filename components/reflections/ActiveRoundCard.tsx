@@ -72,68 +72,66 @@ export function ActiveRoundCard({
   const pct = Math.min(100, Math.max(0, (scoredPillarCount / 5) * 100))
 
   return (
-    <>
+    <div
+      style={{
+        background: 'rgba(245,158,11,0.08)',
+        border: '1px solid rgba(245,158,11,0.25)',
+        borderRadius: 12,
+        padding: '16px 20px',
+      }}
+    >
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8, marginBottom: 4 }}>
+        <p style={{ fontSize: 14, fontWeight: 600, color: '#f59e0b' }}>{title}</p>
+        <span
+          style={{
+            fontSize: 10,
+            fontWeight: 700,
+            letterSpacing: '0.1em',
+            textTransform: 'uppercase' as const,
+            color: '#f59e0b',
+            background: 'rgba(245,158,11,0.15)',
+            borderRadius: 4,
+            padding: '2px 6px',
+          }}
+        >
+          In progress
+        </span>
+      </div>
+      <p style={{ fontSize: 12, color: '#64748b', marginBottom: 8 }}>
+        {scoredPillarCount} of 5 pillars scored
+      </p>
       <div
         style={{
-          background: 'rgba(245,158,11,0.08)',
-          border: '1px solid rgba(245,158,11,0.25)',
-          borderRadius: 12,
-          padding: '16px 20px',
+          height: 4,
+          borderRadius: 2,
+          background: 'rgba(255,255,255,0.08)',
+          marginBottom: 12,
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8, marginBottom: 4 }}>
-          <p style={{ fontSize: 14, fontWeight: 600, color: '#f59e0b' }}>{title}</p>
-          <span
-            style={{
-              fontSize: 10,
-              fontWeight: 700,
-              letterSpacing: '0.1em',
-              textTransform: 'uppercase' as const,
-              color: '#f59e0b',
-              background: 'rgba(245,158,11,0.15)',
-              borderRadius: 4,
-              padding: '2px 6px',
-            }}
-          >
-            In progress
-          </span>
-        </div>
-        <p style={{ fontSize: 12, color: '#64748b', marginBottom: 8 }}>
-          {scoredPillarCount} of 5 pillars scored
-        </p>
         <div
           style={{
-            height: 4,
+            height: '100%',
+            width: `${pct}%`,
             borderRadius: 2,
-            background: 'rgba(255,255,255,0.08)',
-            marginBottom: 12,
+            background: '#f59e0b',
           }}
-        >
-          <div
-            style={{
-              height: '100%',
-              width: `${pct}%`,
-              borderRadius: 2,
-              background: '#f59e0b',
-            }}
-          />
-        </div>
-        <Link
-          href="/scorecard"
-          aria-label="Continue to scorecard"
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: 4,
-            fontSize: 12,
-            fontWeight: 700,
-            color: '#f59e0b',
-            textDecoration: 'none',
-          }}
-        >
-          Continue →
-        </Link>
+        />
       </div>
-    </>
+      <Link
+        href="/scorecard"
+        aria-label="Continue to scorecard"
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: 4,
+          fontSize: 12,
+          fontWeight: 700,
+          color: '#f59e0b',
+          textDecoration: 'none',
+        }}
+      >
+        Continue →
+      </Link>
+    </div>
   )
 }
