@@ -1,6 +1,7 @@
 'use client'
 import { useEffect } from 'react'
 import { createRoundAction } from '@/app/(app)/reflections/actions'
+import { trackRoundStarted } from '@/lib/analytics'
 
 interface CreateRoundModalProps {
   open: boolean
@@ -20,6 +21,12 @@ export function CreateRoundModal({ open, onClose, defaultTitle }: CreateRoundMod
   }, [open, onClose])
 
   if (!open) return null
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const formData = new FormData(e.currentTarget)
+    const title = (formData.get('title') as string) || ''
+    trackRoundStarted(title)
+  }
 
   return (
     <div
@@ -55,7 +62,7 @@ export function CreateRoundModal({ open, onClose, defaultTitle }: CreateRoundMod
           Start a new reflection round
         </h2>
 
-        <form action={createRoundAction} aria-label="Create round form" className="flex flex-col gap-4">
+        <form action={createRoundAction} onSubmit={handleSubmit} aria-label="Create round form" className="flex flex-col gap-4">
           <div className="flex flex-col gap-1.5">
             <label
               htmlFor="round-title"

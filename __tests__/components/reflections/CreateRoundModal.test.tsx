@@ -8,9 +8,15 @@ vi.mock('@/app/(app)/reflections/actions', () => ({
   createRoundAction: (...args: unknown[]) => mockCreateRoundAction(...args),
 }))
 
+const mockTrackRoundStarted = vi.fn()
+vi.mock('@/lib/analytics', () => ({
+  trackRoundStarted: (...args: unknown[]) => mockTrackRoundStarted(...args),
+}))
+
 describe('CreateRoundModal', () => {
   beforeEach(() => {
     mockCreateRoundAction.mockReset()
+    mockTrackRoundStarted.mockReset()
   })
 
   it('does not render when open is false', () => {
@@ -119,5 +125,13 @@ describe('CreateRoundModal', () => {
     )
     fireEvent.keyDown(document, { key: 'Escape' })
     expect(onClose).toHaveBeenCalled()
+  })
+
+  it('calls trackRoundStarted with the title when the form is submitted', () => {
+    render(
+      <CreateRoundModal open={true} onClose={() => {}} defaultTitle="Q2 2026" />
+    )
+    fireEvent.submit(screen.getByRole('form'))
+    expect(mockTrackRoundStarted).toHaveBeenCalledWith('Q2 2026')
   })
 })
