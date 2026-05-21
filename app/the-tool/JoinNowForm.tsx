@@ -3,6 +3,8 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 
+const supabase = createClient()
+
 export function JoinNowForm() {
   const [email, setEmail] = useState('')
   const [sent, setSent] = useState(false)
@@ -13,7 +15,6 @@ export function JoinNowForm() {
     e.preventDefault()
     setError('')
     setLoading(true)
-    const supabase = createClient()
     try {
       const { error: err } = await supabase.auth.signInWithOtp({
         email,
@@ -48,7 +49,7 @@ export function JoinNowForm() {
         required
         placeholder="your@email.com"
         value={email}
-        onChange={e => setEmail(e.target.value)}
+        onChange={e => { setEmail(e.target.value); if (error) setError('') }}
         className="w-full rounded-md px-3.5 py-2.5 text-sm"
         style={{
           background: 'rgba(254,252,247,0.07)',

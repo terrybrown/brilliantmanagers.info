@@ -7,6 +7,7 @@ const GOOGLE_SHEET_URL =
   'https://docs.google.com/spreadsheets/d/1CDalSItIni0PWWcrwXzMG-CAOWzjP-1FYPdRCbswcoo/edit?usp=sharing'
 
 interface Feature {
+  id: string
   tag: string
   heading: string
   body: string
@@ -17,6 +18,7 @@ interface Feature {
 
 const FEATURES: Feature[] = [
   {
+    id: 'dashboard',
     tag: '📊 Dashboard',
     heading: 'See all five pillars at a glance',
     body: 'Your dashboard gives you the full picture — a radar across every pillar, individual scores, and a score history so you can see how far you\'ve come.',
@@ -29,6 +31,7 @@ const FEATURES: Feature[] = [
     imageRight: true,
   },
   {
+    id: 'growth',
     tag: '🌱 Growth Goals',
     heading: 'Set goals and leave every session with a clear next step',
     body: 'Turn your lowest-scoring skills into focused goals. Each goal comes with a suggested action so you always know what to do next — no vague intentions.',
@@ -41,6 +44,7 @@ const FEATURES: Feature[] = [
     imageRight: false,
   },
   {
+    id: 'team-org',
     tag: '🤝 Team & Org',
     heading: 'Connect with your manager and map your team',
     body: 'Invite your manager to connect — they score you independently, then you compare. Add your direct reports and build out your org structure so everyone has the full picture.',
@@ -97,6 +101,7 @@ export default function ToolPage() {
 
         {/* Right — Join now card */}
         <div
+          id="beta-signup"
           className="rounded-xl p-6"
           style={{
             background: 'rgba(254,252,247,0.04)',
@@ -240,7 +245,7 @@ export default function ToolPage() {
             )
 
             return (
-              <div key={feature.tag} className="grid items-center gap-12 md:grid-cols-2">
+              <div key={feature.id} className="grid items-center gap-12 md:grid-cols-2">
                 {feature.imageRight ? textPanel : imagePanel}
                 {feature.imageRight ? imagePanel : textPanel}
               </div>

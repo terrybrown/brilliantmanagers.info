@@ -2,7 +2,9 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { JoinNowForm } from '@/app/the-tool/JoinNowForm'
 
-const mockSignInWithOtp = vi.fn()
+const { mockSignInWithOtp } = vi.hoisted(() => ({
+  mockSignInWithOtp: vi.fn(),
+}))
 
 vi.mock('@/lib/supabase/client', () => ({
   createClient: () => ({
