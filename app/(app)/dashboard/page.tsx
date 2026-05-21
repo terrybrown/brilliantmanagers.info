@@ -8,7 +8,7 @@ import { getAllCompleteRoundsWithScores, getInProgressRound } from '@/lib/db/rou
 import { getScoresForRound } from '@/lib/db/scores'
 import { getManagerScoresForDirectReport } from '@/lib/db/manager-scores'
 import { getPlansForUser } from '@/lib/db/development-plans'
-import { getScheduledRound } from '@/lib/db/scheduled-rounds'
+import { nextRoundTitle as computeNextRoundTitle } from '@/lib/reflections'
 import {
   PILLARS,
   PILLAR_LABELS,
@@ -199,10 +199,9 @@ export default async function DashboardPage() {
   const { round, scores } = allRoundsWithScores[allRoundsWithScores.length - 1]
 
   // ── Parallel data fetch ───────────────────────────────────────────────────────
-  const [managerScores, plans, scheduled, inProgress] = await Promise.all([
+  const [managerScores, plans, inProgress] = await Promise.all([
     getManagerScoresForDirectReport(round.id),
     getPlansForUser(user.id),
-    getScheduledRound(user.id),
     getInProgressRound(user.id),
   ])
 
@@ -354,9 +353,9 @@ export default async function DashboardPage() {
     } as HistoryPoint
   })
 
-  const showStartNewRound = true
   const inProgressScores = inProgress ? await getScoresForRound(inProgress.id) : []
-  const hasInProgressRound = inProgressScores.length > 0
+  const scoredPillarCount = new Set(inProgressScores.map(s => s.pillar)).size
+  const currentNextRoundTitle = computeNextRoundTitle()
 
   return (
     <div className="p-6">
@@ -368,11 +367,11 @@ export default async function DashboardPage() {
         historyData={historyData}
         overallAvg={overallAvg}
         roundDate={roundDate}
-        scheduled={scheduled}
+        inProgressRound={inProgress}
+        scoredPillarCount={scoredPillarCount}
+        nextRoundTitle={currentNextRoundTitle}
         plans={plans}
         overdueCount={overdueCheckins.length}
-        showStartNewRound={showStartNewRound}
-        hasInProgressRound={hasInProgressRound}
       />
     </div>
   )

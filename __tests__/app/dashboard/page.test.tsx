@@ -2,7 +2,6 @@ import { describe, it, expect, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import DashboardPage from '@/app/(app)/dashboard/page'
 
-// Supabase server client
 vi.mock('@/lib/supabase/server', () => ({
   createClient: vi.fn().mockResolvedValue({
     auth: {
@@ -14,23 +13,22 @@ vi.mock('@/lib/supabase/server', () => ({
   }),
 }))
 
-// DB functions — empty array triggers the empty state branch
 vi.mock('@/lib/db/rounds', () => ({
   getAllCompleteRoundsWithScores: vi.fn().mockResolvedValue([]),
   getInProgressRound: vi.fn().mockResolvedValue(null),
 }))
+vi.mock('@/lib/db/scores', () => ({
+  getScoresForRound: vi.fn().mockResolvedValue([]),
+}))
 vi.mock('@/lib/db/manager-scores', () => ({
   getManagerScoresForDirectReport: vi.fn().mockResolvedValue([]),
+  getManagerScoresForAllRounds: vi.fn().mockResolvedValue({}),
 }))
 vi.mock('@/lib/db/development-plans', () => ({
   getPlansForUser: vi.fn().mockResolvedValue([]),
 }))
-vi.mock('@/lib/db/scheduled-rounds', () => ({
-  getScheduledRound: vi.fn().mockResolvedValue(null),
-}))
 vi.mock('next/navigation', () => ({ redirect: vi.fn() }))
 
-// DashboardTour (imported by the page) uses driver.js
 vi.mock('driver.js', () => ({
   driver: vi.fn(() => ({ drive: vi.fn(), destroy: vi.fn() })),
 }))
