@@ -1,4 +1,5 @@
 'use client'
+import { useEffect } from 'react'
 import { createRoundAction } from '@/app/(app)/reflections/actions'
 
 interface CreateRoundModalProps {
@@ -8,13 +9,24 @@ interface CreateRoundModalProps {
 }
 
 export function CreateRoundModal({ open, onClose, defaultTitle }: CreateRoundModalProps) {
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape') onClose()
+    }
+    if (open) {
+      document.addEventListener('keydown', handleKeyDown)
+      return () => document.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [open, onClose])
+
   if (!open) return null
 
   return (
     <div
       role="dialog"
       aria-modal="true"
-      aria-label="Start new reflection round"
+      aria-labelledby="create-round-title"
+      onClick={onClose}
       style={{
         position: 'fixed',
         inset: 0,
@@ -26,6 +38,7 @@ export function CreateRoundModal({ open, onClose, defaultTitle }: CreateRoundMod
       }}
     >
       <div
+        onClick={e => e.stopPropagation()}
         style={{
           background: '#1e293b',
           border: '1px solid #334155',
@@ -35,11 +48,14 @@ export function CreateRoundModal({ open, onClose, defaultTitle }: CreateRoundMod
           maxWidth: 440,
         }}
       >
-        <h2 style={{ fontSize: 16, fontWeight: 700, color: '#fff', marginBottom: 20 }}>
+        <h2
+          id="create-round-title"
+          style={{ fontSize: 16, fontWeight: 700, color: '#fff', marginBottom: 20 }}
+        >
           Start a new reflection round
         </h2>
 
-        <form action={createRoundAction} className="flex flex-col gap-4">
+        <form action={createRoundAction} aria-label="Create round form" className="flex flex-col gap-4">
           <div className="flex flex-col gap-1.5">
             <label
               htmlFor="round-title"
@@ -52,6 +68,7 @@ export function CreateRoundModal({ open, onClose, defaultTitle }: CreateRoundMod
               name="title"
               type="text"
               required
+              autoFocus
               defaultValue={defaultTitle}
               style={{
                 background: '#0f172a',

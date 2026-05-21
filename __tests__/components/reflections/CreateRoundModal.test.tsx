@@ -82,4 +82,42 @@ describe('CreateRoundModal', () => {
     )
     expect(screen.getByRole('button', { name: /start reflection/i })).toBeInTheDocument()
   })
+
+  it('submits the form with title and optional fields', async () => {
+    render(
+      <CreateRoundModal
+        open={true}
+        onClose={() => {}}
+        defaultTitle="Q2 2026"
+      />
+    )
+
+    const titleInput = screen.getByLabelText(/title/i)
+    const notesInput = screen.getByLabelText(/intention/i)
+
+    fireEvent.change(titleInput, { target: { value: 'My Round' } })
+    fireEvent.change(notesInput, { target: { value: 'Focus on coaching' } })
+    fireEvent.submit(screen.getByRole('form'))
+
+    // The form's action is bound to createRoundAction via server action — submit fires the action
+    // We can't deeply verify FormData here (server action limitation in tests),
+    // but we verify the form has the correct name attributes
+    expect(screen.getByRole('form')).toBeInTheDocument()
+    expect(titleInput).toHaveAttribute('name', 'title')
+    expect(notesInput).toHaveAttribute('name', 'notes')
+    expect(screen.getByLabelText(/remind me by/i)).toHaveAttribute('name', 'remind_at')
+  })
+
+  it('closes when Escape key is pressed', () => {
+    const onClose = vi.fn()
+    render(
+      <CreateRoundModal
+        open={true}
+        onClose={onClose}
+        defaultTitle="Q2 2026"
+      />
+    )
+    fireEvent.keyDown(document, { key: 'Escape' })
+    expect(onClose).toHaveBeenCalled()
+  })
 })
