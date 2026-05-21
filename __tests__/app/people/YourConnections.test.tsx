@@ -1,8 +1,14 @@
-import { render, screen } from '@testing-library/react'
-import { describe, it, expect, vi } from 'vitest'
+import { render, screen, fireEvent } from '@testing-library/react'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { YourConnections } from '@/app/(app)/people/YourConnections'
 import type { EnrichedConnection } from '@/app/(app)/people/types'
 import type { DirectReportRoundSummary } from '@/lib/db/direct-reports'
+
+const mockTrackConnectionAccepted = vi.hoisted(() => vi.fn())
+
+vi.mock('@/lib/analytics', () => ({
+  trackConnectionAccepted: mockTrackConnectionAccepted,
+}))
 
 vi.mock('@/app/(app)/connections/actions', () => ({
   inviteConnection: vi.fn(),
@@ -26,6 +32,10 @@ function makeConn(overrides: Partial<EnrichedConnection>): EnrichedConnection {
 }
 
 describe('YourConnections', () => {
+  beforeEach(() => {
+    mockTrackConnectionAccepted.mockReset()
+  })
+
   it('shows Invite your manager when no manager connected', () => {
     render(<YourConnections connections={emptyConns} roundSummaries={{}} userId="u1" pendingInvitations={[]} />)
     expect(screen.getByText('Invite your manager')).toBeInTheDocument()
@@ -81,5 +91,17 @@ describe('YourConnections', () => {
       />
     )
     expect(screen.getByRole('button', { name: /accept/i })).toBeInTheDocument()
+  })
+
+  it('calls trackConnectionAccepted when Accept button is clicked', () => {
+    const conn = makeConn({ manager_id: 'u1', status: 'pending', initiated_by: 'dr1' })
+    render(
+      <YourConnections
+        connections={{ asManager: [conn], asDirectReport: [] }}
+        roundSummaries={{}} userId="u1" pendingInvitations={[]}
+      />
+    )
+    fireEvent.click(screen.getByRole('button', { name: /accept/i }))
+    expect(mockTrackConnectionAccepted).toHaveBeenCalledTimes(1)
   })
 })

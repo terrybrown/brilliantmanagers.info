@@ -1,5 +1,5 @@
 'use client'
-import { useActionState, useState, useEffect } from 'react'
+import { useActionState, useState, useEffect, useRef } from 'react'
 import { inviteConnection } from '@/app/(app)/connections/actions'
 import type { InviteState } from '@/app/(app)/connections/actions'
 import { trackManagerInvited } from '@/lib/analytics'
@@ -10,8 +10,12 @@ export function AddConnectionForm() {
   const [open, setOpen] = useState(false)
   const [state, formAction, pending] = useActionState(inviteConnection, initial)
 
+  const trackedRef = useRef(false)
   useEffect(() => {
-    if (state.success) trackManagerInvited()
+    if (state.success && !trackedRef.current) {
+      trackedRef.current = true
+      trackManagerInvited()
+    }
   }, [state.success])
 
   if (state.success) {
