@@ -33,23 +33,23 @@ describe('buildOrgNodeInviteEmail', () => {
     expect(html).toContain('Alice')
   })
 
-  it('links to /login using NEXT_PUBLIC_APP_URL', () => {
+  it('links to /the-tool using NEXT_PUBLIC_APP_URL', () => {
     vi.stubEnv('NEXT_PUBLIC_APP_URL', 'https://app.example.com')
     const { html } = buildOrgNodeInviteEmail({
       inviterName: 'Alice',
       orgName: 'Acme Corp',
       nodeName: 'Engineering',
     })
-    expect(html).toContain('https://app.example.com/login')
+    expect(html).toContain('https://app.example.com/the-tool')
   })
 
-  it('falls back to brilliantmanagers.info/login when NEXT_PUBLIC_APP_URL is not set', () => {
+  it('falls back to brilliantmanagers.info/the-tool when NEXT_PUBLIC_APP_URL is not set', () => {
     vi.stubEnv('NEXT_PUBLIC_APP_URL', undefined as unknown as string)
     const { html } = buildOrgNodeInviteEmail({
       inviterName: 'Alice',
       orgName: 'Acme Corp',
       nodeName: 'Engineering',
     })
-    expect(html).toContain('https://brilliantmanagers.info/login')
+    expect(html).toContain('https://brilliantmanagers.info/the-tool')
   })
 })

@@ -12,13 +12,13 @@ describe('buildConnectionInviteEmail', () => {
     expect(subject).toContain('Alice')
   })
 
-  it('links to /login in the html body', () => {
+  it('links to /the-tool in the html body', () => {
     vi.stubEnv('NEXT_PUBLIC_APP_URL', 'https://app.example.com')
     const { html } = buildConnectionInviteEmail({
       fromName: 'Alice',
       inviterRole: 'manager',
     })
-    expect(html).toContain('https://app.example.com/login')
+    expect(html).toContain('https://app.example.com/the-tool')
   })
 
   it('describes the direct report relationship when inviterRole is manager', () => {
