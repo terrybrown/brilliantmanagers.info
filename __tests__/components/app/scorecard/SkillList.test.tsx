@@ -4,11 +4,13 @@ import { SkillList } from '@/components/app/scorecard/SkillList'
 import type { Skill, Level } from '@/lib/skills'
 
 const mockTrackPillarScored = vi.hoisted(() => vi.fn())
+const mockTrackRoundCompleted = vi.hoisted(() => vi.fn())
 const mockTrackScorecardCompleted = vi.hoisted(() => vi.fn())
 const mockSaveScore = vi.hoisted(() => vi.fn())
 
 vi.mock('@/lib/analytics', () => ({
   trackPillarScored: mockTrackPillarScored,
+  trackRoundCompleted: mockTrackRoundCompleted,
   trackScorecardCompleted: mockTrackScorecardCompleted,
 }))
 
@@ -34,6 +36,7 @@ const defaultProps = {
 
 beforeEach(() => {
   mockTrackPillarScored.mockReset()
+  mockTrackRoundCompleted.mockReset()
   mockTrackScorecardCompleted.mockReset()
   mockSaveScore.mockReset()
   ;(defaultProps.onSkillActivate as ReturnType<typeof vi.fn>).mockReset()
@@ -62,6 +65,7 @@ describe('SkillList analytics', () => {
     await waitFor(() => {
       expect(mockTrackPillarScored).toHaveBeenCalledWith('self', 'Proficient')
     })
+    expect(mockTrackRoundCompleted).toHaveBeenCalledWith('round-1')
     expect(mockTrackScorecardCompleted).toHaveBeenCalledTimes(1)
   })
 
@@ -74,6 +78,7 @@ describe('SkillList analytics', () => {
     await waitFor(() => {
       expect(mockTrackPillarScored).toHaveBeenCalled()
     })
+    expect(mockTrackRoundCompleted).not.toHaveBeenCalled()
     expect(mockTrackScorecardCompleted).not.toHaveBeenCalled()
   })
 
@@ -87,5 +92,6 @@ describe('SkillList analytics', () => {
       expect(mockOnScore).toHaveBeenCalled()
     })
     expect(mockTrackPillarScored).not.toHaveBeenCalled()
+    expect(mockTrackRoundCompleted).not.toHaveBeenCalled()
   })
 })
