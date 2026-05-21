@@ -29,7 +29,7 @@ export function RoundsHistoryTable({ rows }: RoundsHistoryTableProps) {
       <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
         <thead>
           <tr>
-            {['Round', 'Your score', 'Mgr score', ...PILLAR_COLS.map(c => c.label), 'Trend', ''].map(
+            {['Round', 'Your score', 'Manager score', ...PILLAR_COLS.map(c => c.label), 'Trend', 'View'].map(
               header => (
                 <th
                   key={header}
