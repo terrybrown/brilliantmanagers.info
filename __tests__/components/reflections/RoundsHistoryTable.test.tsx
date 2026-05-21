@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { RoundsHistoryTable } from '@/components/reflections/RoundsHistoryTable'
 import type { RoundRow } from '@/components/reflections/RoundsHistoryTable'
+import type { Pillar } from '@/lib/skills'
 
 const negTrendRow: RoundRow = {
   id: 'r-0',
@@ -62,7 +63,7 @@ describe('RoundsHistoryTable', () => {
     expect(dashes).toHaveLength(2) // one from manager score, one from trend in r-1
   })
 
-  it('shows positive trend in green', () => {
+  it('shows + prefix for positive trend', () => {
     render(<RoundsHistoryTable rows={rows} />)
     expect(screen.getByText('+0.6')).toBeInTheDocument()
   })
@@ -77,9 +78,8 @@ describe('RoundsHistoryTable', () => {
 
   it('renders pillar score values', () => {
     render(<RoundsHistoryTable rows={rows} />)
-    // row r-2 has self: 3.5 and strategy: 3.5, so multiple cells with this value
     const cells = screen.getAllByText('3.5')
-    expect(cells.length).toBeGreaterThan(0)
+    expect(cells).toHaveLength(2)
   })
 
   it('renders dateRange below title', () => {
@@ -91,5 +91,36 @@ describe('RoundsHistoryTable', () => {
     render(<RoundsHistoryTable rows={[negTrendRow]} />)
     expect(screen.getByText('-0.3')).toBeInTheDocument()
     expect(screen.queryByText('+0.3')).not.toBeInTheDocument()
+  })
+
+  it('shows "—" for a missing pillar score', () => {
+    const missingPillarRow: RoundRow = {
+      id: 'r-missing',
+      title: 'Q3 2025',
+      dateRange: 'Jul 2025 – Sep 2025',
+      overallScore: 2.5,
+      managerOverall: null,
+      pillarScores: { self: 2.5 } as Partial<Record<Pillar, number>>,
+      trend: null,
+    }
+    render(<RoundsHistoryTable rows={[missingPillarRow]} />)
+    // team, strategy, communications, domain-expertise are all missing — each should show —
+    const dashes = screen.getAllByText('—')
+    expect(dashes.length).toBeGreaterThanOrEqual(4)
+  })
+
+  it('shows neutral style for zero trend', () => {
+    const zeroTrendRow: RoundRow = {
+      id: 'r-zero',
+      title: 'Q2 2025',
+      dateRange: 'Apr 2025 – Jun 2025',
+      overallScore: 3.0,
+      managerOverall: null,
+      pillarScores: { self: 3.0, team: 3.0, strategy: 3.0, communications: 3.0, 'domain-expertise': 3.0 },
+      trend: 0,
+    }
+    render(<RoundsHistoryTable rows={[zeroTrendRow]} />)
+    expect(screen.getByText('0.0')).toBeInTheDocument()
+    expect(screen.queryByText('+0.0')).not.toBeInTheDocument()
   })
 })

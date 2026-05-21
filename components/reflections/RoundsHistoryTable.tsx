@@ -7,7 +7,7 @@ export interface RoundRow {
   dateRange: string
   overallScore: number
   managerOverall: number | null
-  pillarScores: Record<Pillar, number>
+  pillarScores: Partial<Record<Pillar, number>>
   trend: number | null
 }
 
@@ -26,13 +26,14 @@ const PILLAR_COLS: { key: Pillar; label: string }[] = [
 export function RoundsHistoryTable({ rows }: RoundsHistoryTableProps) {
   return (
     <div className="rounded-xl bg-slate-800 overflow-x-auto">
-      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
+      <table aria-label="Rounds history" style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
         <thead>
           <tr>
             {['Round', 'Your score', 'Manager score', ...PILLAR_COLS.map(c => c.label), 'Trend', 'View'].map(
-              header => (
+              (header, i) => (
                 <th
-                  key={header}
+                  key={i}
+                  scope="col"
                   style={{
                     padding: '10px 14px',
                     textAlign: 'left',
@@ -66,22 +67,18 @@ export function RoundsHistoryTable({ rows }: RoundsHistoryTableProps) {
               </td>
               {PILLAR_COLS.map(col => (
                 <td key={col.key} style={{ padding: '10px 14px', color: '#94a3b8' }}>
-                  {row.pillarScores[col.key].toFixed(1)}
+                  {row.pillarScores[col.key] != null ? row.pillarScores[col.key]!.toFixed(1) : '—'}
                 </td>
               ))}
               <td style={{ padding: '10px 14px' }}>
-                {row.trend !== null ? (
-                  <span
-                    style={{
-                      fontWeight: 700,
-                      color: row.trend >= 0 ? '#4ade80' : '#f87171',
-                    }}
-                  >
-                    {row.trend >= 0 ? '+' : ''}
-                    {row.trend.toFixed(1)}
-                  </span>
-                ) : (
+                {row.trend === null ? (
                   <span style={{ color: '#475569' }}>—</span>
+                ) : row.trend > 0 ? (
+                  <span style={{ fontWeight: 700, color: '#4ade80' }}>+{row.trend.toFixed(1)}</span>
+                ) : row.trend < 0 ? (
+                  <span style={{ fontWeight: 700, color: '#f87171' }}>{row.trend.toFixed(1)}</span>
+                ) : (
+                  <span style={{ fontWeight: 700, color: '#94a3b8' }}>{row.trend.toFixed(1)}</span>
                 )}
               </td>
               <td style={{ padding: '10px 14px' }}>
