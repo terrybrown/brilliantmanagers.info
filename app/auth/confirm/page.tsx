@@ -14,7 +14,7 @@ interface Props {
 }
 
 export default async function AuthConfirmPage({ searchParams }: Props) {
-  const { token_hash, code, error, error_description } = await searchParams
+  const { token_hash, code, type, error, error_description } = await searchParams
 
   // PKCE signup flow: Supabase redirects here with ?code= instead of ?token_hash=
   // Forward to /auth/callback which handles code exchange and pending invite processing
@@ -53,6 +53,7 @@ export default async function AuthConfirmPage({ searchParams }: Props) {
         <p className="mb-6 text-slate-500">Click below to sign in to Brilliant Managers.</p>
         <form action={confirmLogin}>
           <input type="hidden" name="token_hash" value={token_hash} />
+          <input type="hidden" name="type" value={type ?? 'email'} />
           <ConfirmButton />
         </form>
       </div>
