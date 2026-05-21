@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { addEvidenceAction } from '@/app/(app)/growth/actions'
 import type { GoalEvidence } from '@/lib/db/goal-evidence'
+import { trackGoalCheckin } from '@/lib/analytics'
 
 interface EvidenceLogProps {
   planId: string
@@ -28,8 +29,13 @@ export function EvidenceLog({ planId, entries }: EvidenceLogProps) {
         <form
           action={async (fd: FormData) => {
             fd.set('plan_id', planId)
-            await addEvidenceAction(fd)
-            setShowForm(false)
+            try {
+              await addEvidenceAction(fd)
+              trackGoalCheckin()
+              setShowForm(false)
+            } catch {
+              // addEvidenceAction failed — leave the form open so the user can retry
+            }
           }}
           className="mb-6 rounded-xl border border-slate-700 bg-slate-800 p-4"
         >
