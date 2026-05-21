@@ -5,7 +5,6 @@ import { GuideIcon } from '@/components/icons/guide-icons'
 export const metadata = { title: 'The Guide' }
 
 const SECTION_EXCERPTS: Record<string, string> = {
-  measurement: 'How to think about progress — in yourself and in others.',
   self: 'Understanding yourself before you can lead anyone else.',
   team: 'Building an environment where people do their best work.',
   strategy: 'Connecting day-to-day work to longer-term direction.',
@@ -34,7 +33,7 @@ export default function GuideIndexPage() {
             The Guide
           </h1>
           <p className="max-w-xl text-base leading-relaxed" style={{ color: 'var(--color-text-muted)' }}>
-            Six pillars. The honest truth about what management actually requires.
+            Five pillars. The honest truth about what management actually requires.
           </p>
         </header>
 
