@@ -152,6 +152,7 @@ export function MemberStack({
           </div>
 
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 10 }}>
+            {/* Confirmed member chips */}
             {members.map(m => (
               <div
                 key={m.user_id}
@@ -183,6 +184,7 @@ export function MemberStack({
               </div>
             ))}
 
+            {/* Pending invite chips */}
             {pendingInvites.map(invite => (
               <div
                 key={invite.id}
@@ -205,6 +207,7 @@ export function MemberStack({
             ))}
           </div>
 
+          {/* Add member input */}
           <div style={{ display: 'flex', gap: 6 }}>
             <form
               style={{ display: 'flex', gap: 6, flex: 1 }}

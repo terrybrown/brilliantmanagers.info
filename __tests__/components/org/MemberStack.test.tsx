@@ -78,6 +78,7 @@ describe('MemberStack', () => {
         onToggle={vi.fn()}
       />
     )
+    expect(screen.getByTitle(/manage members/i)).toBeInTheDocument()
     expect(screen.getByPlaceholderText('Add member by email…')).toBeInTheDocument()
   })
 
