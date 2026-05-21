@@ -2,6 +2,7 @@
 import { InviteManagerModal } from '@/components/people/InviteManagerModal'
 import { AddConnectionForm } from '@/components/people/AddConnectionForm'
 import { acceptConnectionAction } from '@/app/(app)/connections/actions'
+import { trackConnectionAccepted } from '@/lib/analytics'
 import type { EnrichedConnection, DirectReportRoundSummary } from './types'
 import type { PendingInvitation } from '@/lib/db/pending-invitations'
 
@@ -152,6 +153,7 @@ export function YourConnections({ connections, roundSummaries, userId, pendingIn
                   <form action={acceptConnectionAction.bind(null, c.id)}>
                     <button
                       type="submit"
+                      onClick={trackConnectionAccepted}
                       style={{
                         padding: '5px 12px', background: 'rgba(34,197,94,0.15)',
                         color: '#4ade80', border: '1px solid rgba(34,197,94,0.3)',
