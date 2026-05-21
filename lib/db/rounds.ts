@@ -151,11 +151,12 @@ export async function createRound(
 
 export async function getRoundById(roundId: string, userId: string): Promise<Round | null> {
   const supabase = await createClient()
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from('assessment_rounds')
     .select('*')
     .eq('id', roundId)
     .eq('user_id', userId)
     .maybeSingle()
+  if (error) throw error
   return data as Round | null
 }

@@ -67,6 +67,13 @@ describe('createRound', () => {
     const result = await createRound('u-1', 'Q2 2026', null, null)
     expect(result.notes).toBeNull()
     expect(result.remind_at).toBeNull()
+    expect(mockInsert).toHaveBeenCalledWith({
+      user_id: 'u-1',
+      status: 'in_progress',
+      title: 'Q2 2026',
+      notes: null,
+      remind_at: null,
+    })
   })
 
   it('throws when insert fails', async () => {
@@ -109,5 +116,11 @@ describe('getRoundById', () => {
     const { getRoundById } = await import('@/lib/db/rounds')
     const result = await getRoundById('r-99', 'u-1')
     expect(result).toBeNull()
+  })
+
+  it('throws when the query fails', async () => {
+    mockMaybeSingle.mockResolvedValue({ data: null, error: { message: 'DB error' } })
+    const { getRoundById } = await import('@/lib/db/rounds')
+    await expect(getRoundById('r-1', 'u-1')).rejects.toEqual({ message: 'DB error' })
   })
 })
