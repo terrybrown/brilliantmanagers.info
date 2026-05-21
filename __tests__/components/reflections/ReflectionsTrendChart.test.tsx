@@ -89,4 +89,27 @@ describe('ReflectionsTrendChart', () => {
     expect(screen.getByTestId('line-self')).toBeInTheDocument()
     expect(screen.queryByTestId('line-overall')).not.toBeInTheDocument()
   })
+
+  it('does not render manager line when data has no mgr fields', () => {
+    const noMgrPoints: TrendPoint[] = [
+      {
+        label: 'Q1 2026',
+        overall: 2.8,
+        self: 3.0,
+        team: 2.5,
+        strategy: 3.0,
+        communications: 2.8,
+        'domain-expertise': 2.7,
+      },
+    ]
+    render(<ReflectionsTrendChart data={noMgrPoints} />)
+    expect(screen.queryByTestId('line-mgr_overall')).not.toBeInTheDocument()
+  })
+
+  it('renders mgr_domain-expertise line on domain-expertise tab when mgr data present', () => {
+    render(<ReflectionsTrendChart data={mockPoints} />)
+    fireEvent.click(screen.getByRole('button', { name: /expertise/i }))
+    expect(screen.getByTestId('line-domain-expertise')).toBeInTheDocument()
+    expect(screen.getByTestId('line-mgr_domain-expertise')).toBeInTheDocument()
+  })
 })

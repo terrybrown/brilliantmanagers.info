@@ -23,6 +23,15 @@ const TABS: { id: Tab; label: string }[] = [
   { id: 'domain-expertise', label: 'Expertise' },
 ]
 
+const MGR_KEY_MAP = {
+  overall: 'mgr_overall',
+  self: 'mgr_self',
+  team: 'mgr_team',
+  strategy: 'mgr_strategy',
+  communications: 'mgr_communications',
+  'domain-expertise': 'mgr_domain-expertise',
+} as const satisfies Record<Tab, keyof TrendPoint>
+
 interface ReflectionsTrendChartProps {
   data: TrendPoint[]
 }
@@ -32,8 +41,8 @@ export function ReflectionsTrendChart({ data }: ReflectionsTrendChartProps) {
 
   if (data.length === 0) return null
 
-  const hasMgr = data.some(p => p.mgr_overall !== undefined)
-  const mgrKey = activeTab === 'domain-expertise' ? 'mgr_domain-expertise' : `mgr_${activeTab}`
+  const mgrKey = MGR_KEY_MAP[activeTab]
+  const hasMgr = data.some(p => p[mgrKey] !== undefined)
 
   return (
     <div className="rounded-xl bg-slate-800 px-4 py-4">
