@@ -16,7 +16,7 @@ export function buildConnectionInviteEmail({
   personalMessage,
 }: ConnectionInviteEmailParams): EmailContent {
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://brilliantmanagers.info'
-  const loginUrl = `${appUrl}/login`
+  const loginUrl = `${appUrl}/the-tool`
 
   const relationshipText =
     inviterRole === 'manager'

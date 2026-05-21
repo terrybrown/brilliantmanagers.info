@@ -24,7 +24,7 @@ export function buildOrgNodeInviteEmail({
   nodeName,
 }: OrgNodeInviteEmailParams): EmailContent {
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://brilliantmanagers.info'
-  const signUpUrl = `${appUrl}/login`
+  const signUpUrl = `${appUrl}/the-tool`
 
   const escapedInviterName = esc(inviterName)
   const escapedOrgName = esc(orgName)
