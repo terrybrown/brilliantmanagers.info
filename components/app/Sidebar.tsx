@@ -2,6 +2,7 @@
 import {
   LayoutDashboard,
   TrendingUp,
+  History,
   Network,
   Users,
   ScrollText,
@@ -12,6 +13,7 @@ import { NavItem } from './NavItem'
 const NAV_ITEMS = [
   { href: '/dashboard', icon: LayoutDashboard, label: 'Dashboard', id: 'nav-dashboard' },
   { href: '/growth', icon: TrendingUp, label: 'Growth', id: 'nav-growth' },
+  { href: '/reflections', icon: History, label: 'Reflections', id: 'nav-reflections' },
   { href: '/people', icon: Network, label: 'Team & Org', id: 'nav-people' },
 ] as const
 
@@ -52,7 +54,7 @@ export function Sidebar({ isExpanded, onToggle, isSuperAdmin = false }: SidebarP
           icon={item.icon}
           label={item.label}
           isExpanded={isExpanded}
-          id={'id' in item ? item.id : undefined}
+          id={item.id}
         />
       ))}
 

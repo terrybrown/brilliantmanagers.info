@@ -8,6 +8,7 @@ const APP_ROUTES = [
   '/manager',
   '/people',
   '/growth',
+  '/reflections',
   '/profile',
   '/notifications',
 ]

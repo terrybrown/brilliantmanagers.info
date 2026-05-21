@@ -108,8 +108,8 @@ export function ScorecardRadarChart({ pillarScores, showManager, onPillarClick }
             <Radar
               name="Manager"
               dataKey="Manager"
-              stroke="#3b82f6"
-              fill="#3b82f6"
+              stroke="#a78bfa"
+              fill="#a78bfa"
               fillOpacity={0.12}
               strokeWidth={1.5}
               strokeDasharray="4 2"

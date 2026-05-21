@@ -2,7 +2,7 @@
 import { useState, useCallback } from 'react'
 import { RadarWithToggle } from '@/components/app/RadarWithToggle'
 import { PillarAccordion } from '@/components/app/PillarAccordion'
-import { ScheduleWidget } from '@/components/app/ScheduleWidget'
+import { ActiveRoundCard } from '@/components/reflections/ActiveRoundCard'
 import { GrowthSummaryCard } from '@/components/app/GrowthSummaryCard'
 import { CheckInNudgeCard } from '@/components/app/CheckInNudgeCard'
 import { InviteManagerModal } from '@/components/people/InviteManagerModal'
@@ -10,7 +10,7 @@ import { ScoreSparkline } from '@/components/app/ScoreSparkline'
 import { PillarHistoryChart } from '@/components/app/PillarHistoryChart'
 import type { PillarData } from '@/components/app/PillarAccordion'
 import type { Pillar } from '@/lib/skills'
-import type { ScheduledRound } from '@/lib/db/scheduled-rounds'
+import type { Round } from '@/lib/db/rounds'
 import type { DevelopmentPlan } from '@/lib/db/development-plans'
 import type { HistoryPoint } from '@/components/app/PillarHistoryChart'
 
@@ -28,11 +28,11 @@ interface DashboardResultsProps {
   historyData: HistoryPoint[]
   overallAvg: number
   roundDate: string
-  scheduled: ScheduledRound | null
+  inProgressRound: Round | null
+  scoredPillarCount: number
+  nextRoundTitle: string
   plans: DevelopmentPlan[]
   overdueCount: number
-  showStartNewRound: boolean
-  hasInProgressRound: boolean
 }
 
 export function DashboardResults({
@@ -43,11 +43,11 @@ export function DashboardResults({
   historyData,
   overallAvg,
   roundDate,
-  scheduled,
+  inProgressRound,
+  scoredPillarCount,
+  nextRoundTitle,
   plans,
   overdueCount,
-  showStartNewRound,
-  hasInProgressRound,
 }: DashboardResultsProps) {
   const [openPillar, setOpenPillar] = useState<string | null>(null)
 
@@ -90,7 +90,11 @@ export function DashboardResults({
 
         {/* Right: Action cards */}
         <aside className="flex flex-col gap-4">
-          <ScheduleWidget scheduled={scheduled} showStartNewRound={showStartNewRound} hasInProgressRound={hasInProgressRound} />
+          <ActiveRoundCard
+            inProgressRound={inProgressRound}
+            scoredPillarCount={scoredPillarCount}
+            nextRoundTitle={nextRoundTitle}
+          />
           <GrowthSummaryCard plans={plans} />
           <CheckInNudgeCard overdueCount={overdueCount} />
 
@@ -106,11 +110,8 @@ export function DashboardResults({
               <InviteManagerModal />
             </div>
           )}
-
-
         </aside>
       </div>
-
     </div>
   )
 }
