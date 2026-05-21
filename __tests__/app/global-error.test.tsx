@@ -21,6 +21,13 @@ describe('GlobalError boundary', () => {
     expect(screen.getByRole('button', { name: /try again/i })).toBeInTheDocument()
   })
 
+  it('calls reset() when Try again is clicked', () => {
+    const reset = vi.fn()
+    render(<GlobalError error={new Error('boom')} reset={reset} />)
+    fireEvent.click(screen.getByRole('button', { name: /try again/i }))
+    expect(reset).toHaveBeenCalled()
+  })
+
   it('calls Sentry.captureException with the error', () => {
     const error = new Error('test error')
     render(<GlobalError error={error} reset={() => {}} />)
