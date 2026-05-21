@@ -34,7 +34,7 @@ describe('JoinNowForm', () => {
     await waitFor(() => {
       expect(mockSignInWithOtp).toHaveBeenCalledWith({
         email: 'test@example.com',
-        options: expect.objectContaining({ emailRedirectTo: expect.stringContaining('/auth/callback') }),
+        options: { emailRedirectTo: 'http://localhost/auth/callback' },
       })
     })
   })
@@ -66,5 +66,24 @@ describe('JoinNowForm', () => {
     await waitFor(() => {
       expect(screen.getByText('Rate limit exceeded')).toBeInTheDocument()
     })
+  })
+
+  it('hides the join now button and shows loading dots while submitting', async () => {
+    let resolve: (value: { error: null }) => void
+    mockSignInWithOtp.mockReturnValue(new Promise(r => { resolve = r }))
+    render(<JoinNowForm />)
+
+    fireEvent.change(screen.getByPlaceholderText('your@email.com'), {
+      target: { value: 'test@example.com' },
+    })
+    fireEvent.click(screen.getByRole('button', { name: /join now/i }))
+
+    // Button should be gone, dots should be present
+    expect(screen.queryByRole('button', { name: /join now/i })).not.toBeInTheDocument()
+    expect(screen.getByLabelText('Sending…')).toBeInTheDocument()
+
+    // Resolve the promise to clean up
+    resolve!({ error: null })
+    await waitFor(() => expect(screen.getByText(/check your email/i)).toBeInTheDocument())
   })
 })
