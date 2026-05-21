@@ -123,7 +123,7 @@ export function computeTrendData(
         const avg = pillarMgr[pillar]
         if (avg !== undefined) {
           const key = `mgr_${pillar}` as keyof TrendPoint
-          ;(point as Record<string, number>)[key] = Number(avg.toFixed(2))
+          ;(point as unknown as Record<string, number>)[key] = Number(avg.toFixed(2))
         }
       }
     }
@@ -169,8 +169,8 @@ export function computeStats(
     }
   }
 
-  let bestPillar: Pillar = 'self'
-  let bestAvg = -1
+  let bestPillar: Pillar | null = null
+  let bestAvg = -Infinity
   for (const pillar of PILLARS) {
     const count = pillarCounts[pillar] ?? 0
     if (count > 0) {

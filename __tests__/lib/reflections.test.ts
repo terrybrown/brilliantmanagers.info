@@ -118,6 +118,24 @@ describe('computeStats', () => {
     expect(stats.managerAvg).toBeNull()
   })
 
+  it('returns bestPillar: null when rounds exist but all score arrays are empty', () => {
+    const emptyRound = {
+      round: {
+        id: 'r-empty',
+        user_id: 'user-1',
+        status: 'complete' as const,
+        created_at: '2026-01-01T00:00:00Z',
+        completed_at: '2026-03-01T00:00:00Z',
+        title: 'Q1 2026',
+        notes: null,
+        remind_at: null,
+      },
+      scores: [],
+    }
+    const result = computeStats([emptyRound], {})
+    expect(result.bestPillar).toBeNull()
+  })
+
   it('includes managerAvg when manager scores exist', () => {
     const round = makeRound('r-1')
     const scores: Score[] = [makeScore('r-1', 'self', 'self-resilience', 'Proficient')]
