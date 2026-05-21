@@ -16,7 +16,6 @@ export function ActiveRoundCard({
   nextRoundTitle,
 }: ActiveRoundCardProps) {
   const [modalOpen, setModalOpen] = useState(false)
-  const title = inProgressRound?.title ?? nextRoundTitle
 
   if (!inProgressRound) {
     return (
@@ -64,7 +63,8 @@ export function ActiveRoundCard({
     )
   }
 
-  const pct = (scoredPillarCount / 5) * 100
+  const title = inProgressRound.title ?? nextRoundTitle
+  const pct = Math.min(100, Math.max(0, (scoredPillarCount / 5) * 100))
 
   return (
     <>
@@ -115,6 +115,7 @@ export function ActiveRoundCard({
         </div>
         <Link
           href="/scorecard"
+          aria-label="Continue to scorecard"
           style={{
             display: 'inline-flex',
             alignItems: 'center',
@@ -128,11 +129,6 @@ export function ActiveRoundCard({
           Continue →
         </Link>
       </div>
-      <CreateRoundModal
-        open={modalOpen}
-        onClose={() => setModalOpen(false)}
-        defaultTitle={nextRoundTitle}
-      />
     </>
   )
 }

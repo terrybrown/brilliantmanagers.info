@@ -53,6 +53,28 @@ describe('ActiveRoundCard — active state', () => {
     const link = screen.getByRole('link', { name: /continue/i })
     expect(link).toHaveAttribute('href', '/scorecard')
   })
+
+  it('does not show modal in active state', () => {
+    render(
+      <ActiveRoundCard
+        inProgressRound={baseRound}
+        scoredPillarCount={2}
+        nextRoundTitle="Q3 2026"
+      />
+    )
+    expect(screen.queryByTestId('create-round-modal')).not.toBeInTheDocument()
+  })
+
+  it('shows full progress when all 5 pillars scored', () => {
+    render(
+      <ActiveRoundCard
+        inProgressRound={baseRound}
+        scoredPillarCount={5}
+        nextRoundTitle="Q3 2026"
+      />
+    )
+    expect(screen.getByText(/5 of 5/)).toBeInTheDocument()
+  })
 })
 
 describe('ActiveRoundCard — empty state', () => {
