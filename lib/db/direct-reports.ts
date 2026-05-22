@@ -3,7 +3,6 @@ import { getInProgressRound } from '@/lib/db/rounds'
 import { getScheduledRound } from '@/lib/db/scheduled-rounds'
 import { LEVEL_VALUES, PILLARS, getSkillsByPillar } from '@/lib/skills'
 import type { Level } from '@/lib/skills'
-import { getManagerScoringStatus } from '@/lib/db/manager-scores'
 import type { ManagerScoringStatus } from '@/lib/db/manager-scores'
 
 export interface DirectReportRoundSummary {
@@ -67,22 +66,28 @@ export async function getDirectReportRoundSummaries(
       let pillarsScored = 0
 
       if (roundId) {
-        managerScoringStatus = await getManagerScoringStatus(roundId, managerId)
-
-        const { data: mgrScores } = await supabase
+        const { data: mgrScores, error: mgrScoresError } = await supabase
           .from('manager_scores')
           .select('skill_key')
           .eq('round_id', roundId)
           .eq('manager_id', managerId)
 
-        const scoredPillars = new Set(
-          (mgrScores ?? [])
-            .map(s =>
-              PILLARS.find(p => getSkillsByPillar(p).some(sk => sk.key === s.skill_key))
-            )
-            .filter(Boolean)
+        if (mgrScoresError) throw mgrScoresError
+
+        const scoredKeys = new Set((mgrScores ?? []).map(s => s.skill_key))
+        const allKeys = PILLARS.flatMap(p => getSkillsByPillar(p).map(s => s.key))
+
+        managerScoringStatus =
+          scoredKeys.size === 0 ? 'not_started'
+          : allKeys.every(k => scoredKeys.has(k)) ? 'complete'
+          : 'in_progress'
+
+        const scoredPillarsSet = new Set(
+          [...scoredKeys]
+            .map(key => PILLARS.find(p => getSkillsByPillar(p).some(s => s.key === key)))
+            .filter((p): p is string => p !== undefined)
         )
-        pillarsScored = scoredPillars.size
+        pillarsScored = scoredPillarsSet.size
       }
 
       return [userId, {

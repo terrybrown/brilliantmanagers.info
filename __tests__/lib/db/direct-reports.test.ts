@@ -8,6 +8,21 @@ let mockLastRound: { id: string; completed_at: string | null } | null = null
 let mockScoreRows: { level: string }[] = []
 let mockManagerScoreRows: { skill_key: string }[] = []
 
+vi.mock('@/lib/skills', () => ({
+  PILLARS: ['self', 'team'],
+  getSkillsByPillar: (p: string) =>
+    p === 'self'
+      ? [{ key: 'sk1' }, { key: 'sk2' }]
+      : [{ key: 'sk3' }],
+  LEVEL_VALUES: {
+    Developing: 1,
+    Basic: 2,
+    Proficient: 3,
+    Advanced: 4,
+    Expert: 5,
+  },
+}))
+
 vi.mock('@/lib/db/rounds', () => ({
   getInProgressRound: vi.fn(() => Promise.resolve(mockInProgress)),
 }))
@@ -119,5 +134,23 @@ describe('getDirectReportRoundSummaries', () => {
     const { getDirectReportRoundSummaries } = await import('@/lib/db/direct-reports')
     const result = await getDirectReportRoundSummaries(['u1'], 'mgr1')
     expect(result['u1'].roundId).toBe('r2')
+  })
+
+  it('returns managerScoringStatus: in_progress when only some skills are scored', async () => {
+    mockInProgress = { id: 'round-1', user_id: 'u1', status: 'in_progress', created_at: '', completed_at: null }
+    mockManagerScoreRows = [{ skill_key: 'sk1' }]
+    const { getDirectReportRoundSummaries } = await import('@/lib/db/direct-reports')
+    const result = await getDirectReportRoundSummaries(['u1'], 'manager-1')
+    expect(result['u1'].managerScoringStatus).toBe('in_progress')
+    expect(result['u1'].pillarsScored).toBe(1) // 'self' pillar has sk1 scored
+  })
+
+  it('returns managerScoringStatus: complete and pillarsScored: 2 when all skills scored', async () => {
+    mockInProgress = { id: 'round-1', user_id: 'u1', status: 'in_progress', created_at: '', completed_at: null }
+    mockManagerScoreRows = [{ skill_key: 'sk1' }, { skill_key: 'sk2' }, { skill_key: 'sk3' }]
+    const { getDirectReportRoundSummaries } = await import('@/lib/db/direct-reports')
+    const result = await getDirectReportRoundSummaries(['u1'], 'manager-1')
+    expect(result['u1'].managerScoringStatus).toBe('complete')
+    expect(result['u1'].pillarsScored).toBe(2) // both 'self' and 'team' pillars covered
   })
 })
