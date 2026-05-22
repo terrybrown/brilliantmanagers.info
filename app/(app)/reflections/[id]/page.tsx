@@ -30,7 +30,6 @@ export default async function ReflectionDetailPage({
   ])
 
   const pillarScoresForRadar = computePillarScores(scores, managerScores)
-  const hasManagerScores = pillarScoresForRadar.some(p => p.managerScore !== undefined)
 
   function scoreToLevel(score: number): Level {
     const idx = Math.min(4, Math.max(0, Math.round(score) - 1))
@@ -124,7 +123,6 @@ export default async function ReflectionDetailPage({
         <div>
           <ScorecardRadarChart
             pillarScores={pillarScoresForRadar}
-            showManager={hasManagerScores}
           />
         </div>
 

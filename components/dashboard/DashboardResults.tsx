@@ -1,6 +1,7 @@
 'use client'
 import { useState, useCallback } from 'react'
-import { RadarWithToggle } from '@/components/app/RadarWithToggle'
+import { ScorecardRadarChart } from '@/components/app/ScorecardRadarChart'
+import type { RadarPillarScore } from '@/lib/reflections'
 import { PillarAccordion } from '@/components/app/PillarAccordion'
 import { ActiveRoundCard } from '@/components/reflections/ActiveRoundCard'
 import { GrowthSummaryCard } from '@/components/app/GrowthSummaryCard'
@@ -14,14 +15,8 @@ import type { Round } from '@/lib/db/rounds'
 import type { DevelopmentPlan } from '@/lib/db/development-plans'
 import type { HistoryPoint } from '@/components/app/PillarHistoryChart'
 
-interface PillarScore {
-  pillar: Pillar
-  selfScore: number
-  managerScore?: number
-}
-
 interface DashboardResultsProps {
-  pillarScoresForRadar: PillarScore[]
+  pillarScoresForRadar: RadarPillarScore[]
   hasManagerScores: boolean
   pillarsForAccordion: PillarData[]
   sparklineData: { date: string; score: number }[]
@@ -62,9 +57,8 @@ export function DashboardResults({
 
         {/* Left: Radar + score + sparkline */}
         <aside className="flex flex-col gap-4">
-          <RadarWithToggle
+          <ScorecardRadarChart
             pillarScores={pillarScoresForRadar}
-            hasManagerScores={hasManagerScores}
             onPillarClick={handlePillarClick}
           />
 
