@@ -123,3 +123,196 @@ describe('deletePendingOrgNodeInvitationById', () => {
     await expect(deletePendingOrgNodeInvitationById('inv-1', 'org-1')).rejects.toThrow()
   })
 })
+
+describe('propagateOrgNodeInvitesOnAccept', () => {
+  beforeEach(() => {
+    vi.resetModules()
+    vi.clearAllMocks()
+  })
+
+  function buildAdmin(tableHandlers: Record<string, unknown>) {
+    return {
+      from: (table: string) => tableHandlers[table] ?? {},
+    }
+  }
+
+  it('does nothing when initiator has no org node memberships', async () => {
+    const upsert = vi.fn()
+    adminMock.mockReturnValue(buildAdmin({
+      profiles: {
+        select: () => ({ eq: () => ({ maybeSingle: () => Promise.resolve({ data: { id: 'new-user-id' } }) }) }),
+      },
+      org_node_members: {
+        select: () => ({ eq: () => Promise.resolve({ data: [], error: null }) }),
+      },
+      pending_org_node_invitations: { upsert },
+    }))
+
+    const { propagateOrgNodeInvitesOnAccept } = await import('@/lib/db/pending-org-node-invitations')
+    await propagateOrgNodeInvitesOnAccept('org-member-id', 'new@example.com')
+
+    expect(upsert).not.toHaveBeenCalled()
+  })
+
+  it('creates one pending invite when initiator has one direct node', async () => {
+    const upsert = vi.fn().mockResolvedValue({ error: null })
+
+    // Track calls to org_node_members: first call returns initiator's nodes, subsequent calls check membership
+    let orgNodeMembersCallCount = 0
+    adminMock.mockReturnValue(buildAdmin({
+      profiles: {
+        select: () => ({ eq: () => ({ maybeSingle: () => Promise.resolve({ data: { id: 'new-user-id' } }) }) }),
+      },
+      org_node_members: {
+        select: (fields: string) => {
+          orgNodeMembersCallCount++
+          if (orgNodeMembersCallCount === 1) {
+            // Get initiator's memberships
+            return {
+              eq: () => Promise.resolve({
+                data: [{ node_id: 'node-1', org_nodes: { org_id: 'org-1' } }],
+                error: null,
+              }),
+            }
+          }
+          // Check if new member already in node
+          return {
+            eq: () => ({ eq: () => ({ maybeSingle: () => Promise.resolve({ data: null }) }) }),
+          }
+        },
+      },
+      pending_org_node_invitations: { upsert },
+    }))
+
+    const { propagateOrgNodeInvitesOnAccept } = await import('@/lib/db/pending-org-node-invitations')
+    await propagateOrgNodeInvitesOnAccept('org-member-id', 'new@example.com')
+
+    expect(upsert).toHaveBeenCalledOnce()
+    expect(upsert).toHaveBeenCalledWith(
+      {
+        inviter_id: 'org-member-id',
+        invited_email: 'new@example.com',
+        org_id: 'org-1',
+        node_id: 'node-1',
+      },
+      { onConflict: 'invited_email,node_id', ignoreDuplicates: true }
+    )
+  })
+
+  it('creates one invite per node when initiator has multiple nodes', async () => {
+    const upsert = vi.fn().mockResolvedValue({ error: null })
+
+    let orgNodeMembersCallCount = 0
+    adminMock.mockReturnValue(buildAdmin({
+      profiles: {
+        select: () => ({ eq: () => ({ maybeSingle: () => Promise.resolve({ data: { id: 'new-user-id' } }) }) }),
+      },
+      org_node_members: {
+        select: () => {
+          orgNodeMembersCallCount++
+          if (orgNodeMembersCallCount === 1) {
+            return {
+              eq: () => Promise.resolve({
+                data: [
+                  { node_id: 'node-1', org_nodes: { org_id: 'org-1' } },
+                  { node_id: 'node-2', org_nodes: { org_id: 'org-1' } },
+                ],
+                error: null,
+              }),
+            }
+          }
+          return {
+            eq: () => ({ eq: () => ({ maybeSingle: () => Promise.resolve({ data: null }) }) }),
+          }
+        },
+      },
+      pending_org_node_invitations: { upsert },
+    }))
+
+    const { propagateOrgNodeInvitesOnAccept } = await import('@/lib/db/pending-org-node-invitations')
+    await propagateOrgNodeInvitesOnAccept('org-member-id', 'new@example.com')
+
+    expect(upsert).toHaveBeenCalledTimes(2)
+  })
+
+  it('skips a node where new member is already a member', async () => {
+    const upsert = vi.fn().mockResolvedValue({ error: null })
+
+    let orgNodeMembersCallCount = 0
+    adminMock.mockReturnValue(buildAdmin({
+      profiles: {
+        select: () => ({ eq: () => ({ maybeSingle: () => Promise.resolve({ data: { id: 'new-user-id' } }) }) }),
+      },
+      org_node_members: {
+        select: () => {
+          orgNodeMembersCallCount++
+          if (orgNodeMembersCallCount === 1) {
+            return {
+              eq: () => Promise.resolve({
+                data: [
+                  { node_id: 'node-1', org_nodes: { org_id: 'org-1' } },
+                  { node_id: 'node-2', org_nodes: { org_id: 'org-1' } },
+                ],
+                error: null,
+              }),
+            }
+          }
+          // node-1: already member, node-2: not member
+          const isFirstCheck = orgNodeMembersCallCount === 2
+          return {
+            eq: () => ({
+              eq: () => ({
+                maybeSingle: () => Promise.resolve({
+                  data: isFirstCheck ? { user_id: 'new-user-id' } : null,
+                }),
+              }),
+            }),
+          }
+        },
+      },
+      pending_org_node_invitations: { upsert },
+    }))
+
+    const { propagateOrgNodeInvitesOnAccept } = await import('@/lib/db/pending-org-node-invitations')
+    await propagateOrgNodeInvitesOnAccept('org-member-id', 'new@example.com')
+
+    expect(upsert).toHaveBeenCalledOnce()
+    expect(upsert).toHaveBeenCalledWith(
+      expect.objectContaining({ node_id: 'node-2' }),
+      expect.any(Object)
+    )
+  })
+
+  it('skips nodes with null org_id', async () => {
+    const upsert = vi.fn()
+
+    let orgNodeMembersCallCount = 0
+    adminMock.mockReturnValue(buildAdmin({
+      profiles: {
+        select: () => ({ eq: () => ({ maybeSingle: () => Promise.resolve({ data: { id: 'new-user-id' } }) }) }),
+      },
+      org_node_members: {
+        select: () => {
+          orgNodeMembersCallCount++
+          if (orgNodeMembersCallCount === 1) {
+            return {
+              eq: () => Promise.resolve({
+                data: [{ node_id: 'node-1', org_nodes: null }],
+                error: null,
+              }),
+            }
+          }
+          return {
+            eq: () => ({ eq: () => ({ maybeSingle: () => Promise.resolve({ data: null }) }) }),
+          }
+        },
+      },
+      pending_org_node_invitations: { upsert },
+    }))
+
+    const { propagateOrgNodeInvitesOnAccept } = await import('@/lib/db/pending-org-node-invitations')
+    await propagateOrgNodeInvitesOnAccept('org-member-id', 'new@example.com')
+
+    expect(upsert).not.toHaveBeenCalled()
+  })
+})
