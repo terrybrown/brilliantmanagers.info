@@ -53,7 +53,7 @@ export function DashboardResults({
   return (
     <div className="flex flex-col gap-6">
       {/* Three-column grid */}
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-[220px_1fr_260px]">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-[280px_1fr_260px] lg:grid-cols-[320px_1fr_260px]">
 
         {/* Left: Radar + score + sparkline */}
         <aside className="flex flex-col gap-4">
