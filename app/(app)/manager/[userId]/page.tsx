@@ -1,7 +1,7 @@
 import { notFound, redirect } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
-import { getLatestCompleteRound } from '@/lib/db/rounds'
+import { getLatestCompleteRound, getRoundById } from '@/lib/db/rounds'
 import { getManagerScoresForRound } from '@/lib/db/manager-scores'
 import { getSignedAvatarUrl } from '@/lib/db/profiles'
 import { PILLARS, PILLAR_LABELS, getSkillsByPillar, type Pillar, type Level } from '@/lib/skills'
@@ -12,10 +12,10 @@ export default async function ManagerPage({
   searchParams,
 }: {
   params: Promise<{ userId: string }>
-  searchParams: Promise<{ pillar?: string }>
+  searchParams: Promise<{ pillar?: string; roundId?: string }>
 }) {
   const { userId } = await params
-  const { pillar } = await searchParams
+  const { pillar, roundId: roundIdParam } = await searchParams
 
   const supabase = await createClient()
   const {
@@ -42,7 +42,23 @@ export default async function ManagerPage({
     ? await getSignedAvatarUrl(profile.avatar_path)
     : null
 
-  const round = await getLatestCompleteRound(userId)
+  let round = roundIdParam ? await getRoundById(roundIdParam, userId) : null
+  if (!round) {
+    round = await getLatestCompleteRound(userId)
+  }
+
+  if (round?.status === 'scheduled') {
+    return (
+      <main className="mx-auto max-w-2xl px-4 py-8">
+        <h1 className="mb-4 text-xl font-bold">{profile?.display_name ?? profile?.email}</h1>
+        <p className="text-neutral-400">
+          {profile?.display_name ?? profile?.email ?? 'This person'} has a round scheduled but
+          hasn&apos;t started their self-assessment yet. Check back once they begin.
+        </p>
+      </main>
+    )
+  }
+
   if (!round) {
     return (
       <div className="flex items-center justify-center py-24">
