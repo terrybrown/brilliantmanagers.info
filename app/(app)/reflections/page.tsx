@@ -4,11 +4,15 @@ import { createClient } from '@/lib/supabase/server'
 import { getAllCompleteRoundsWithScores, getInProgressRound } from '@/lib/db/rounds'
 import { getScoresForRound } from '@/lib/db/scores'
 import { getManagerScoresForAllRounds } from '@/lib/db/manager-scores'
+import { getConnectionsForUser } from '@/lib/db/connections'
+import { getTeamReflectionSummaries, type TeamReflectionSummary } from '@/lib/db/direct-reports'
+import { getProfile } from '@/lib/db/profiles'
 import { nextRoundTitle, roundLabel, computeTrendData, computeStats, pillarAvgFromScores } from '@/lib/reflections'
 import { ReflectionsHeader } from '@/components/reflections/ReflectionsHeader'
 import { ReflectionsTrendChart } from '@/components/reflections/ReflectionsTrendChart'
 import { RoundsHistoryTable } from '@/components/reflections/RoundsHistoryTable'
 import type { RoundRow } from '@/components/reflections/RoundsHistoryTable'
+import { TeamReflectionsSection } from '@/components/reflections/TeamReflectionsSection'
 import { PILLARS, PILLAR_LABELS, LEVEL_VALUES, type Pillar, type Level } from '@/lib/skills'
 
 export default async function ReflectionsPage() {
@@ -83,6 +87,28 @@ export default async function ReflectionsPage() {
       }
     })
 
+  const connections = await getConnectionsForUser(user.id)
+  const drConnections = connections.asManager.filter(c => c.status === 'active')
+  const drIds = drConnections.map(c => c.direct_report_id)
+
+  const [teamSummaries, drProfiles] = drIds.length > 0
+    ? await Promise.all([
+        getTeamReflectionSummaries(drIds, user.id),
+        Promise.all(drIds.map(id => getProfile(id))),
+      ])
+    : [[] as TeamReflectionSummary[], []]
+
+  const profileByDrId = Object.fromEntries(
+    (drProfiles as (Awaited<ReturnType<typeof getProfile>>)[])
+      .filter((p): p is NonNullable<typeof p> => p !== null)
+      .map(p => [p.id, p])
+  )
+
+  const enrichedTeamSummaries = teamSummaries.map(s => ({
+    ...s,
+    name: profileByDrId[s.directReportId]?.display_name ?? 'Direct report',
+  }))
+
   const hasRounds = completeRoundsWithScores.length > 0
 
   return (
@@ -142,6 +168,9 @@ export default async function ReflectionsPage() {
 
       {/* History table */}
       {hasRounds && <RoundsHistoryTable rows={rows} />}
+
+      {/* Team reflections (manager view) */}
+      <TeamReflectionsSection summaries={enrichedTeamSummaries} />
     </div>
   )
 }
