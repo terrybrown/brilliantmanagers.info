@@ -274,7 +274,7 @@ export function ScorecardRadarChart({ pillarScores, onPillarClick }: Props) {
       if (hidden.has('Manager')) return null
       const { x = 0, y = 0, value, index = 0 } = props
       const ps = pillarScores[index]
-      if (!ps || ps.managerScore === undefined || value === undefined) return null
+      if (!ps || ps.managerScore === undefined) return null
       const { dx, dy } = LABEL_OFFSETS[index] ?? { dx: 0, dy: -14 }
       return (
         <text
@@ -286,38 +286,42 @@ export function ScorecardRadarChart({ pillarScores, onPillarClick }: Props) {
           fontSize={9}
           fontFamily="monospace"
         >
-          {Math.round(value)}
+          {Math.round(ps.managerScore)}
         </text>
       )
     },
     [hidden, pillarScores]
   )
 
-  const renderDot = useCallback(
-    (color: string, radius: number) =>
-      function Dot(props: { cx?: number; cy?: number; index?: number }) {
-        const { cx = 0, cy = 0, index = 0 } = props
-        const ps = pillarScores[index]
-        return (
-          <g key={`dot-${color}-${index}`}>
-            <circle
-              cx={cx}
-              cy={cy}
-              r={12}
-              fill="transparent"
-              style={{ cursor: onPillarClick ? 'pointer' : 'default' }}
-              onClick={() => ps && onPillarClick?.(ps.pillar)}
-            />
-            <circle
-              cx={cx}
-              cy={cy}
-              r={radius}
-              fill={color}
-              style={{ pointerEvents: 'none' }}
-            />
-          </g>
-        )
-      },
+  const renderSelfDot = useCallback(
+    function SelfDot(props: { cx?: number; cy?: number; index?: number }) {
+      const { cx = 0, cy = 0, index = 0 } = props
+      const ps = pillarScores[index]
+      return (
+        <g key={`dot-self-${index}`}>
+          <circle cx={cx} cy={cy} r={12} fill="transparent"
+            style={{ cursor: onPillarClick ? 'pointer' : 'default' }}
+            onClick={() => ps && onPillarClick?.(ps.pillar)} />
+          <circle cx={cx} cy={cy} r={4} fill="#f59e0b" style={{ pointerEvents: 'none' }} />
+        </g>
+      )
+    },
+    [pillarScores, onPillarClick]
+  )
+
+  const renderManagerDot = useCallback(
+    function ManagerDot(props: { cx?: number; cy?: number; index?: number }) {
+      const { cx = 0, cy = 0, index = 0 } = props
+      const ps = pillarScores[index]
+      return (
+        <g key={`dot-manager-${index}`}>
+          <circle cx={cx} cy={cy} r={12} fill="transparent"
+            style={{ cursor: onPillarClick ? 'pointer' : 'default' }}
+            onClick={() => ps && onPillarClick?.(ps.pillar)} />
+          <circle cx={cx} cy={cy} r={3.5} fill="#a78bfa" style={{ pointerEvents: 'none' }} />
+        </g>
+      )
+    },
     [pillarScores, onPillarClick]
   )
 
@@ -335,7 +339,7 @@ export function ScorecardRadarChart({ pillarScores, onPillarClick }: Props) {
             fillOpacity={hidden.has('Self') ? 0 : 0.18}
             strokeWidth={2}
             label={renderSelfLabel as never}
-            dot={renderDot('#f59e0b', 4) as never}
+            dot={renderSelfDot as never}
           />
           {hasManagerData && (
             <Radar
@@ -347,7 +351,7 @@ export function ScorecardRadarChart({ pillarScores, onPillarClick }: Props) {
               strokeWidth={1.5}
               strokeDasharray="4 2"
               label={renderManagerLabel as never}
-              dot={renderDot('#a78bfa', 3.5) as never}
+              dot={renderManagerDot as never}
             />
           )}
           <Tooltip
