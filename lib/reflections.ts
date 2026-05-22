@@ -49,21 +49,16 @@ export function computePillarScores(
 
     const selfAvg = pillarAvgFromScores(scores, pillar)
 
+    const pillarSelfScores = scores.filter(s => s.pillar === pillar)
     const selfSkills: SkillScore[] = pillarSkills.flatMap(skill => {
-      const match = scores.find(s => s.skill_key === skill.key)
+      const match = pillarSelfScores.find(s => s.skill_key === skill.key)
       return match ? [{ skillKey: skill.key, label: skill.label, level: match.level }] : []
     })
 
     const relevantMgrScores = managerScores.filter(ms =>
       pillarSkills.some(s => s.key === ms.skill_key)
     )
-    const managerAvg =
-      relevantMgrScores.length > 0
-        ? relevantMgrScores.reduce(
-            (sum, ms) => sum + LEVEL_VALUES[ms.level as Level],
-            0
-          ) / relevantMgrScores.length
-        : undefined
+    const managerAvg = pillarAvgFromManagerScores(managerScores, pillar as Pillar)
 
     const managerSkills: SkillScore[] | undefined =
       relevantMgrScores.length > 0

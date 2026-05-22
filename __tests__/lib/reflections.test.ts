@@ -223,4 +223,28 @@ describe('computePillarScores', () => {
     const result = computePillarScores([], [])
     expect(result.every(r => r.managerSkills === undefined)).toBe(true)
   })
+
+  it('selfSkills does not include scores from a different pillar with a matching key', () => {
+    // A team score should never appear in the self pillar's selfSkills, even if the
+    // skill_key lookup were naive. This test guards the pillar-scoped filter.
+    const scores = [
+      makeScore('r-1', 'team', 'team-accountability', 'Advanced'),
+    ]
+    const result = computePillarScores(scores, [])
+    const selfPillar = result.find(r => r.pillar === 'self')!
+    // self pillar should have no selfSkills from a team score
+    expect(selfPillar.selfSkills).toHaveLength(0)
+    // team pillar should have its score
+    const teamPillar = result.find(r => r.pillar === 'team')!
+    expect(teamPillar.selfSkills).toHaveLength(1)
+    expect(teamPillar.selfSkills[0].skillKey).toBe('team-accountability')
+  })
+
+  it('managerSkills is undefined for pillars without any manager scores', () => {
+    const mgrScores = [makeMgrScore('r-1', 'self-self-awareness', 'Expert')]
+    const result = computePillarScores([], mgrScores)
+    // only 'self' pillar should have managerSkills
+    const nonSelfPillars = result.filter(r => r.pillar !== 'self')
+    expect(nonSelfPillars.every(r => r.managerSkills === undefined)).toBe(true)
+  })
 })
