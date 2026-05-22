@@ -2,7 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { getInProgressRound } from '@/lib/db/rounds'
 import { getScheduledRound } from '@/lib/db/scheduled-rounds'
 import { LEVEL_VALUES, PILLARS, getSkillsByPillar } from '@/lib/skills'
-import type { Level } from '@/lib/skills'
+import type { Level, Pillar } from '@/lib/skills'
 import type { ManagerScoringStatus } from '@/lib/db/manager-scores'
 
 export interface DirectReportRoundSummary {
@@ -85,7 +85,7 @@ export async function getDirectReportRoundSummaries(
         const scoredPillarsSet = new Set(
           [...scoredKeys]
             .map(key => PILLARS.find(p => getSkillsByPillar(p).some(s => s.key === key)))
-            .filter((p): p is string => p !== undefined)
+            .filter((p): p is Pillar => p !== undefined)
         )
         pillarsScored = scoredPillarsSet.size
       }
