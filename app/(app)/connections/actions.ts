@@ -3,6 +3,7 @@ import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
 import { createConnection, acceptConnection, NO_ACCOUNT_ERROR } from '@/lib/db/connections'
 import { createPendingInvitation } from '@/lib/db/pending-invitations'
+import { propagateOrgNodeInvitesOnAccept } from '@/lib/db/pending-org-node-invitations'
 import { logAudit } from '@/lib/audit'
 import { sendEmail } from '@/lib/email/mailgun'
 import { buildManagerInviteEmail } from '@/lib/email/templates/manager-invite'
@@ -136,6 +137,14 @@ export async function acceptConnectionAction(connectionId: string) {
       acceptorId: user.id,
       acceptorName,
     })
+  }
+
+  if (conn && user.email) {
+    try {
+      await propagateOrgNodeInvitesOnAccept(conn.initiated_by, user.email)
+    } catch (e) {
+      console.error('org invite propagation failed:', e)
+    }
   }
 
   await logAudit({
