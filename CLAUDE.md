@@ -35,13 +35,16 @@ app/
     dashboard/
     scorecard/
     results/
-    connections/
-    manager/
-    organisation/
+    people/             # team and connections hub (invite, view, accept)
+    reflections/        # reflection rounds list + detail (/reflections/[id])
     growth/
     profile/
     notifications/
     admin/
+    connections/        # stub — redirects to /people
+    organisation/       # stub — redirects to /people
+    manager/            # stub — redirects to /people
+    error.tsx           # authenticated route error boundary (reports to Sentry)
     layout.tsx          # app shell with sidebar nav
   auth/               # Supabase auth callbacks (/auth/confirm, /auth/callback)
   blog/               # public blog index + posts
@@ -49,6 +52,7 @@ app/
   resources/          # public resources page
   the-guide/          # public management guide (MDX)
   the-tool/           # public product page
+  global-error.tsx    # root-level error boundary (reports to Sentry)
   layout.tsx          # root layout (ThemeProvider, fonts)
   page.tsx            # marketing home page
 ```
@@ -74,7 +78,7 @@ All global styles in `app/globals.css`. Tailwind CSS v4 with `@tailwindcss/postc
 
 ### Database
 
-Supabase migrations live in `supabase/migrations/`. Run them in order against your Supabase project. Email templates are in `supabase/templates/`.
+Supabase migrations live in `supabase/migrations/`, named `YYYYMMDDNNNNNN_description.sql` and applied in filename sort order. Run them sequentially against your Supabase project. Email templates are in `supabase/templates/`.
 
 ### Testing
 
@@ -92,8 +96,18 @@ Tests live in `__tests__/`, mirroring the source tree. Vitest + Testing Library.
 | `MAILGUN_BASE_URL` | Server only |
 | `MAILGUN_SENDING_KEY` | Server only |
 | `NEXT_PUBLIC_SLEEKPLAN_PRODUCT_ID` | Client only (Sleekplan feedback widget) |
+| `NEXT_PUBLIC_SENTRY_DSN` | Client + server (Sentry error monitoring) |
+| `SENTRY_AUTH_TOKEN` | Netlify build env only — never commit, never `.env.local` |
+| `SENTRY_ORG` | Netlify build env only |
+| `SENTRY_PROJECT` | Netlify build env only |
 
-Never put `SUPABASE_SERVICE_ROLE_KEY` or any non-`NEXT_PUBLIC_` key in client-side code.
+Never put `SUPABASE_SERVICE_ROLE_KEY` or any non-`NEXT_PUBLIC_` key in client-side code. `SENTRY_AUTH_TOKEN` must never appear in `.env.local` or any committed file — it belongs only in Netlify's build environment settings.
+
+## Analytics
+
+User-facing actions are tracked via GA4 through `lib/analytics.ts`. Every exported function is a one-liner wrapper around `window.gtag` with an SSR guard. When adding a new user action (form submit, button click, modal confirm), add a corresponding `track*` call in `lib/analytics.ts` and call it at the point of success. Existing tracked events: `trackRoundStarted`, `trackReflectionViewed`, `trackRoundCompleted`, `trackPillarScored`, `trackScorecardCompleted`, `trackGoalCreated`, `trackGoalCheckin`, `trackManagerInvited`, `trackConnectionAccepted`.
+
+For actions that trigger a server action ending in `redirect()`, fire the analytics call _before_ the `await` — any code after `redirect()` never executes on the client.
 
 ## Things that bite
 
@@ -101,6 +115,8 @@ Never put `SUPABASE_SERVICE_ROLE_KEY` or any non-`NEXT_PUBLIC_` key in client-si
 - **Supabase client creation** — use `createServerClient` (from `@supabase/ssr`) in server components and API routes; use `createBrowserClient` in client components. The browser client must not receive the service role key.
 - **Microsoft Safe Links** — the email OTP flow uses `/auth/confirm` with `token_hash` + `verifyOtp` rather than the default magic link, to prevent Safe Links from consuming the token before the user clicks.
 - **RLS on every table** — see section below. A table without RLS is either fully open or fully broken.
+- **Sentry + Next.js 15 App Router** — `instrumentation.ts` must export `export const onRequestError = Sentry.captureRequestError`. Without it, server component and server action errors are not forwarded to Sentry. The `register()` function must also handle both `nodejs` and `edge` runtimes.
+- **React Strict Mode double-fire** — `useEffect` hooks that trigger analytics on state changes will fire twice in development. Guard with a `useRef(false)` flag set to `true` on first fire.
 
 ## Supabase / database rules
 
