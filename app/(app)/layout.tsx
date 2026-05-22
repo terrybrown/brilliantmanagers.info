@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { getSignedAvatarUrl } from '@/lib/db/profiles'
 import { isSuperAdmin } from '@/lib/auth/roles'
+import { getUnreadCount } from '@/lib/notifications'
 import { AppShell } from '@/components/app/AppShell'
 
 function getInitials(displayName: string | null, email: string | null): string {
@@ -19,9 +20,10 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
   if (!user) redirect('/login')
 
-  const [{ data: profile }, superAdmin] = await Promise.all([
+  const [{ data: profile }, superAdmin, unreadCount] = await Promise.all([
     supabase.from('profiles').select('display_name, avatar_path').eq('id', user.id).maybeSingle(),
     isSuperAdmin(user.id),
+    getUnreadCount(user.id),
   ])
 
   const displayName = profile?.display_name ?? user.email?.split('@')[0] ?? 'You'
@@ -36,6 +38,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       user={{ displayName, email, initials, avatarUrl: avatarUrl ?? undefined }}
       showBeta={true}
       isSuperAdmin={superAdmin}
+      unreadCount={unreadCount}
     >
       {children}
     </AppShell>

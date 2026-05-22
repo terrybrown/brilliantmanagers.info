@@ -4,6 +4,7 @@ import {
   TrendingUp,
   History,
   Network,
+  Bell,
   Users,
   ScrollText,
   Building2,
@@ -27,9 +28,10 @@ interface SidebarProps {
   isExpanded: boolean
   onToggle: () => void
   isSuperAdmin?: boolean
+  unreadCount?: number
 }
 
-export function Sidebar({ isExpanded, onToggle, isSuperAdmin = false }: SidebarProps) {
+export function Sidebar({ isExpanded, onToggle, isSuperAdmin = false, unreadCount }: SidebarProps) {
   return (
     <div
       style={{
@@ -57,6 +59,14 @@ export function Sidebar({ isExpanded, onToggle, isSuperAdmin = false }: SidebarP
           id={item.id}
         />
       ))}
+      <NavItem
+        href="/notifications"
+        icon={Bell}
+        label="Notifications"
+        isExpanded={isExpanded}
+        id="nav-notifications"
+        badge={unreadCount}
+      />
 
       {isSuperAdmin && (
         <>

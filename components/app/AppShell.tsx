@@ -18,11 +18,13 @@ export function AppShell({
   user,
   showBeta,
   isSuperAdmin = false,
+  unreadCount,
   children,
 }: {
   user: UserInfo
   showBeta: boolean
   isSuperAdmin?: boolean
+  unreadCount?: number
   children: React.ReactNode
 }) {
   const [isExpanded, setIsExpanded] = useState(false)
@@ -60,7 +62,7 @@ export function AppShell({
           background: '#0a0f1e',
         }}
       >
-        <Sidebar isExpanded={isExpanded} onToggle={handleToggle} isSuperAdmin={isSuperAdmin} />
+        <Sidebar isExpanded={isExpanded} onToggle={handleToggle} isSuperAdmin={isSuperAdmin} unreadCount={unreadCount} />
 
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
           <Topbar user={user} showBeta={showBeta} />
