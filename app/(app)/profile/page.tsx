@@ -1,8 +1,10 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { getProfile, getSignedAvatarUrl } from '@/lib/db/profiles'
+import { getConnectionsForUser } from '@/lib/db/connections'
 import { updateProfileAction } from './actions'
 import { AvatarUpload } from '@/components/app/AvatarUpload'
+import { BlindScoringToggle } from '@/components/profile/BlindScoringToggle'
 
 function getInitials(name: string | null, email: string | null): string {
   const src = name ?? email ?? '?'
@@ -18,11 +20,15 @@ export default async function ProfilePage() {
   } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
-  const profile = await getProfile(user.id)
+  const [profile, connections] = await Promise.all([
+    getProfile(user.id),
+    getConnectionsForUser(user.id),
+  ])
   const avatarUrl = profile?.avatar_path
     ? await getSignedAvatarUrl(profile.avatar_path)
     : null
   const initials = getInitials(profile?.display_name ?? null, user.email ?? null)
+  const hasDirectReports = connections.asManager.some(c => c.status === 'active')
 
   return (
     <div className="mx-auto max-w-5xl">
@@ -92,6 +98,13 @@ export default async function ProfilePage() {
           Save changes
         </button>
       </form>
+
+      {hasDirectReports && (
+        <section className="mt-8 border-t border-neutral-800 pt-8">
+          <h2 className="mb-4 text-lg font-semibold">Manager preferences</h2>
+          <BlindScoringToggle initialValue={profile?.manager_scoring_blind ?? false} />
+        </section>
+      )}
     </div>
   )
 }

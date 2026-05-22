@@ -86,3 +86,18 @@ export async function removeAvatarAction(): Promise<{ error?: string }> {
   revalidatePath('/profile')
   return {}
 }
+
+export async function updateBlindScoringAction(value: boolean): Promise<void> {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) redirect('/login')
+  await updateProfile(user.id, { manager_scoring_blind: value })
+  await logAudit({
+    actorId: user.id,
+    action: 'profile.update_blind_scoring',
+    entityType: 'profile',
+    entityId: user.id,
+    metadata: { manager_scoring_blind: value },
+  })
+  revalidatePath('/profile')
+}

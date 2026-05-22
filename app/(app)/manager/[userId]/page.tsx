@@ -3,9 +3,13 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { getLatestCompleteRound, getRoundById } from '@/lib/db/rounds'
 import { getManagerScoresForRound } from '@/lib/db/manager-scores'
-import { getSignedAvatarUrl } from '@/lib/db/profiles'
+import { getSignedAvatarUrl, getProfile } from '@/lib/db/profiles'
 import { PILLARS, PILLAR_LABELS, getSkillsByPillar, type Pillar, type Level } from '@/lib/skills'
 import { ManagerScoringView } from '@/components/app/ManagerScoringView'
+
+function shouldFetchDrScores(isBlindMode: boolean, roundStatus: string): boolean {
+  return !isBlindMode && roundStatus === 'complete'
+}
 
 export default async function ManagerPage({
   params,
@@ -67,6 +71,22 @@ export default async function ManagerPage({
         </p>
       </div>
     )
+  }
+
+  const managerProfile = await getProfile(user.id)
+  const isBlindMode = managerProfile?.manager_scoring_blind ?? false
+
+  let directReportScores: Record<string, Level> | null = null
+  if (shouldFetchDrScores(isBlindMode, round.status)) {
+    const { data: scoreRows } = await supabase
+      .from('scores')
+      .select('skill_key, level')
+      .eq('round_id', round.id)
+    if (scoreRows) {
+      directReportScores = Object.fromEntries(
+        scoreRows.map(s => [s.skill_key, s.level as Level])
+      )
+    }
   }
 
   if (!pillar || !PILLARS.includes(pillar as Pillar)) {
@@ -133,6 +153,8 @@ export default async function ManagerPage({
       initialScores={initialScores}
       directReportName={profile?.display_name ?? profile?.email ?? 'your direct report'}
       userId={userId}
+      directReportScores={directReportScores}
+      isBlindMode={isBlindMode}
     />
   )
 }

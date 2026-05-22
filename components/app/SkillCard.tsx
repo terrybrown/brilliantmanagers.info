@@ -7,9 +7,10 @@ interface Props {
   skill: Skill
   currentLevel: Level | null
   onSelect: (skillKey: string, level: Level) => void
+  drScore?: Level
 }
 
-export function SkillCard({ skill, currentLevel, onSelect }: Props) {
+export function SkillCard({ skill, currentLevel, onSelect, drScore }: Props) {
   const [expanded, setExpanded] = useState(currentLevel === null)
 
   function handleSelect(level: Level) {
@@ -33,6 +34,9 @@ export function SkillCard({ skill, currentLevel, onSelect }: Props) {
         >
           {currentLevel}
         </span>
+        {drScore && (
+          <span className="text-xs text-neutral-400 ml-2">Their view: {drScore}</span>
+        )}
         <span className="text-xs text-slate-500">✎</span>
       </button>
     )
@@ -48,6 +52,9 @@ export function SkillCard({ skill, currentLevel, onSelect }: Props) {
     >
       <p className="mb-1 text-sm font-semibold text-white">{skill.label}</p>
       <p className="mb-4 text-xs leading-relaxed text-slate-400">{skill.description}</p>
+      {drScore && (
+        <p className="mt-1 text-xs text-neutral-400">Their view: {drScore}</p>
+      )}
       <div className="flex flex-wrap gap-2">
         {LEVELS.map(level => (
           <button
