@@ -43,6 +43,16 @@ NEXT_PUBLIC_SLEEKPLAN_PRODUCT_ID=
 
 Netlify build-only (not needed locally): `SENTRY_AUTH_TOKEN`, `SENTRY_ORG`, `SENTRY_PROJECT`.
 
+### Database setup
+
+All migrations live in `supabase/migrations/`, named `YYYYMMDDNNNNNN_description.sql` and designed to be run in filename order. Run them against your Supabase project in the SQL editor, or with the Supabase CLI:
+
+```bash
+supabase db push
+```
+
+If running manually, apply each file in sort order — they are safe to run sequentially with no gaps.
+
 ### Run locally
 
 ```bash
