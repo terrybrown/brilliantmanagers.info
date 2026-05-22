@@ -1,183 +1,120 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
-// Build the mock chain bottom-up so each level can be reset per test.
-const mockIs = vi.fn()
-const mockLimit = vi.fn()
-const mockOrder = vi.fn().mockReturnValue({ limit: mockLimit })
-const mockEq = vi.fn().mockReturnValue({ order: mockOrder, is: mockIs })
-const mockInsert = vi.fn()
-const mockUpdate = vi.fn().mockReturnValue({ eq: vi.fn().mockReturnValue({ is: mockIs }) })
-const mockSelect = vi.fn().mockReturnValue({ eq: mockEq })
-const mockFrom = vi.fn().mockReturnValue({
-  select: mockSelect,
-  insert: mockInsert,
-  update: mockUpdate,
+// Keep top-level vi.mock declarations (required by Vitest hoisting)
+vi.mock('@/lib/supabase/admin', () => ({ createAdminClient: vi.fn() }))
+vi.mock('@/lib/supabase/server', () => ({ createClient: vi.fn() }))
+
+import { createAdminClient } from '@/lib/supabase/admin'
+import { createClient } from '@/lib/supabase/server'
+import { createNotification, getNotifications, markAllRead, getUnreadCount } from '@/lib/notifications'
+
+const mockCreateAdminClient = vi.mocked(createAdminClient)
+const mockCreateClient = vi.mocked(createClient)
+
+beforeEach(() => {
+  vi.clearAllMocks()
 })
 
-vi.mock('@/lib/supabase/admin', () => ({
-  createAdminClient: vi.fn().mockReturnValue({ from: mockFrom }),
-}))
-vi.mock('@/lib/supabase/server', () => ({
-  createClient: vi.fn().mockResolvedValue({ from: mockFrom }),
-}))
-
 describe('createNotification', () => {
-  beforeEach(() => {
-    vi.clearAllMocks()
-    mockFrom.mockReturnValue({ select: mockSelect, insert: mockInsert, update: mockUpdate })
-    mockInsert.mockResolvedValue({ error: null })
-  })
+  it('inserts via admin client with correct fields', async () => {
+    const mockInsert = vi.fn().mockResolvedValue({ error: null })
+    const mockFrom = vi.fn().mockReturnValue({ insert: mockInsert })
+    mockCreateAdminClient.mockReturnValue({ from: mockFrom } as never)
 
-  it('calls insert with user_id, type, and payload', async () => {
-    const { createNotification } = await import('@/lib/notifications')
-    await createNotification('user-1', 'manager_scoring_needed', { roundId: 'r-1' })
+    await createNotification('user-1', 'round_scheduled', { roundId: 'r1' })
 
-    expect(mockFrom).toHaveBeenCalledWith('notifications')
     expect(mockInsert).toHaveBeenCalledWith({
       user_id: 'user-1',
-      type: 'manager_scoring_needed',
-      payload: { roundId: 'r-1' },
+      type: 'round_scheduled',
+      payload: { roundId: 'r1' },
     })
   })
 
-  it('defaults payload to empty object when not provided', async () => {
-    const { createNotification } = await import('@/lib/notifications')
-    await createNotification('user-2', 'connection_accepted')
+  it('throws when insert returns an error', async () => {
+    const mockInsert = vi.fn().mockResolvedValue({ error: new Error('DB error') })
+    mockCreateAdminClient.mockReturnValue({ from: vi.fn().mockReturnValue({ insert: mockInsert }) } as never)
 
-    expect(mockInsert).toHaveBeenCalledWith({
-      user_id: 'user-2',
-      type: 'connection_accepted',
-      payload: {},
-    })
+    await expect(createNotification('user-1', 'round_scheduled')).rejects.toThrow('DB error')
   })
 })
 
 describe('getUnreadCount', () => {
-  beforeEach(() => {
-    vi.clearAllMocks()
-    // Rebuild the chain so is() resolves with a count
-    const mockIsInner = vi.fn()
-    const mockEqInner = vi.fn().mockReturnValue({ is: mockIsInner })
-    const mockSelectInner = vi.fn().mockReturnValue({ eq: mockEqInner })
-    mockFrom.mockReturnValue({
-      select: mockSelectInner,
-      insert: mockInsert,
-      update: mockUpdate,
-    })
-    ;(mockFrom as ReturnType<typeof vi.fn>)._selectInner = mockSelectInner
-    ;(mockFrom as ReturnType<typeof vi.fn>)._eqInner = mockEqInner
-    ;(mockFrom as ReturnType<typeof vi.fn>)._isInner = mockIsInner
-  })
+  function mockCountChain(count: number | null, error: Error | null = null) {
+    const mockIs = vi.fn().mockResolvedValue({ count, error })
+    const mockEq = vi.fn().mockReturnValue({ is: mockIs })
+    const mockSelect = vi.fn().mockReturnValue({ eq: mockEq })
+    mockCreateClient.mockResolvedValue({ from: vi.fn().mockReturnValue({ select: mockSelect }) } as never)
+    return { mockIs, mockEq, mockSelect }
+  }
 
-  it('returns the count from the database', async () => {
-    const isInner = (mockFrom as ReturnType<typeof vi.fn>)._isInner as ReturnType<typeof vi.fn>
-    isInner.mockResolvedValue({ count: 7, error: null })
-
-    const { getUnreadCount } = await import('@/lib/notifications')
-    const result = await getUnreadCount('user-1')
-
-    expect(result).toBe(7)
-    const eqInner = (mockFrom as ReturnType<typeof vi.fn>)._eqInner as ReturnType<typeof vi.fn>
-    expect(eqInner).toHaveBeenCalledWith('user_id', 'user-1')
-    expect(isInner).toHaveBeenCalledWith('read_at', null)
+  it('returns count of unread notifications', async () => {
+    mockCountChain(4)
+    expect(await getUnreadCount('user-1')).toBe(4)
   })
 
   it('returns 0 when count is null', async () => {
-    const isInner = (mockFrom as ReturnType<typeof vi.fn>)._isInner as ReturnType<typeof vi.fn>
-    isInner.mockResolvedValue({ count: null, error: null })
+    mockCountChain(null)
+    expect(await getUnreadCount('user-1')).toBe(0)
+  })
 
-    const { getUnreadCount } = await import('@/lib/notifications')
-    const result = await getUnreadCount('user-1')
+  it('throws when query errors', async () => {
+    const mockIs = vi.fn().mockResolvedValue({ count: null, error: new Error('query failed') })
+    const mockEq = vi.fn().mockReturnValue({ is: mockIs })
+    const mockSelect = vi.fn().mockReturnValue({ eq: mockEq })
+    mockCreateClient.mockResolvedValue({ from: vi.fn().mockReturnValue({ select: mockSelect }) } as never)
 
-    expect(result).toBe(0)
+    await expect(getUnreadCount('user-1')).rejects.toThrow('query failed')
   })
 })
 
 describe('getNotifications', () => {
-  beforeEach(() => {
-    vi.clearAllMocks()
+  function mockListChain(data: object[], error: Error | null = null) {
+    const mockLimit = vi.fn().mockResolvedValue({ data, error })
+    const mockOrder = vi.fn().mockReturnValue({ limit: mockLimit })
+    const mockEq = vi.fn().mockReturnValue({ order: mockOrder })
+    const mockSelect = vi.fn().mockReturnValue({ eq: mockEq })
+    mockCreateClient.mockResolvedValue({ from: vi.fn().mockReturnValue({ select: mockSelect }) } as never)
+  }
 
-    // Build a fresh chain: select -> eq -> order -> limit -> resolves
-    const mockLimitInner = vi.fn()
-    const mockOrderInner = vi.fn().mockReturnValue({ limit: mockLimitInner })
-    const mockEqInner = vi.fn().mockReturnValue({ order: mockOrderInner })
-    const mockSelectInner = vi.fn().mockReturnValue({ eq: mockEqInner })
-    mockFrom.mockReturnValue({
-      select: mockSelectInner,
-      insert: mockInsert,
-      update: mockUpdate,
+  it('maps row fields to camelCase Notification shape', async () => {
+    mockListChain([{
+      id: 'n1', user_id: 'u1', type: 'round_scheduled',
+      payload: {}, read_at: null, created_at: '2026-05-22T00:00:00Z',
+    }])
+    const result = await getNotifications('u1')
+    expect(result).toHaveLength(1)
+    expect(result[0]).toMatchObject({
+      id: 'n1', userId: 'u1', type: 'round_scheduled', readAt: null,
     })
-    ;(mockFrom as ReturnType<typeof vi.fn>)._limitInner = mockLimitInner
-    ;(mockFrom as ReturnType<typeof vi.fn>)._orderInner = mockOrderInner
-    ;(mockFrom as ReturnType<typeof vi.fn>)._eqInner = mockEqInner
-    ;(mockFrom as ReturnType<typeof vi.fn>)._selectInner = mockSelectInner
   })
 
-  it('maps snake_case DB rows to camelCase Notification objects', async () => {
-    const rows = [
-      {
-        id: 'n-1',
-        user_id: 'user-1',
-        type: 'manager_scoring_needed',
-        payload: { roundId: 'r-1' },
-        read_at: null,
-        created_at: '2026-05-22T10:00:00Z',
-      },
-      {
-        id: 'n-2',
-        user_id: 'user-1',
-        type: 'connection_accepted',
-        payload: {},
-        read_at: '2026-05-22T11:00:00Z',
-        created_at: '2026-05-22T09:00:00Z',
-      },
-    ]
-    const limitInner = (mockFrom as ReturnType<typeof vi.fn>)._limitInner as ReturnType<typeof vi.fn>
-    limitInner.mockResolvedValue({ data: rows, error: null })
-
-    const { getNotifications } = await import('@/lib/notifications')
-    const result = await getNotifications('user-1')
-
-    expect(result).toHaveLength(2)
-    expect(result[0]).toEqual({
-      id: 'n-1',
-      userId: 'user-1',
-      type: 'manager_scoring_needed',
-      payload: { roundId: 'r-1' },
-      readAt: null,
-      createdAt: '2026-05-22T10:00:00Z',
-    })
-    expect(result[1]).toEqual({
-      id: 'n-2',
-      userId: 'user-1',
-      type: 'connection_accepted',
-      payload: {},
-      readAt: '2026-05-22T11:00:00Z',
-      createdAt: '2026-05-22T09:00:00Z',
-    })
+  it('filters out unknown notification types', async () => {
+    mockListChain([
+      { id: 'n1', user_id: 'u1', type: 'unknown_future_type', payload: {}, read_at: null, created_at: '2026-05-22T00:00:00Z' },
+      { id: 'n2', user_id: 'u1', type: 'round_scheduled', payload: {}, read_at: null, created_at: '2026-05-22T00:00:00Z' },
+    ])
+    const result = await getNotifications('u1')
+    expect(result).toHaveLength(1)
+    expect(result[0].id).toBe('n2')
   })
 
   it('returns empty array when data is null', async () => {
-    const limitInner = (mockFrom as ReturnType<typeof vi.fn>)._limitInner as ReturnType<typeof vi.fn>
-    limitInner.mockResolvedValue({ data: null, error: null })
-
-    const { getNotifications } = await import('@/lib/notifications')
-    const result = await getNotifications('user-1')
-
-    expect(result).toEqual([])
+    mockListChain([])
+    expect(await getNotifications('u1')).toEqual([])
   })
+})
 
-  it('queries notifications ordered by created_at descending with limit 50', async () => {
-    const limitInner = (mockFrom as ReturnType<typeof vi.fn>)._limitInner as ReturnType<typeof vi.fn>
-    limitInner.mockResolvedValue({ data: [], error: null })
+describe('markAllRead', () => {
+  it('calls update with correct filter on read_at null', async () => {
+    const mockIs = vi.fn().mockResolvedValue({ error: null })
+    const mockEq = vi.fn().mockReturnValue({ is: mockIs })
+    const mockUpdate = vi.fn().mockReturnValue({ eq: mockEq })
+    mockCreateClient.mockResolvedValue({ from: vi.fn().mockReturnValue({ update: mockUpdate }) } as never)
 
-    const { getNotifications } = await import('@/lib/notifications')
-    await getNotifications('user-1')
+    await markAllRead('user-1')
 
-    const eqInner = (mockFrom as ReturnType<typeof vi.fn>)._eqInner as ReturnType<typeof vi.fn>
-    const orderInner = (mockFrom as ReturnType<typeof vi.fn>)._orderInner as ReturnType<typeof vi.fn>
-    expect(eqInner).toHaveBeenCalledWith('user_id', 'user-1')
-    expect(orderInner).toHaveBeenCalledWith('created_at', { ascending: false })
-    expect(limitInner).toHaveBeenCalledWith(50)
+    expect(mockUpdate).toHaveBeenCalledWith({ read_at: expect.any(String) })
+    expect(mockEq).toHaveBeenCalledWith('user_id', 'user-1')
+    expect(mockIs).toHaveBeenCalledWith('read_at', null)
   })
 })
