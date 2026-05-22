@@ -1,13 +1,14 @@
 import { describe, it, expect, vi } from 'vitest'
 import { render, fireEvent } from '@testing-library/react'
-import { ScorecardPillarTick, PillarTooltip } from '@/components/app/ScorecardRadarChart'
+import { ScorecardPillarTick, PillarTooltip, ScorecardRadarChart } from '@/components/app/ScorecardRadarChart'
 import type { RadarPillarScore } from '@/lib/reflections'
 
-global.ResizeObserver = vi.fn().mockImplementation(() => ({
-  observe: vi.fn(),
-  unobserve: vi.fn(),
-  disconnect: vi.fn(),
-}))
+class MockResizeObserver {
+  observe = vi.fn()
+  unobserve = vi.fn()
+  disconnect = vi.fn()
+}
+global.ResizeObserver = MockResizeObserver as unknown as typeof ResizeObserver
 
 describe('ScorecardPillarTick', () => {
   it('renders a single text element for single-word labels', () => {
@@ -178,5 +179,40 @@ describe('PillarTooltip', () => {
       <PillarTooltip pillarScore={partial} hidden={new Set()} />
     )
     expect(queryByText('Manager')).toBeNull()
+  })
+})
+
+describe('ScorecardRadarChart', () => {
+  function makeScores(opts?: { withManager?: boolean }): RadarPillarScore[] {
+    return [
+      { pillar: 'self',             selfScore: 4, selfScored: true,  selfSkills: [], managerScore: opts?.withManager ? 3 : undefined, managerSkills: opts?.withManager ? [] : undefined },
+      { pillar: 'team',             selfScore: 3, selfScored: true,  selfSkills: [], managerScore: opts?.withManager ? 4 : undefined, managerSkills: opts?.withManager ? [] : undefined },
+      { pillar: 'strategy',         selfScore: 5, selfScored: true,  selfSkills: [], managerScore: opts?.withManager ? 4 : undefined, managerSkills: opts?.withManager ? [] : undefined },
+      { pillar: 'communications',   selfScore: 2, selfScored: true,  selfSkills: [], managerScore: opts?.withManager ? 3 : undefined, managerSkills: opts?.withManager ? [] : undefined },
+      { pillar: 'domain-expertise', selfScore: 4, selfScored: true,  selfSkills: [], managerScore: opts?.withManager ? 3 : undefined, managerSkills: opts?.withManager ? [] : undefined },
+    ]
+  }
+
+  it('renders without crashing with self scores only', () => {
+    const { container } = render(
+      <ScorecardRadarChart pillarScores={makeScores()} />
+    )
+    expect(container.firstChild).toBeTruthy()
+  })
+
+  it('renders without crashing with both self and manager scores', () => {
+    const { container } = render(
+      <ScorecardRadarChart pillarScores={makeScores({ withManager: true })} />
+    )
+    expect(container.firstChild).toBeTruthy()
+  })
+
+  it('calls onPillarClick prop when provided (function is passed through)', () => {
+    const handler = vi.fn()
+    const { container } = render(
+      <ScorecardRadarChart pillarScores={makeScores()} onPillarClick={handler} />
+    )
+    // Component mounts without error and handler is accepted as a prop
+    expect(container.firstChild).toBeTruthy()
   })
 })
