@@ -1,5 +1,12 @@
 'use client'
 import { InviteManagerModal } from '@/components/people/InviteManagerModal'
+
+const STATUS_LABEL: Record<string, string> = {
+  not_started: 'Not scored',
+  in_progress: 'Scoring in progress',
+  complete: 'Scored',
+}
+
 import { AddConnectionForm } from '@/components/people/AddConnectionForm'
 import { acceptConnectionAction } from '@/app/(app)/connections/actions'
 import { trackConnectionAccepted } from '@/lib/analytics'
@@ -73,9 +80,9 @@ function DirectReportCard({
           <p style={{ fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.04em', color: '#6b7280', margin: 0 }}>
             Manager scored
           </p>
-          <p style={{ fontSize: 12, margin: '2px 0 0', color: summary.managerScoringStatus === 'complete' ? '#4ade80' : '#f59e0b' }}>
-            {summary.managerScoringStatus === 'complete' ? '✓ Done' : '⚠ Not yet'}
-          </p>
+          <span className="text-xs text-neutral-400">
+            {STATUS_LABEL[summary.managerScoringStatus] ?? 'Unknown'}
+          </span>
         </div>
       )}
     </div>
