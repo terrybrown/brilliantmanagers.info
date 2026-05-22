@@ -52,12 +52,18 @@ function DirectReportCard({
     ? <span style={{ color: '#60a5fa' }}>Scheduled</span>
     : <span style={{ color: '#6b7280' }}>None scheduled</span>
 
+  const href = summary?.roundId
+    ? `/manager/${connection.direct_report_id}?roundId=${summary.roundId}`
+    : `/manager/${connection.direct_report_id}`
+
   return (
-    <div
+    <a
+      href={href}
       style={{
         display: 'flex', alignItems: 'center', gap: 10,
         background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)',
         borderRadius: 8, padding: '12px 14px',
+        textDecoration: 'none', color: 'inherit',
       }}
     >
       <Avatar name={dr.display_name || dr.email} />
@@ -85,7 +91,7 @@ function DirectReportCard({
           </span>
         </div>
       )}
-    </div>
+    </a>
   )
 }
 
