@@ -62,7 +62,9 @@ export async function getDirectReportRoundSummaries(
       }
 
       const activeRound = inProgress
-      const roundId = activeRound?.id ?? null
+      // Use the last complete round as the scoring target — the manager scores after the DR finishes.
+      // Fall back to the in-progress round only when no complete round exists yet.
+      const roundId = lastRound?.id ?? activeRound?.id ?? null
 
       let managerScoringStatus: ManagerScoringStatus = 'not_started'
       let pillarsScored = 0

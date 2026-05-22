@@ -14,7 +14,7 @@ export function ManagerStrip({ summaries }: Props) {
   if (summaries.length === 0) return null
 
   return (
-    <section id="manager-strip" className="rounded-lg border border-amber-800/40 bg-amber-950/20 p-4">
+    <section id="manager-strip" className="rounded-lg border border-amber-800/40 bg-amber-950/20 p-4 mb-6">
       <h2 className="mb-3 text-sm font-semibold text-amber-400">Your team — action needed</h2>
       <ul className="space-y-2">
         {summaries.map(s => {
