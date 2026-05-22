@@ -4,7 +4,12 @@ import { redirect } from 'next/navigation'
 import { Lightbulb, Search, TrendingUp, MessageSquare, type LucideIcon } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import { DashboardTour } from '@/components/dashboard/DashboardTour'
+import { DashboardManagerTour } from '@/components/dashboard/DashboardManagerTour'
+import { ManagerStrip, type EnrichedDRSummary } from '@/components/dashboard/ManagerStrip'
 import { getAllCompleteRoundsWithScores, getInProgressRound } from '@/lib/db/rounds'
+import { getConnectionsForUser } from '@/lib/db/connections'
+import { getDirectReportRoundSummaries } from '@/lib/db/direct-reports'
+import { getProfile } from '@/lib/db/profiles'
 import { getScoresForRound } from '@/lib/db/scores'
 import { getManagerScoresForDirectReport } from '@/lib/db/manager-scores'
 import { getPlansForUser } from '@/lib/db/development-plans'
@@ -51,6 +56,35 @@ export default async function DashboardPage() {
   } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
+  // ── Direct report data (manager view) ───────────────────────────────────────
+  const connections = await getConnectionsForUser(user.id)
+  const drConnections = connections.asManager.filter(c => c.status === 'active')
+  const drIds = drConnections.map(c => c.direct_report_id)
+
+  const [drSummaries, drProfiles] = drIds.length > 0
+    ? await Promise.all([
+        getDirectReportRoundSummaries(drIds, user.id),
+        Promise.all(drIds.map(id => getProfile(id))),
+      ])
+    : [{} as Record<string, never>, []]
+
+  const profileByDrId = Object.fromEntries(
+    (drProfiles as (Awaited<ReturnType<typeof getProfile>>)[])
+      .filter((p): p is NonNullable<typeof p> => p !== null)
+      .map(p => [p.id, p])
+  )
+
+  const enrichedDRs: EnrichedDRSummary[] = drIds
+    .filter(id => drSummaries[id] !== undefined)
+    .map(id => ({
+      ...drSummaries[id],
+      userId: id,
+      name: profileByDrId[id]?.display_name ?? 'Direct report',
+    }))
+
+  const isManager = enrichedDRs.length > 0
+  const actionableDRs = enrichedDRs.filter(s => s.managerScoringStatus !== 'complete')
+
   const allRoundsWithScores = await getAllCompleteRoundsWithScores(user.id)
 
   // ── Empty state ──────────────────────────────────────────────────────────────
@@ -59,7 +93,9 @@ export default async function DashboardPage() {
       <div style={{ display: 'flex', flexDirection: 'column' }}>
         {/* CTA area */}
         <div style={{ padding: '40px 36px 0' }}>
-          <DashboardTour />
+          <ManagerStrip summaries={actionableDRs} />
+          {!isManager && <DashboardTour />}
+          {isManager && <DashboardManagerTour hasManagerStrip={actionableDRs.length > 0} />}
 
           <div style={{ marginBottom: 36 }}>
             <p
@@ -340,6 +376,8 @@ export default async function DashboardPage() {
 
   return (
     <div className="p-6">
+      <ManagerStrip summaries={actionableDRs} />
+      {isManager && <DashboardManagerTour hasManagerStrip={actionableDRs.length > 0} />}
       <DashboardResults
         pillarScoresForRadar={pillarScoresForRadar}
         hasManagerScores={hasManagerScores}

@@ -3,6 +3,7 @@ import { render, screen } from '@testing-library/react'
 import DashboardPage from '@/app/(app)/dashboard/page'
 import { getAllCompleteRoundsWithScores, getInProgressRound } from '@/lib/db/rounds'
 import { getScoresForRound } from '@/lib/db/scores'
+import { getConnectionsForUser } from '@/lib/db/connections'
 
 vi.mock('@/lib/supabase/server', () => ({
   createClient: vi.fn().mockResolvedValue({
@@ -28,6 +29,15 @@ vi.mock('@/lib/db/manager-scores', () => ({
 }))
 vi.mock('@/lib/db/development-plans', () => ({
   getPlansForUser: vi.fn().mockResolvedValue([]),
+}))
+vi.mock('@/lib/db/connections', () => ({
+  getConnectionsForUser: vi.fn().mockResolvedValue({ asManager: [], asDirectReport: [] }),
+}))
+vi.mock('@/lib/db/direct-reports', () => ({
+  getDirectReportRoundSummaries: vi.fn().mockResolvedValue({}),
+}))
+vi.mock('@/lib/db/profiles', () => ({
+  getProfile: vi.fn().mockResolvedValue(null),
 }))
 vi.mock('next/navigation', () => ({ redirect: vi.fn() }))
 
