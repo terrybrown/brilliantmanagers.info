@@ -5,6 +5,9 @@ const mockFrom = vi.hoisted(() => vi.fn())
 vi.mock('@/lib/supabase/server', () => ({
   createClient: vi.fn().mockResolvedValue({ from: mockFrom }),
 }))
+vi.mock('@/lib/supabase/admin', () => ({
+  createAdminClient: vi.fn(() => ({ from: mockFrom })),
+}))
 vi.mock('@/lib/db/manager-scores', () => ({
   getManagerScoringStatus: vi.fn().mockResolvedValue('not_started'),
   getManagerScoresForDirectReport: vi.fn().mockResolvedValue([]),

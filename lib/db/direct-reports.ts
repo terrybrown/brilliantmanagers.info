@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { getInProgressRound } from '@/lib/db/rounds'
 import { getScheduledRound } from '@/lib/db/scheduled-rounds'
 import { LEVEL_VALUES, PILLARS, getSkillsByPillar } from '@/lib/skills'
@@ -120,7 +121,7 @@ export async function getTeamReflectionSummaries(
 ): Promise<TeamReflectionSummary[]> {
   if (directReportIds.length === 0) return []
 
-  const supabase = await createClient()
+  const supabase = createAdminClient()
   const { data: rounds } = await supabase
     .from('assessment_rounds')
     .select('id, user_id, status, created_at, completed_at')
@@ -152,6 +153,11 @@ export async function getTeamReflectionSummaries(
   return summaries.sort((a, b) => {
     const pendingA = a.managerScoringStatus !== 'complete' ? 0 : 1
     const pendingB = b.managerScoringStatus !== 'complete' ? 0 : 1
-    return pendingA - pendingB
+    if (pendingA !== pendingB) return pendingA - pendingB
+    // Secondary: oldest completed first (nulls last)
+    if (!a.selfCompletedAt && !b.selfCompletedAt) return 0
+    if (!a.selfCompletedAt) return 1
+    if (!b.selfCompletedAt) return -1
+    return a.selfCompletedAt.localeCompare(b.selfCompletedAt)
   })
 }

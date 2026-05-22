@@ -25,8 +25,22 @@ export async function scheduleRoundAction(
   scheduledDate: string
 ): Promise<{ error?: string }> {
   const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: 'Unauthenticated' }
 
-  // Check for an existing scheduled round — update it rather than creating a duplicate
+  // Only the user themselves, or their active manager, may schedule a round
+  if (user.id !== userId) {
+    const { data: conn } = await supabase
+      .from('connections')
+      .select('id')
+      .eq('manager_id', user.id)
+      .eq('direct_report_id', userId)
+      .eq('status', 'active')
+      .maybeSingle()
+    if (!conn) return { error: 'Forbidden' }
+  }
+
+  // Check for an existing scheduled round — if one exists, nothing to do
   const { data: existing } = await supabase
     .from('assessment_rounds')
     .select('id')
@@ -35,17 +49,15 @@ export async function scheduleRoundAction(
     .maybeSingle()
 
   if (existing) {
-    await supabase
-      .from('assessment_rounds')
-      .update({ created_at: scheduledDate })
-      .eq('id', existing.id)
-  } else {
-    const { error } = await supabase
-      .from('assessment_rounds')
-      .insert({ user_id: userId, status: 'scheduled' })
-
-    if (error) return { error: error.message }
+    // Already scheduled — nothing to do
+    return {}
   }
+
+  const { error } = await supabase
+    .from('assessment_rounds')
+    .insert({ user_id: userId, status: 'scheduled' })
+
+  if (error) return { error: error.message }
 
   await createNotification(userId, 'round_scheduled', { scheduledDate })
   return {}
