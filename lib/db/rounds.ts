@@ -5,7 +5,7 @@ import type { Score } from '@/lib/db/scores'
 export interface Round {
   id: string
   user_id: string
-  status: 'in_progress' | 'complete'
+  status: 'in_progress' | 'complete' | 'scheduled'
   created_at: string
   completed_at: string | null
   title: string | null
@@ -16,6 +16,7 @@ export interface Round {
 export async function getOrCreateActiveRound(userId: string): Promise<Round> {
   const supabase = await createClient()
 
+  // 1. Return existing in_progress round
   const { data: existing } = await supabase
     .from('assessment_rounds')
     .select('*')
@@ -27,6 +28,28 @@ export async function getOrCreateActiveRound(userId: string): Promise<Round> {
 
   if (existing) return existing as Round
 
+  // 2. Transition a scheduled round to in_progress
+  const { data: scheduled } = await supabase
+    .from('assessment_rounds')
+    .select('*')
+    .eq('user_id', userId)
+    .eq('status', 'scheduled')
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .maybeSingle()
+
+  if (scheduled) {
+    const { data: transitioned, error } = await supabase
+      .from('assessment_rounds')
+      .update({ status: 'in_progress' })
+      .eq('id', scheduled.id)
+      .select('*')
+      .single()
+    if (error) throw error
+    return transitioned as Round
+  }
+
+  // 3. Create a new round
   const { data, error } = await supabase
     .from('assessment_rounds')
     .insert({ user_id: userId, status: 'in_progress' })
