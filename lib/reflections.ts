@@ -58,7 +58,13 @@ export function computePillarScores(
     const relevantMgrScores = managerScores.filter(ms =>
       pillarSkills.some(s => s.key === ms.skill_key)
     )
-    const managerAvg = pillarAvgFromManagerScores(managerScores, pillar as Pillar)
+    const managerAvg =
+      relevantMgrScores.length > 0
+        ? relevantMgrScores.reduce(
+            (sum, ms) => sum + LEVEL_VALUES[ms.level as Level],
+            0
+          ) / relevantMgrScores.length
+        : undefined
 
     const managerSkills: SkillScore[] | undefined =
       relevantMgrScores.length > 0

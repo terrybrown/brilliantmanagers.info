@@ -225,8 +225,9 @@ describe('computePillarScores', () => {
   })
 
   it('selfSkills does not include scores from a different pillar with a matching key', () => {
-    // A team score should never appear in the self pillar's selfSkills, even if the
-    // skill_key lookup were naive. This test guards the pillar-scoped filter.
+    // Guards that scores are filtered to the current pillar before skill lookup.
+    // Without the filter, cross-pillar contamination could occur if key prefixes
+    // ever stopped being pillar-namespaced.
     const scores = [
       makeScore('r-1', 'team', 'team-accountability', 'Advanced'),
     ]
@@ -246,5 +247,6 @@ describe('computePillarScores', () => {
     // only 'self' pillar should have managerSkills
     const nonSelfPillars = result.filter(r => r.pillar !== 'self')
     expect(nonSelfPillars.every(r => r.managerSkills === undefined)).toBe(true)
+    expect(nonSelfPillars.every(r => r.managerScore === undefined)).toBe(true)
   })
 })
