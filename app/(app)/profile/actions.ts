@@ -86,3 +86,10 @@ export async function removeAvatarAction(): Promise<{ error?: string }> {
   revalidatePath('/profile')
   return {}
 }
+
+export async function updateBlindScoringAction(value: boolean): Promise<void> {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return
+  await updateProfile(user.id, { manager_scoring_blind: value })
+}
