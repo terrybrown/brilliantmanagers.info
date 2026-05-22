@@ -37,6 +37,16 @@ MAILGUN_SENDING_KEY=
 
 `NEXT_PUBLIC_*` values come from your Supabase project's API settings. `SUPABASE_SERVICE_ROLE_KEY` is the service role secret — never expose it client-side. `ANTHROPIC_API_KEY` powers AI-assisted features. Mailgun keys are for transactional email.
 
+### Database setup
+
+All migrations live in `supabase/migrations/`, named `YYYYMMDDNNNNNN_description.sql` and designed to be run in filename order. Run them against your Supabase project in the SQL editor, or with the Supabase CLI:
+
+```bash
+supabase db push
+```
+
+If running manually, apply each file in sort order — they are safe to run sequentially with no gaps.
+
 ### Run locally
 
 ```bash
