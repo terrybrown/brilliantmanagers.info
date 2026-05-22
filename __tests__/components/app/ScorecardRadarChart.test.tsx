@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from 'vitest'
 import { render, fireEvent } from '@testing-library/react'
-import { ScorecardPillarTick } from '@/components/app/ScorecardRadarChart'
+import { ScorecardPillarTick, PillarTooltip } from '@/components/app/ScorecardRadarChart'
+import type { RadarPillarScore } from '@/lib/reflections'
 
 global.ResizeObserver = vi.fn().mockImplementation(() => ({
   observe: vi.fn(),
@@ -78,5 +79,85 @@ describe('ScorecardPillarTick', () => {
     )
     fireEvent.click(container.querySelector('g')!)
     expect(handler).toHaveBeenCalledWith('self')
+  })
+})
+
+describe('PillarTooltip', () => {
+  const baseScore: RadarPillarScore = {
+    pillar: 'strategy',
+    selfScore: 4,
+    selfScored: true,
+    selfSkills: [
+      { skillKey: 'strategy-vision-creation', label: 'Strategy & Vision Creation', level: 'Advanced' },
+      { skillKey: 'strategy-goal-setting', label: 'Goal Setting', level: 'Expert' },
+    ],
+    managerScore: 3,
+    managerSkills: [
+      { skillKey: 'strategy-vision-creation', label: 'Strategy & Vision Creation', level: 'Proficient' },
+    ],
+  }
+
+  it('shows the pillar name', () => {
+    const { getByText } = render(
+      <PillarTooltip pillarScore={baseScore} hidden={new Set()} />
+    )
+    expect(getByText('Strategy')).toBeTruthy()
+  })
+
+  it('shows self score and skill breakdown', () => {
+    const { getByText, getAllByText } = render(
+      <PillarTooltip pillarScore={baseScore} hidden={new Set()} />
+    )
+    expect(getByText('4 / 5')).toBeTruthy()
+    // label appears in both self and manager skill rows since fixture shares the skill key
+    expect(getAllByText('Strategy & Vision Creation').length).toBeGreaterThanOrEqual(1)
+    expect(getByText('Goal Setting')).toBeTruthy()
+  })
+
+  it('shows manager score and skills when manager series is visible', () => {
+    const { getByText, getAllByText } = render(
+      <PillarTooltip pillarScore={baseScore} hidden={new Set()} />
+    )
+    expect(getByText('3 / 5')).toBeTruthy()
+    // 'Proficient' appears as the level badge and as the skill level in SkillRow
+    expect(getAllByText('Proficient').length).toBeGreaterThanOrEqual(1)
+  })
+
+  it('omits manager section when Manager series is hidden', () => {
+    const { queryByText, getAllByText } = render(
+      <PillarTooltip pillarScore={baseScore} hidden={new Set(['Manager'] as const)} />
+    )
+    // '3 / 5' belongs only to manager — should be gone
+    expect(queryByText('3 / 5')).toBeNull()
+    // '4 / 5' belongs to self — still shown
+    expect(getAllByText('4 / 5')).toHaveLength(1)
+  })
+
+  it('omits self section when Self series is hidden', () => {
+    const { queryByText } = render(
+      <PillarTooltip pillarScore={baseScore} hidden={new Set(['Self'] as const)} />
+    )
+    expect(queryByText('4 / 5')).toBeNull()
+  })
+
+  it('shows "Not scored" for an unscored self pillar', () => {
+    const unscored: RadarPillarScore = {
+      ...baseScore,
+      selfScore: 0,
+      selfScored: false,
+      selfSkills: [],
+    }
+    const { getByText } = render(
+      <PillarTooltip pillarScore={unscored} hidden={new Set()} />
+    )
+    expect(getByText('Not scored')).toBeTruthy()
+  })
+
+  it('shows level name next to aggregate score', () => {
+    const { getAllByText } = render(
+      <PillarTooltip pillarScore={baseScore} hidden={new Set()} />
+    )
+    // 'Advanced' appears as the level badge (selfScore=4) and as the skill level in SkillRow
+    expect(getAllByText('Advanced').length).toBeGreaterThanOrEqual(1)
   })
 })

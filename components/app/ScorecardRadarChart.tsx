@@ -8,7 +8,8 @@ import {
   Legend,
   ResponsiveContainer,
 } from 'recharts'
-import { PILLAR_LABELS, type Pillar } from '@/lib/skills'
+import { PILLAR_LABELS, LEVELS, type Pillar, type Level } from '@/lib/skills'
+import type { RadarPillarScore, SkillScore } from '@/lib/reflections'
 
 interface PillarScore {
   pillar: Pillar
@@ -25,6 +26,139 @@ interface Props {
 const PILLAR_LABEL_TO_KEY: Record<string, Pillar | undefined> = Object.fromEntries(
   Object.entries(PILLAR_LABELS).map(([k, v]) => [v, k as Pillar])
 )
+
+function levelName(score: number): Level {
+  const idx = Math.min(4, Math.max(0, Math.round(score) - 1))
+  return LEVELS[idx]
+}
+
+function SkillRow({ skill }: { skill: SkillScore }) {
+  return (
+    <div
+      style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        padding: '2px 0',
+        color: '#94a3b8',
+        borderBottom: '1px solid #0f172a',
+        fontSize: 11,
+      }}
+    >
+      <span>{skill.label}</span>
+      <span style={{ color: '#e2e8f0' }}>{skill.level}</span>
+    </div>
+  )
+}
+
+export interface PillarTooltipProps {
+  pillarScore: RadarPillarScore
+  hidden: Set<'Self' | 'Manager'>
+}
+
+export function PillarTooltip({ pillarScore, hidden }: PillarTooltipProps) {
+  const { pillar, selfScore, selfScored, selfSkills, managerScore, managerSkills } = pillarScore
+  const hasManager = managerScore !== undefined && managerSkills !== undefined
+  const showSelf = !hidden.has('Self')
+  const showManager = hasManager && !hidden.has('Manager')
+
+  return (
+    <div
+      style={{
+        background: '#1e293b',
+        border: '1px solid #334155',
+        borderRadius: 8,
+        padding: '10px 14px',
+        fontSize: 12,
+        maxWidth: 240,
+      }}
+    >
+      <div style={{ fontWeight: 600, color: '#f1f5f9', marginBottom: 8, fontSize: 13 }}>
+        {PILLAR_LABELS[pillar]}
+      </div>
+
+      {showSelf && (
+        <div style={{ marginBottom: showManager ? 10 : 0 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
+            <div style={{ width: 10, height: 2, background: '#f59e0b', borderRadius: 1 }} />
+            <span style={{ color: '#fbbf24', fontWeight: 600 }}>Self</span>
+            {selfScored ? (
+              <>
+                <span
+                  style={{
+                    background: 'rgba(245,158,11,.15)',
+                    color: '#fbbf24',
+                    padding: '1px 5px',
+                    borderRadius: 3,
+                    fontSize: 10,
+                  }}
+                >
+                  {`${Math.round(selfScore)} / 5`}
+                </span>
+                <span
+                  style={{
+                    background: '#0f172a',
+                    color: '#64748b',
+                    padding: '1px 4px',
+                    borderRadius: 3,
+                    fontSize: 10,
+                  }}
+                >
+                  {levelName(selfScore)}
+                </span>
+              </>
+            ) : (
+              <span style={{ color: '#475569', fontSize: 10 }}>Not scored</span>
+            )}
+          </div>
+          {selfSkills.map(skill => (
+            <SkillRow key={skill.skillKey} skill={skill} />
+          ))}
+        </div>
+      )}
+
+      {showManager && (
+        <div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
+            <div
+              style={{
+                width: 10,
+                height: 2,
+                background:
+                  'repeating-linear-gradient(90deg, #a78bfa 0, #a78bfa 4px, transparent 4px, transparent 7px)',
+              }}
+            />
+            <span style={{ color: '#c4b5fd', fontWeight: 600 }}>Manager</span>
+            <span
+              style={{
+                background: 'rgba(167,139,250,.15)',
+                color: '#c4b5fd',
+                padding: '1px 5px',
+                borderRadius: 3,
+                fontSize: 10,
+              }}
+            >
+              {`${Math.round(managerScore!)} / 5`}
+            </span>
+            <span
+              style={{
+                background: '#0f172a',
+                color: '#64748b',
+                padding: '1px 4px',
+                borderRadius: 3,
+                fontSize: 10,
+              }}
+            >
+              {levelName(managerScore!)}
+            </span>
+          </div>
+          {managerSkills!.map(skill => (
+            <SkillRow key={skill.skillKey} skill={skill} />
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
 
 export interface ScorecardPillarTickProps {
   x?: number | string
