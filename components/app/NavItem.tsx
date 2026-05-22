@@ -9,9 +9,10 @@ interface NavItemProps {
   label: string
   isExpanded: boolean
   id?: string
+  badge?: number
 }
 
-export function NavItem({ href, icon: Icon, label, isExpanded, id }: NavItemProps) {
+export function NavItem({ href, icon: Icon, label, isExpanded, id, badge }: NavItemProps) {
   const pathname = usePathname()
   const isActive = pathname === href || (href !== '/dashboard' && pathname.startsWith(href))
 
@@ -52,6 +53,11 @@ export function NavItem({ href, icon: Icon, label, isExpanded, id }: NavItemProp
       <Icon size={18} strokeWidth={1.75} style={{ flexShrink: 0 }} />
       {isExpanded && (
         <span style={{ fontSize: 13, fontWeight: 500, whiteSpace: 'nowrap' }}>{label}</span>
+      )}
+      {isExpanded && badge != null && badge > 0 && (
+        <span className="ml-auto flex h-5 min-w-5 items-center justify-center rounded-full bg-amber-500 px-1 text-xs font-medium text-white leading-none">
+          {badge >= 10 ? '9+' : badge}
+        </span>
       )}
     </Link>
   )

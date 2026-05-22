@@ -1,18 +1,23 @@
 import { createClient } from '@/lib/supabase/server'
 import { getInProgressRound } from '@/lib/db/rounds'
 import { getScheduledRound } from '@/lib/db/scheduled-rounds'
-import { LEVEL_VALUES } from '@/lib/skills'
-import type { Level } from '@/lib/skills'
+import { LEVEL_VALUES, PILLARS, getSkillsByPillar } from '@/lib/skills'
+import type { Level, Pillar } from '@/lib/skills'
+import type { ManagerScoringStatus } from '@/lib/db/manager-scores'
 
 export interface DirectReportRoundSummary {
   roundStatus: 'in_progress' | 'scheduled' | 'none'
   lastScore: number | null
   nextScheduledDate: string | null
-  managerHasScored: boolean
+  managerScoringStatus: ManagerScoringStatus
+  roundId: string | null
+  completedAt: string | null
+  pillarsScored: number
 }
 
 export async function getDirectReportRoundSummaries(
-  directReportIds: string[]
+  directReportIds: string[],
+  managerId: string
 ): Promise<Record<string, DirectReportRoundSummary>> {
   if (directReportIds.length === 0) return {}
 
@@ -31,13 +36,15 @@ export async function getDirectReportRoundSummaries(
       // Most recent complete round
       const { data: lastRound } = await supabase
         .from('assessment_rounds')
-        .select('id')
+        .select('id, completed_at')
         .eq('user_id', userId)
         .eq('status', 'complete')
         .not('completed_at', 'is', null)
         .order('completed_at', { ascending: false })
         .limit(1)
         .maybeSingle()
+
+      const completedAt = lastRound?.completed_at ?? null
 
       let lastScore: number | null = null
       if (lastRound) {
@@ -52,21 +59,45 @@ export async function getDirectReportRoundSummaries(
         }
       }
 
-      // Manager has scored the in-progress round
-      let managerHasScored = false
-      if (inProgress) {
-        const { count } = await supabase
+      const activeRound = inProgress
+      const roundId = activeRound?.id ?? null
+
+      let managerScoringStatus: ManagerScoringStatus = 'not_started'
+      let pillarsScored = 0
+
+      if (roundId) {
+        const { data: mgrScores, error: mgrScoresError } = await supabase
           .from('manager_scores')
-          .select('*', { count: 'exact', head: true })
-          .eq('round_id', inProgress.id)
-        managerHasScored = (count ?? 0) > 0
+          .select('skill_key')
+          .eq('round_id', roundId)
+          .eq('manager_id', managerId)
+
+        if (mgrScoresError) throw mgrScoresError
+
+        const scoredKeys = new Set((mgrScores ?? []).map(s => s.skill_key))
+        const allKeys = PILLARS.flatMap(p => getSkillsByPillar(p).map(s => s.key))
+
+        managerScoringStatus =
+          scoredKeys.size === 0 ? 'not_started'
+          : allKeys.every(k => scoredKeys.has(k)) ? 'complete'
+          : 'in_progress'
+
+        const scoredPillarsSet = new Set(
+          [...scoredKeys]
+            .map(key => PILLARS.find(p => getSkillsByPillar(p).some(s => s.key === key)))
+            .filter((p): p is Pillar => p !== undefined)
+        )
+        pillarsScored = scoredPillarsSet.size
       }
 
       return [userId, {
         roundStatus,
         lastScore,
         nextScheduledDate: scheduled?.scheduled_date ?? null,
-        managerHasScored,
+        managerScoringStatus,
+        roundId,
+        completedAt,
+        pillarsScored,
       }] as [string, DirectReportRoundSummary]
     })
   )

@@ -8,6 +8,8 @@ export interface Profile {
   bio: string | null
   avatar_path: string | null
   created_at: string
+  email_notifications_enabled: boolean
+  manager_scoring_blind: boolean
 }
 
 export async function getProfile(userId: string): Promise<Profile | null> {
@@ -22,7 +24,14 @@ export async function getProfile(userId: string): Promise<Profile | null> {
 
 export async function updateProfile(
   userId: string,
-  fields: { display_name?: string; job_title?: string; bio?: string; avatar_path?: string | null }
+  fields: {
+    display_name?: string
+    job_title?: string
+    bio?: string
+    avatar_path?: string | null
+    email_notifications_enabled?: boolean
+    manager_scoring_blind?: boolean
+  }
 ): Promise<void> {
   const supabase = await createClient()
   const { error } = await supabase

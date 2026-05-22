@@ -36,7 +36,7 @@ export async function createConnection(params: {
   initiatorId: string
   otherEmail: string
   initiatorRole: 'manager' | 'direct_report'
-}): Promise<{ error?: string }> {
+}): Promise<{ connectionId?: string; managerId?: string; directReportId?: string; error?: string }> {
   const supabase = await createClient()
 
   const { data: otherProfile } = await supabase
@@ -54,19 +54,23 @@ export async function createConnection(params: {
   const directReportId =
     params.initiatorRole === 'direct_report' ? params.initiatorId : otherProfile.id
 
-  const { error } = await supabase.from('connections').insert({
-    manager_id: managerId,
-    direct_report_id: directReportId,
-    status: 'pending',
-    initiated_by: params.initiatorId,
-  })
+  const { data, error } = await supabase
+    .from('connections')
+    .insert({
+      manager_id: managerId,
+      direct_report_id: directReportId,
+      status: 'pending',
+      initiated_by: params.initiatorId,
+    })
+    .select('id')
+    .single()
 
   if (error) {
     if (error.code === '23505') return { error: 'Connection already exists.' }
     return { error: error.message }
   }
 
-  return {}
+  return { connectionId: data.id, managerId, directReportId }
 }
 
 export async function acceptConnection(connectionId: string): Promise<void> {
