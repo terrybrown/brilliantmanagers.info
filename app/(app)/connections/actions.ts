@@ -7,6 +7,7 @@ import { logAudit } from '@/lib/audit'
 import { sendEmail } from '@/lib/email/mailgun'
 import { buildManagerInviteEmail } from '@/lib/email/templates/manager-invite'
 import { buildConnectionInviteEmail } from '@/lib/email/templates/connection-invite'
+import { createNotification } from '@/lib/notifications'
 
 export type InviteState = { success: boolean; error?: string }
 
@@ -38,7 +39,7 @@ export async function inviteConnection(
   const role = formData.get('role') as 'manager' | 'direct_report'
   const message = (formData.get('message') as string | null) ?? ''
 
-  const { error } = await createConnection({
+  const { error, managerId, directReportId } = await createConnection({
     initiatorId: user.id,
     otherEmail: email,
     initiatorRole: role,
@@ -78,6 +79,16 @@ export async function inviteConnection(
 
   if (error) return { success: false, error }
 
+  // Notify the other party that they received a connection request
+  const otherUserId = role === 'manager' ? directReportId : managerId
+  if (otherUserId) {
+    const fromName = await getDisplayName(supabase, user.id, user.email ?? 'A colleague')
+    await createNotification(otherUserId, 'connection_request_received', {
+      requesterId: user.id,
+      requesterName: fromName,
+    })
+  }
+
   await logAudit({
     actorId: user.id,
     action: 'connection.create',
@@ -111,6 +122,21 @@ export async function acceptConnectionAction(connectionId: string) {
   if (!user) return
 
   await acceptConnection(connectionId)
+
+  // Fetch the connection to notify the initiator
+  const { data: conn } = await supabase
+    .from('connections')
+    .select('initiated_by')
+    .eq('id', connectionId)
+    .single()
+
+  if (conn && conn.initiated_by !== user.id) {
+    const acceptorName = await getDisplayName(supabase, user.id, user.email ?? 'A colleague')
+    await createNotification(conn.initiated_by, 'connection_accepted', {
+      acceptorId: user.id,
+      acceptorName,
+    })
+  }
 
   await logAudit({
     actorId: user.id,
