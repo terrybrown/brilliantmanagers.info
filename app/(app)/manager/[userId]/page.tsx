@@ -7,6 +7,10 @@ import { getSignedAvatarUrl, getProfile } from '@/lib/db/profiles'
 import { PILLARS, PILLAR_LABELS, getSkillsByPillar, type Pillar, type Level } from '@/lib/skills'
 import { ManagerScoringView } from '@/components/app/ManagerScoringView'
 
+function shouldFetchDrScores(isBlindMode: boolean, roundStatus: string): boolean {
+  return !isBlindMode && roundStatus === 'complete'
+}
+
 export default async function ManagerPage({
   params,
   searchParams,
@@ -73,7 +77,7 @@ export default async function ManagerPage({
   const isBlindMode = managerProfile?.manager_scoring_blind ?? false
 
   let directReportScores: Record<string, Level> | null = null
-  if (!isBlindMode && round.status === 'complete') {
+  if (shouldFetchDrScores(isBlindMode, round.status)) {
     const { data: scoreRows } = await supabase
       .from('scores')
       .select('skill_key, level')

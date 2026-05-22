@@ -34,6 +34,9 @@ export function SkillCard({ skill, currentLevel, onSelect, drScore }: Props) {
         >
           {currentLevel}
         </span>
+        {drScore && (
+          <span className="text-xs text-neutral-400 ml-2">Their view: {drScore}</span>
+        )}
         <span className="text-xs text-slate-500">✎</span>
       </button>
     )
