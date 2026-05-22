@@ -79,7 +79,7 @@ export function computePillarScores(
     return {
       pillar: pillar as Pillar,
       selfScore: selfAvg,
-      selfScored: selfAvg > 0,
+      selfScored: pillarSelfScores.length > 0,
       selfSkills,
       managerScore: managerAvg,
       managerSkills,
