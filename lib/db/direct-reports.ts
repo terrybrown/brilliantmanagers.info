@@ -3,6 +3,7 @@ import { getInProgressRound } from '@/lib/db/rounds'
 import { getScheduledRound } from '@/lib/db/scheduled-rounds'
 import { LEVEL_VALUES, PILLARS, getSkillsByPillar } from '@/lib/skills'
 import type { Level, Pillar } from '@/lib/skills'
+import { getManagerScoringStatus } from '@/lib/db/manager-scores'
 import type { ManagerScoringStatus } from '@/lib/db/manager-scores'
 
 export interface DirectReportRoundSummary {
@@ -103,4 +104,54 @@ export async function getDirectReportRoundSummaries(
   )
 
   return Object.fromEntries(entries)
+}
+
+export interface TeamReflectionSummary {
+  directReportId: string
+  roundId: string
+  roundStatus: 'in_progress' | 'complete' | 'scheduled'
+  managerScoringStatus: ManagerScoringStatus
+  selfCompletedAt: string | null
+}
+
+export async function getTeamReflectionSummaries(
+  directReportIds: string[],
+  managerId: string
+): Promise<TeamReflectionSummary[]> {
+  if (directReportIds.length === 0) return []
+
+  const supabase = await createClient()
+  const { data: rounds } = await supabase
+    .from('assessment_rounds')
+    .select('id, user_id, status, created_at, completed_at')
+    .in('user_id', directReportIds)
+    .order('created_at', { ascending: false })
+
+  if (!rounds?.length) return []
+
+  // Keep only the latest round per DR (rows already sorted desc by created_at)
+  const latestByDR = new Map<string, typeof rounds[0]>()
+  for (const round of rounds) {
+    if (!latestByDR.has(round.user_id)) latestByDR.set(round.user_id, round)
+  }
+
+  const summaries: TeamReflectionSummary[] = await Promise.all(
+    Array.from(latestByDR.entries()).map(async ([drId, round]) => {
+      const managerScoringStatus = await getManagerScoringStatus(round.id, managerId)
+      return {
+        directReportId: drId,
+        roundId: round.id,
+        roundStatus: round.status as TeamReflectionSummary['roundStatus'],
+        managerScoringStatus,
+        selfCompletedAt: round.completed_at,
+      }
+    })
+  )
+
+  // Pending scoring first, then completed
+  return summaries.sort((a, b) => {
+    const pendingA = a.managerScoringStatus !== 'complete' ? 0 : 1
+    const pendingB = b.managerScoringStatus !== 'complete' ? 0 : 1
+    return pendingA - pendingB
+  })
 }
