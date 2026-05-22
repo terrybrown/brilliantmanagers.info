@@ -88,8 +88,9 @@ describe('PillarTooltip', () => {
     selfScore: 4,
     selfScored: true,
     selfSkills: [
-      { skillKey: 'strategy-vision-creation', label: 'Strategy & Vision Creation', level: 'Advanced' },
-      { skillKey: 'strategy-goal-setting', label: 'Goal Setting', level: 'Expert' },
+      // Skill levels deliberately NOT 'Advanced' so the badge is the only 'Advanced' in the output
+      { skillKey: 'strategy-vision-creation', label: 'Strategy & Vision Creation', level: 'Expert' },
+      { skillKey: 'strategy-goal-setting', label: 'Goal Setting', level: 'Basic' },
     ],
     managerScore: 3,
     managerSkills: [
@@ -112,6 +113,8 @@ describe('PillarTooltip', () => {
     // label appears in both self and manager skill rows since fixture shares the skill key
     expect(getAllByText('Strategy & Vision Creation').length).toBeGreaterThanOrEqual(1)
     expect(getByText('Goal Setting')).toBeTruthy()
+    expect(getByText('Expert')).toBeTruthy()
+    expect(getByText('Basic')).toBeTruthy()
   })
 
   it('shows manager score and skills when manager series is visible', () => {
@@ -131,6 +134,8 @@ describe('PillarTooltip', () => {
     expect(queryByText('3 / 5')).toBeNull()
     // '4 / 5' belongs to self — still shown
     expect(getAllByText('4 / 5')).toHaveLength(1)
+    // 'Manager' header label should be absent
+    expect(queryByText('Manager')).toBeNull()
   })
 
   it('omits self section when Self series is hidden', () => {
@@ -138,6 +143,8 @@ describe('PillarTooltip', () => {
       <PillarTooltip pillarScore={baseScore} hidden={new Set(['Self'] as const)} />
     )
     expect(queryByText('4 / 5')).toBeNull()
+    // 'Self' header label should be absent
+    expect(queryByText('Self')).toBeNull()
   })
 
   it('shows "Not scored" for an unscored self pillar', () => {
@@ -157,7 +164,19 @@ describe('PillarTooltip', () => {
     const { getAllByText } = render(
       <PillarTooltip pillarScore={baseScore} hidden={new Set()} />
     )
-    // 'Advanced' appears as the level badge (selfScore=4) and as the skill level in SkillRow
-    expect(getAllByText('Advanced').length).toBeGreaterThanOrEqual(1)
+    // Fixture has selfScore=4 → badge = 'Advanced'; skill levels are 'Expert' and 'Basic',
+    // so 'Advanced' appears exactly once — in the level badge. The test fails if levelName() is removed.
+    expect(getAllByText('Advanced').length).toBe(1)
+  })
+
+  it('does not show manager section when managerSkills is undefined', () => {
+    const partial: RadarPillarScore = {
+      ...baseScore,
+      managerSkills: undefined,
+    }
+    const { queryByText } = render(
+      <PillarTooltip pillarScore={partial} hidden={new Set()} />
+    )
+    expect(queryByText('Manager')).toBeNull()
   })
 })

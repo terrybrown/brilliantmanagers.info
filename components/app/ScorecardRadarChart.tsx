@@ -61,6 +61,10 @@ export function PillarTooltip({ pillarScore, hidden }: PillarTooltipProps) {
   const showSelf = !hidden.has('Self')
   const showManager = hasManager && !hidden.has('Manager')
 
+  // Narrowed locals — only used inside the showManager block where hasManager is guaranteed true
+  const mScore = hasManager ? managerScore : undefined
+  const mSkills = hasManager ? managerSkills : undefined
+
   return (
     <div
       style={{
@@ -116,7 +120,7 @@ export function PillarTooltip({ pillarScore, hidden }: PillarTooltipProps) {
         </div>
       )}
 
-      {showManager && (
+      {showManager && mScore !== undefined && mSkills !== undefined && (
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
             <div
@@ -137,7 +141,7 @@ export function PillarTooltip({ pillarScore, hidden }: PillarTooltipProps) {
                 fontSize: 10,
               }}
             >
-              {`${Math.round(managerScore!)} / 5`}
+              {`${Math.round(mScore)} / 5`}
             </span>
             <span
               style={{
@@ -148,10 +152,10 @@ export function PillarTooltip({ pillarScore, hidden }: PillarTooltipProps) {
                 fontSize: 10,
               }}
             >
-              {levelName(managerScore!)}
+              {levelName(mScore)}
             </span>
           </div>
-          {managerSkills!.map(skill => (
+          {mSkills.map(skill => (
             <SkillRow key={skill.skillKey} skill={skill} />
           ))}
         </div>
