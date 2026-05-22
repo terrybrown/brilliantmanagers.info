@@ -13,6 +13,8 @@ interface Props {
   initialScores: Record<string, Level>
   directReportName: string
   userId: string
+  directReportScores: Record<string, Level> | null
+  isBlindMode: boolean
 }
 
 export function ManagerScoringView({
@@ -23,6 +25,8 @@ export function ManagerScoringView({
   initialScores,
   directReportName,
   userId,
+  directReportScores,
+  isBlindMode,
 }: Props) {
   const [scores, setScores] = useState<Record<string, Level>>(initialScores)
   const [, startTransition] = useTransition()
@@ -60,6 +64,14 @@ export function ManagerScoringView({
         </span>
       </div>
 
+      {!isBlindMode && directReportScores && (
+        <div className="mb-4 rounded-md border border-neutral-700 bg-neutral-800/50 px-4 py-3">
+          <p className="text-xs text-neutral-300">
+            Informed mode: {directReportName}&apos;s self-assessment scores are shown alongside each skill.
+          </p>
+        </div>
+      )}
+
       <div className="flex flex-col gap-3">
         {skills.map(skill => (
           <SkillCard
@@ -67,6 +79,7 @@ export function ManagerScoringView({
             skill={skill}
             currentLevel={scores[skill.key] ?? null}
             onSelect={handleSelect}
+            drScore={!isBlindMode && directReportScores ? directReportScores[skill.key] : undefined}
           />
         ))}
       </div>
