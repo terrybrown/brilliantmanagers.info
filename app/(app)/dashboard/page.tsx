@@ -83,7 +83,9 @@ export default async function DashboardPage() {
     }))
 
   const isManager = enrichedDRs.length > 0
-  const actionableDRs = enrichedDRs.filter(s => s.managerScoringStatus !== 'complete')
+  const actionableDRs = enrichedDRs.filter(
+    s => s.completedAt !== null && s.managerScoringStatus !== 'complete'
+  )
 
   const allRoundsWithScores = await getAllCompleteRoundsWithScores(user.id)
 
