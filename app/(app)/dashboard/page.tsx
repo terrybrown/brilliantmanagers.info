@@ -8,7 +8,7 @@ import { getAllCompleteRoundsWithScores, getInProgressRound } from '@/lib/db/rou
 import { getScoresForRound } from '@/lib/db/scores'
 import { getManagerScoresForDirectReport } from '@/lib/db/manager-scores'
 import { getPlansForUser } from '@/lib/db/development-plans'
-import { nextRoundTitle as computeNextRoundTitle } from '@/lib/reflections'
+import { nextRoundTitle as computeNextRoundTitle, computePillarScores } from '@/lib/reflections'
 import {
   PILLARS,
   PILLAR_LABELS,
@@ -233,26 +233,7 @@ export default async function DashboardPage() {
     plans.filter(p => p.status !== 'completed').map(p => [p.skill_key, p.goal])
   )
 
-  const pillarScoresForRadar = PILLARS.map(pillar => {
-    const pillarSkills = getSkillsByPillar(pillar as Pillar)
-    const pillarSelfScores = scores.filter(s => s.pillar === pillar)
-    const selfAvg =
-      pillarSelfScores.length > 0
-        ? pillarSelfScores.reduce((sum, s) => sum + LEVEL_VALUES[s.level as Level], 0) /
-          pillarSelfScores.length
-        : 0
-
-    const managerPillarScores = managerScores.filter(ms =>
-      pillarSkills.some(s => s.key === ms.skill_key)
-    )
-    const managerAvg =
-      managerPillarScores.length > 0
-        ? managerPillarScores.reduce((sum, ms) => sum + LEVEL_VALUES[ms.level as Level], 0) /
-          managerPillarScores.length
-        : undefined
-
-    return { pillar: pillar as Pillar, selfScore: selfAvg, managerScore: managerAvg }
-  })
+  const pillarScoresForRadar = computePillarScores(scores, managerScores)
 
   const pillarScoreMap = Object.fromEntries(
     pillarScoresForRadar.map(p => [p.pillar, p.selfScore])
