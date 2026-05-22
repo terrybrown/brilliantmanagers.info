@@ -25,11 +25,19 @@ export interface TrendPoint {
   'mgr_domain-expertise'?: number
 }
 
+export interface SkillScore {
+  skillKey: string
+  label: string
+  level: Level
+}
+
 export interface RadarPillarScore {
   pillar: Pillar
   selfScore: number    // 0 when not scored (kept numeric for radar compatibility)
   selfScored: boolean  // true only when user actually has scores for this pillar
+  selfSkills: SkillScore[]
   managerScore?: number
+  managerSkills?: SkillScore[]
 }
 
 export function computePillarScores(
@@ -37,12 +45,43 @@ export function computePillarScores(
   managerScores: ManagerScore[]
 ): RadarPillarScore[] {
   return PILLARS.map(pillar => {
+    const pillarSkills = getSkillsByPillar(pillar as Pillar)
+
     const selfAvg = pillarAvgFromScores(scores, pillar)
+
+    const selfSkills: SkillScore[] = pillarSkills.flatMap(skill => {
+      const match = scores.find(s => s.skill_key === skill.key)
+      return match ? [{ skillKey: skill.key, label: skill.label, level: match.level }] : []
+    })
+
+    const relevantMgrScores = managerScores.filter(ms =>
+      pillarSkills.some(s => s.key === ms.skill_key)
+    )
+    const managerAvg =
+      relevantMgrScores.length > 0
+        ? relevantMgrScores.reduce(
+            (sum, ms) => sum + LEVEL_VALUES[ms.level as Level],
+            0
+          ) / relevantMgrScores.length
+        : undefined
+
+    const managerSkills: SkillScore[] | undefined =
+      relevantMgrScores.length > 0
+        ? pillarSkills.flatMap(skill => {
+            const match = relevantMgrScores.find(ms => ms.skill_key === skill.key)
+            return match
+              ? [{ skillKey: skill.key, label: skill.label, level: match.level }]
+              : []
+          })
+        : undefined
+
     return {
       pillar: pillar as Pillar,
       selfScore: selfAvg,
       selfScored: selfAvg > 0,
-      managerScore: pillarAvgFromManagerScores(managerScores, pillar as Pillar),
+      selfSkills,
+      managerScore: managerAvg,
+      managerSkills,
     }
   })
 }
