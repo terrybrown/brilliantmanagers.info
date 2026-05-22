@@ -5,12 +5,12 @@ import { ManagerStrip, type EnrichedDRSummary } from '@/components/dashboard/Man
 const BASE: EnrichedDRSummary = {
   userId: 'dr-1',
   name: 'Alice Smith',
-  roundStatus: 'in_progress',
+  roundStatus: 'complete',
   lastScore: null,
   nextScheduledDate: null,
   managerScoringStatus: 'not_started',
   roundId: 'round-1',
-  completedAt: null,
+  completedAt: '2026-05-01T00:00:00Z',
   pillarsScored: 0,
 }
 
@@ -45,5 +45,11 @@ describe('ManagerStrip', () => {
   it('links to manager page without roundId when roundId is null', () => {
     render(<ManagerStrip summaries={[{ ...BASE, roundId: null }]} />)
     expect(screen.getByRole('link')).toHaveAttribute('href', '/manager/dr-1')
+  })
+
+  it('shows "Self-assessment in progress" when DR has no complete round', () => {
+    render(<ManagerStrip summaries={[{ ...BASE, completedAt: null, roundStatus: 'in_progress' }]} />)
+    expect(screen.getByText('Self-assessment in progress')).toBeInTheDocument()
+    expect(screen.queryByRole('link')).toBeNull()
   })
 })

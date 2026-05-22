@@ -15,16 +15,19 @@ export function ManagerStrip({ summaries }: Props) {
 
   return (
     <section id="manager-strip" className="rounded-lg border border-amber-800/40 bg-amber-950/20 p-4 mb-6">
-      <h2 className="mb-3 text-sm font-semibold text-amber-400">Your team — action needed</h2>
+      <h2 className="mb-3 text-sm font-semibold text-amber-400">Your team</h2>
       <ul className="space-y-2">
         {summaries.map(s => {
+          const canScore = s.completedAt !== null
           const href = s.roundId
             ? `/manager/${s.userId}?roundId=${s.roundId}`
             : `/manager/${s.userId}`
           return (
             <li key={s.userId} className="flex items-center justify-between gap-4">
               <span className="text-sm">{s.name}</span>
-              {s.managerScoringStatus === 'complete' ? (
+              {!canScore ? (
+                <span className="text-xs text-neutral-500">Self-assessment in progress</span>
+              ) : s.managerScoringStatus === 'complete' ? (
                 <span className="text-xs text-neutral-400">Complete</span>
               ) : (
                 <Link

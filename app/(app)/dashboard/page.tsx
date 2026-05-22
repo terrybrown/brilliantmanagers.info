@@ -95,9 +95,9 @@ export default async function DashboardPage() {
       <div style={{ display: 'flex', flexDirection: 'column' }}>
         {/* CTA area */}
         <div style={{ padding: '40px 36px 0' }}>
-          <ManagerStrip summaries={actionableDRs} />
+          <ManagerStrip summaries={enrichedDRs} />
           {!isManager && <DashboardTour />}
-          {isManager && <DashboardManagerTour hasManagerStrip={actionableDRs.length > 0} />}
+          {isManager && <DashboardManagerTour hasManagerStrip={enrichedDRs.length > 0} />}
 
           <div style={{ marginBottom: 36 }}>
             <p
@@ -378,8 +378,8 @@ export default async function DashboardPage() {
 
   return (
     <div className="p-6">
-      <ManagerStrip summaries={actionableDRs} />
-      {isManager && <DashboardManagerTour hasManagerStrip={actionableDRs.length > 0} />}
+      <ManagerStrip summaries={enrichedDRs} />
+      {isManager && <DashboardManagerTour hasManagerStrip={enrichedDRs.length > 0} />}
       <DashboardResults
         pillarScoresForRadar={pillarScoresForRadar}
         hasManagerScores={hasManagerScores}
