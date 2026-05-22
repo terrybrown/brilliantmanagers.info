@@ -13,6 +13,8 @@ Brilliant Managers is a management effectiveness tool for engineering managers. 
 | Styling | Tailwind CSS v4, Radix UI, shadcn/ui |
 | Testing | Vitest + Testing Library |
 | Deployment | Netlify |
+| Error monitoring | Sentry |
+| Analytics | Google Analytics 4 |
 
 ## Getting started
 
@@ -33,9 +35,13 @@ ANTHROPIC_API_KEY=
 MAILGUN_API_KEY=
 MAILGUN_BASE_URL=
 MAILGUN_SENDING_KEY=
+NEXT_PUBLIC_SENTRY_DSN=
+NEXT_PUBLIC_SLEEKPLAN_PRODUCT_ID=
 ```
 
-`NEXT_PUBLIC_*` values come from your Supabase project's API settings. `SUPABASE_SERVICE_ROLE_KEY` is the service role secret — never expose it client-side. `ANTHROPIC_API_KEY` powers AI-assisted features. Mailgun keys are for transactional email.
+`NEXT_PUBLIC_*` values come from your Supabase project's API settings. `SUPABASE_SERVICE_ROLE_KEY` is the service role secret — never expose it client-side. `ANTHROPIC_API_KEY` powers AI-assisted features. Mailgun keys are for transactional email. `NEXT_PUBLIC_SENTRY_DSN` comes from your Sentry project settings. `NEXT_PUBLIC_SLEEKPLAN_PRODUCT_ID` comes from your Sleekplan workspace.
+
+Netlify build-only (not needed locally): `SENTRY_AUTH_TOKEN`, `SENTRY_ORG`, `SENTRY_PROJECT`.
 
 ### Run locally
 
@@ -61,9 +67,8 @@ Outstanding features and known gaps:
 - **Dashboard — pillar drill-down**: Tapping a pillar should open a deep-dive view (score history graph per section, skill breakdown) with a clear route back to the dashboard. We had per-section graphs previously; the goal is to bring that back as a drill-down rather than a separate page.
 - **Score history chart — hover/tooltip**: The all-rounds chart on the dashboard should show values on hover so users can read exact scores without guessing from the axis.
 - **Radar chart — hover/tooltip**: Hovering a vertex on the radar should surface the pillar name and score.
-- **Consolidate Connections → Organisation**: Remove the separate Connections section. The Organisation page should be the single place for team/peer relationships, with an invite flow accessible from the top of that page.
 - **Fix Organisations**: The multi-org flow has known issues that need investigation and fixing.
-- **Growth section — polish**: Active Goals, Top Opportunities, and the Skills Table are built. Remaining: progress tracking over time (will link to Reflections data once that ships), and goal evidence/check-in improvements.
+- **Growth section — polish**: Active Goals, Top Opportunities, and the Skills Table are built. Remaining: progress tracking over time (linking to Reflections data), and goal evidence/check-in improvements.
 - **Toast notifications**: Surface action confirmations and errors as toast notifications — likely [Sonner via shadcn/ui](https://ui.shadcn.com/docs/components/radix/sonner).
 - **Reflection detail — skill drill-down**: The `/reflections/[id]` pillar table should expand each row to reveal individual skill scores. No new DB queries needed — scores are already stored at skill level. Four things inside each expanded pillar:
   - **Skill breakdown**: each skill in the pillar listed with its level badge and numeric score, so "Self" stops being an opaque 4.2 average and shows Self-Awareness: Advanced, Growth Mindset: Proficient, etc.
@@ -76,7 +81,9 @@ Outstanding features and known gaps:
 
 Features that have shipped:
 
+- **Observability** *(May 2026)*: GA4 custom event tracking across 9 user actions (round started/viewed/completed, pillar scored, scorecard completed, goal created, goal check-in, manager invited, connection accepted). Sentry error monitoring on server and client with source map upload for readable stack traces.
 - **Reflections page** *(May 2026)*: `/reflections` list page with active round card, 4-stat bar, trend chart with pillar tabs and manager overlay, and history table. `/reflections/[id]` detail page with radar, pillar breakdown table (your score, manager score, gap, level badge). `ScheduleWidget` replaced by `ActiveRoundCard` on the dashboard. Round creation via `CreateRoundModal` (title, remind-me date, intention).
+- **People page and connections consolidation** *(May 2026)*: `/people` replaces the separate Connections and Organisation sections. Single page for all relationships — your manager, your direct reports, pending invites, and org chart. `/connections` and `/organisation` redirect to `/people`. Org chart supports inline child node creation, avatar stacks, and a member management panel.
 - **The Tool page redesign** *(May 2026)*: `/the-tool` rebuilt as the primary signup pathway — hero with "Join now" OTP form, offline fallback strip linking to Google Sheets, and three alternating feature rows with real app screenshots. Measurement pillar removed (was empty); all copy updated to five pillars.
 - **Invite unregistered users** *(May 2026)*: Inviting a connection whose email has no account now sends them an invite email with a registration link. Their connection activates automatically when they verify their OTP — no manual coordination required.
 - **User feedback** *(May 2026)*: Sleekplan feedback widget integrated into all authenticated app pages. Users can submit ideas, view the roadmap, and report bugs without leaving the product.
