@@ -32,7 +32,7 @@ export default async function PeoplePage() {
   const selectedOrg = orgs[0] ?? null
 
   const [roundSummaries, nodes, orgRole] = await Promise.all([
-    directReportIds.length > 0 ? getDirectReportRoundSummaries(directReportIds) : Promise.resolve({}),
+    directReportIds.length > 0 ? getDirectReportRoundSummaries(directReportIds, user.id) : Promise.resolve({}),
     selectedOrg ? getNodesForOrg(selectedOrg.id) : Promise.resolve([]),
     selectedOrg ? getOrgRole(user.id, selectedOrg.id) : Promise.resolve(null),
   ])

@@ -73,8 +73,8 @@ function DirectReportCard({
           <p style={{ fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.04em', color: '#6b7280', margin: 0 }}>
             Manager scored
           </p>
-          <p style={{ fontSize: 12, margin: '2px 0 0', color: summary.managerHasScored ? '#4ade80' : '#f59e0b' }}>
-            {summary.managerHasScored ? '✓ Done' : '⚠ Not yet'}
+          <p style={{ fontSize: 12, margin: '2px 0 0', color: summary.managerScoringStatus === 'complete' ? '#4ade80' : '#f59e0b' }}>
+            {summary.managerScoringStatus === 'complete' ? '✓ Done' : '⚠ Not yet'}
           </p>
         </div>
       )}
