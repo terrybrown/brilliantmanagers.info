@@ -1,24 +1,25 @@
 'use client'
-import { useActionState, useState, useEffect, useRef } from 'react'
+import { useState, useTransition, useEffect, useRef } from 'react'
 import { inviteConnection } from '@/app/(app)/connections/actions'
-import type { InviteState } from '@/app/(app)/connections/actions'
+import type { ActionResult } from '@/lib/action-result'
 import { trackManagerInvited } from '@/lib/analytics'
 
-const initial: InviteState = { success: false }
+const initial: ActionResult = { ok: false, error: '' }
 
 export function AddConnectionForm() {
   const [open, setOpen] = useState(false)
-  const [state, formAction, pending] = useActionState(inviteConnection, initial)
+  const [state, setState] = useState<ActionResult>(initial)
+  const [pending, startTransition] = useTransition()
 
   const trackedRef = useRef(false)
   useEffect(() => {
-    if (state.success && !trackedRef.current) {
+    if (state.ok && !trackedRef.current) {
       trackedRef.current = true
       trackManagerInvited()
     }
-  }, [state.success])
+  }, [state.ok])
 
-  if (state.success) {
+  if (state.ok) {
     return (
       <p className="text-sm text-green-400">Invite sent successfully.</p>
     )
@@ -40,9 +41,18 @@ export function AddConnectionForm() {
     )
   }
 
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+    const formData = new FormData(e.currentTarget)
+    startTransition(async () => {
+      const result = await inviteConnection(formData)
+      setState(result)
+    })
+  }
+
   return (
     <form
-      action={formAction}
+      onSubmit={handleSubmit}
       style={{
         background: '#111827', border: '1px solid #1f2937',
         borderRadius: 10, padding: 20,
@@ -68,7 +78,7 @@ export function AddConnectionForm() {
             They report to me
           </label>
         </div>
-        {state.error && <p className="text-sm text-red-400">{state.error}</p>}
+        {!state.ok && state.error && <p className="text-sm text-red-400">{state.error}</p>}
         <div className="flex gap-2">
           <button
             type="submit"

@@ -1,9 +1,9 @@
 'use client'
-import { useActionState, useState } from 'react'
+import { useState, useTransition } from 'react'
 import { inviteConnection } from '@/app/(app)/connections/actions'
-import type { InviteState } from '@/app/(app)/connections/actions'
+import type { ActionResult } from '@/lib/action-result'
 
-const initial: InviteState = { success: false }
+const initial: ActionResult = { ok: false, error: '' }
 
 interface Props {
   trigger?: React.ReactNode
@@ -11,9 +11,10 @@ interface Props {
 
 export function InviteManagerModal({ trigger }: Props) {
   const [open, setOpen] = useState(false)
-  const [state, formAction, pending] = useActionState(inviteConnection, initial)
+  const [state, setState] = useState<ActionResult>(initial)
+  const [pending, startTransition] = useTransition()
 
-  if (state.success) {
+  if (state.ok) {
     return (
       <div
         className="rounded-xl px-5 py-4"
@@ -25,6 +26,15 @@ export function InviteManagerModal({ trigger }: Props) {
         </p>
       </div>
     )
+  }
+
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+    const formData = new FormData(e.currentTarget)
+    startTransition(async () => {
+      const result = await inviteConnection(formData)
+      setState(result)
+    })
   }
 
   return (
@@ -60,7 +70,7 @@ export function InviteManagerModal({ trigger }: Props) {
             <p className="mb-5 text-sm text-slate-400">
               We'll send them an email so they can connect and score your reflections.
             </p>
-            <form action={formAction} className="flex flex-col gap-4">
+            <form onSubmit={handleSubmit} className="flex flex-col gap-4">
               <input type="hidden" name="role" value="direct_report" />
               <div>
                 <label className="mb-1 block text-xs font-medium text-slate-400">
@@ -88,7 +98,7 @@ export function InviteManagerModal({ trigger }: Props) {
                            resize: 'vertical' }}
                 />
               </div>
-              {state.error && (
+              {!state.ok && state.error && (
                 <p className="text-sm text-red-400">{state.error}</p>
               )}
               <div className="flex gap-3">

@@ -9,8 +9,7 @@ import { sendEmail } from '@/lib/email/mailgun'
 import { buildManagerInviteEmail } from '@/lib/email/templates/manager-invite'
 import { buildConnectionInviteEmail } from '@/lib/email/templates/connection-invite'
 import { createNotification } from '@/lib/notifications'
-
-export type InviteState = { success: boolean; error?: string }
+import { ok, err, type ActionResult } from '@/lib/action-result'
 
 async function getDisplayName(
   supabase: Awaited<ReturnType<typeof createClient>>,
@@ -27,14 +26,13 @@ async function getDisplayName(
 
 
 export async function inviteConnection(
-  _prevState: InviteState,
   formData: FormData
-): Promise<InviteState> {
+): Promise<ActionResult> {
   const supabase = await createClient()
   const {
     data: { user },
   } = await supabase.auth.getUser()
-  if (!user) return { success: false, error: 'Not authenticated' }
+  if (!user) return err('Not authenticated')
 
   const email = formData.get('email') as string
   const role = formData.get('role') as 'manager' | 'direct_report'
@@ -52,7 +50,7 @@ export async function inviteConnection(
       invitedEmail: email,
       inviterRole: role,
     })
-    if (inviteError) return { success: false, error: inviteError }
+    if (inviteError) return err(inviteError)
 
     const fromName = await getDisplayName(supabase, user.id, user.email ?? 'A colleague')
 
@@ -75,10 +73,10 @@ export async function inviteConnection(
     })
 
     revalidatePath('/people')
-    return { success: true }
+    return ok()
   }
 
-  if (error) return { success: false, error }
+  if (error) return err(error)
 
   // Notify the other party that they received a connection request
   const otherUserId = role === 'manager' ? directReportId : managerId
@@ -112,15 +110,15 @@ export async function inviteConnection(
   }
 
   revalidatePath('/people')
-  return { success: true }
+  return ok()
 }
 
-export async function acceptConnectionAction(connectionId: string) {
+export async function acceptConnectionAction(connectionId: string): Promise<ActionResult> {
   const supabase = await createClient()
   const {
     data: { user },
   } = await supabase.auth.getUser()
-  if (!user) return
+  if (!user) return err('Not authenticated')
 
   await acceptConnection(connectionId)
 
@@ -155,4 +153,5 @@ export async function acceptConnectionAction(connectionId: string) {
   })
 
   revalidatePath('/people')
+  return ok()
 }
