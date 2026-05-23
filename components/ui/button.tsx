@@ -47,18 +47,23 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         aria-busy={loading || undefined}
         {...props}
       >
-        <span className={cn('contents', loading && 'opacity-0 pointer-events-none')}>
-          {children}
-        </span>
-        {loading && (
-          <span
-            className="absolute inset-0 flex items-center justify-center gap-1"
-            aria-hidden="true"
-          >
-            <span className="btn-dot-1 h-1.5 w-1.5 rounded-full bg-current" />
-            <span className="btn-dot-2 h-1.5 w-1.5 rounded-full bg-current" />
-            <span className="btn-dot-3 h-1.5 w-1.5 rounded-full bg-current" />
-          </span>
+        {asChild ? children : (
+          <>
+            {/* visibility:hidden preserves layout width while hiding children */}
+            <span className={loading ? 'invisible' : undefined}>
+              {children}
+            </span>
+            {loading && (
+              <span
+                className="absolute inset-0 flex items-center justify-center gap-1"
+                aria-hidden="true"
+              >
+                <span className="btn-dot-1 h-1.5 w-1.5 rounded-full bg-current" />
+                <span className="btn-dot-2 h-1.5 w-1.5 rounded-full bg-current" />
+                <span className="btn-dot-3 h-1.5 w-1.5 rounded-full bg-current" />
+              </span>
+            )}
+          </>
         )}
       </Comp>
     )
