@@ -75,7 +75,7 @@ export async function propagateOrgNodeInvitesOnAccept(
 
   for (const membership of nodeMemberships) {
     const nodeId = membership.node_id
-    const orgId = (membership.org_nodes as { org_id: string } | null)?.org_id
+    const orgId = (membership.org_nodes as unknown as { org_id: string } | null)?.org_id
     if (!orgId) continue
 
     if (newMemberId) {
