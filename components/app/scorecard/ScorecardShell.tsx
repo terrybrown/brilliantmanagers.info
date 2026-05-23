@@ -56,7 +56,7 @@ export function ScorecardShell({ roundId, allScores, allGuideContent }: Scorecar
   const pillarProgress = Object.fromEntries(
     PILLARS.map(pillar => {
       const pillarSkills = getSkillsByPillar(pillar)
-      const scored = pillarSkills.filter(s => scores[s.key]).length
+      const scored = pillarSkills.filter(s => scores[s.key] !== undefined).length
       return [pillar, { scored, total: pillarSkills.length }]
     })
   ) as Record<Pillar, { scored: number; total: number }>

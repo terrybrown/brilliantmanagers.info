@@ -12,8 +12,6 @@ interface ManagerScorecardShellProps {
   allManagerScores: Record<string, Level>
   directReportScores: Record<string, Level> | null
   allGuideContent: Record<string, SkillGuideContent | null>
-  directReportName: string
-  userId: string
 }
 
 export function ManagerScorecardShell({
@@ -64,7 +62,7 @@ export function ManagerScorecardShell({
   const pillarProgress = Object.fromEntries(
     PILLARS.map(pillar => {
       const pillarSkills = getSkillsByPillar(pillar)
-      const scored = pillarSkills.filter(s => scores[s.key]).length
+      const scored = pillarSkills.filter(s => scores[s.key] !== undefined).length
       return [pillar, { scored, total: pillarSkills.length }]
     })
   ) as Record<Pillar, { scored: number; total: number }>
