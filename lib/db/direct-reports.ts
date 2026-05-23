@@ -119,57 +119,153 @@ export async function getDirectReportRoundSummaries(
   return Object.fromEntries(entries)
 }
 
-export interface TeamReflectionSummary {
-  directReportId: string
+export interface TeamRoundSummary {
   roundId: string
+  roundLabel: string
   roundStatus: 'in_progress' | 'complete' | 'scheduled'
+  selfScore: number | null
+  managerScore: number | null
   managerScoringStatus: ManagerScoringStatus
-  selfCompletedAt: string | null
+  pillarsScored: number
+  completedAt: string | null
 }
+
+export interface TeamMemberSummary {
+  directReportId: string
+  rounds: TeamRoundSummary[]
+  pendingScoringCount: number
+}
+
 
 export async function getTeamReflectionSummaries(
   directReportIds: string[],
   managerId: string
-): Promise<TeamReflectionSummary[]> {
+): Promise<TeamMemberSummary[]> {
   if (directReportIds.length === 0) return []
 
-  const supabase = createAdminClient()
-  const { data: rounds } = await supabase
+  const admin = createAdminClient()
+
+  const { data: rounds } = await admin
     .from('assessment_rounds')
-    .select('id, user_id, status, created_at, completed_at')
+    .select('id, user_id, status, title, created_at, completed_at')
     .in('user_id', directReportIds)
     .order('created_at', { ascending: false })
 
   if (!rounds?.length) return []
 
-  // Keep only the latest round per DR (rows already sorted desc by created_at)
-  const latestByDR = new Map<string, typeof rounds[0]>()
-  for (const round of rounds) {
-    if (!latestByDR.has(round.user_id)) latestByDR.set(round.user_id, round)
+  const allRoundIds = (rounds as { id: string }[]).map(r => r.id)
+  const completedRoundIds = (rounds as { id: string; status: string }[])
+    .filter(r => r.status === 'complete')
+    .map(r => r.id)
+
+  const { data: selfScoreRows } = completedRoundIds.length > 0
+    ? await admin
+        .from('scores')
+        .select('round_id, level')
+        .in('round_id', completedRoundIds)
+        .order('round_id', { ascending: true })
+    : { data: [] }
+
+  const { data: mgrScoreRows } = await admin
+    .from('manager_scores')
+    .select('round_id, skill_key, level')
+    .eq('manager_id', managerId)
+    .in('round_id', allRoundIds)
+
+  const selfScoresByRound = new Map<string, { level: string }[]>()
+  for (const row of (selfScoreRows ?? []) as { round_id: string; level: string }[]) {
+    const bucket = selfScoresByRound.get(row.round_id) ?? []
+    bucket.push(row)
+    selfScoresByRound.set(row.round_id, bucket)
   }
 
-  const summaries: TeamReflectionSummary[] = await Promise.all(
-    Array.from(latestByDR.entries()).map(async ([drId, round]) => {
-      const managerScoringStatus = await getManagerScoringStatus(round.id, managerId)
-      return {
-        directReportId: drId,
-        roundId: round.id,
-        roundStatus: round.status as TeamReflectionSummary['roundStatus'],
-        managerScoringStatus,
-        selfCompletedAt: round.completed_at,
-      }
-    })
-  )
+  const mgrScoresByRound = new Map<string, { skill_key: string; level: string }[]>()
+  for (const row of (mgrScoreRows ?? []) as { round_id: string; skill_key: string; level: string }[]) {
+    const bucket = mgrScoresByRound.get(row.round_id) ?? []
+    bucket.push(row)
+    mgrScoresByRound.set(row.round_id, bucket)
+  }
 
-  // Pending scoring first, then completed
+  const allSkillKeys = PILLARS.flatMap(p => getSkillsByPillar(p).map(s => s.key))
+
+  function computeRoundSummary(round: {
+    id: string
+    user_id: string
+    status: string
+    title: string | null
+    created_at: string
+    completed_at: string | null
+  }): TeamRoundSummary {
+    const status = round.status as TeamRoundSummary['roundStatus']
+
+    let selfScore: number | null = null
+    if (status === 'complete') {
+      const sScores = selfScoresByRound.get(round.id) ?? []
+      const validScores = sScores.filter(s => s.level in LEVEL_VALUES)
+      if (validScores.length > 0) {
+        const avg = validScores.reduce((sum, s) => sum + LEVEL_VALUES[s.level as Level], 0) / validScores.length
+        selfScore = Number(avg.toFixed(1))
+      }
+    }
+
+    const mScores = mgrScoresByRound.get(round.id) ?? []
+    const scoredKeys = new Set(mScores.map(s => s.skill_key))
+    let managerScoringStatus: ManagerScoringStatus
+    if (scoredKeys.size === 0) {
+      managerScoringStatus = 'not_started'
+    } else if (allSkillKeys.every(k => scoredKeys.has(k))) {
+      managerScoringStatus = 'complete'
+    } else {
+      managerScoringStatus = 'in_progress'
+    }
+
+    const scoredPillarSet = new Set(
+      [...scoredKeys]
+        .map(key => PILLARS.find(p => getSkillsByPillar(p).some(s => s.key === key)))
+        .filter((p): p is Pillar => p !== undefined)
+    )
+
+    let managerScore: number | null = null
+    if (managerScoringStatus === 'complete' && mScores.length > 0) {
+      const validMgrScores = mScores.filter(s => s.level in LEVEL_VALUES)
+      if (validMgrScores.length > 0) {
+        const avg = validMgrScores.reduce((sum, s) => sum + LEVEL_VALUES[s.level as Level], 0) / validMgrScores.length
+        managerScore = Number(avg.toFixed(1))
+      }
+    }
+
+    const d = new Date(round.created_at)
+    const quarter = Math.floor(d.getMonth() / 3) + 1
+    const roundLabel = round.title ?? `Q${quarter} ${d.getFullYear()}`
+
+    return {
+      roundId: round.id,
+      roundLabel,
+      roundStatus: status,
+      selfScore,
+      managerScore,
+      managerScoringStatus,
+      pillarsScored: scoredPillarSet.size,
+      completedAt: round.completed_at,
+    }
+  }
+
+  const roundsByDR = new Map<string, typeof rounds>()
+  for (const round of rounds as typeof rounds) {
+    const bucket = roundsByDR.get(round.user_id) ?? []
+    bucket.push(round)
+    roundsByDR.set(round.user_id, bucket)
+  }
+
+  const summaries: TeamMemberSummary[] = Array.from(roundsByDR.entries()).map(([drId, drRounds]) => {
+    const roundSummaries = drRounds.map(r => computeRoundSummary(r))
+    const pendingScoringCount = roundSummaries.filter(r => r.managerScoringStatus !== 'complete').length
+    return { directReportId: drId, rounds: roundSummaries, pendingScoringCount }
+  })
+
   return summaries.sort((a, b) => {
-    const pendingA = a.managerScoringStatus !== 'complete' ? 0 : 1
-    const pendingB = b.managerScoringStatus !== 'complete' ? 0 : 1
-    if (pendingA !== pendingB) return pendingA - pendingB
-    // Secondary: oldest completed first (nulls last)
-    if (!a.selfCompletedAt && !b.selfCompletedAt) return 0
-    if (!a.selfCompletedAt) return 1
-    if (!b.selfCompletedAt) return -1
-    return a.selfCompletedAt.localeCompare(b.selfCompletedAt)
+    const pendingA = a.pendingScoringCount > 0 ? 0 : 1
+    const pendingB = b.pendingScoringCount > 0 ? 0 : 1
+    return pendingA - pendingB
   })
 }

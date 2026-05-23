@@ -5,7 +5,7 @@ import { getAllCompleteRoundsWithScores, getInProgressRound } from '@/lib/db/rou
 import { getScoresForRound } from '@/lib/db/scores'
 import { getManagerScoresForAllRounds } from '@/lib/db/manager-scores'
 import { getConnectionsForUser } from '@/lib/db/connections'
-import { getTeamReflectionSummaries, type TeamReflectionSummary } from '@/lib/db/direct-reports'
+import { getTeamReflectionSummaries, type TeamMemberSummary } from '@/lib/db/direct-reports'
 import { getProfile } from '@/lib/db/profiles'
 import { nextRoundTitle, roundLabel, computeTrendData, computeStats, pillarAvgFromScores } from '@/lib/reflections'
 import { ReflectionsHeader } from '@/components/reflections/ReflectionsHeader'
@@ -96,7 +96,7 @@ export default async function ReflectionsPage() {
         getTeamReflectionSummaries(drIds, user.id),
         Promise.all(drIds.map(id => getProfile(id))),
       ])
-    : [[] as TeamReflectionSummary[], []]
+    : [[] as TeamMemberSummary[], []]
 
   const profileByDrId = Object.fromEntries(
     (drProfiles as (Awaited<ReturnType<typeof getProfile>>)[])
