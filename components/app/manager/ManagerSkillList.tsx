@@ -1,14 +1,14 @@
 'use client'
 import { useTransition } from 'react'
 import { toast } from 'sonner'
-import { LEVELS, LEVEL_COLORS, type Skill, type Level } from '@/lib/skills'
+import { LEVELS, LEVEL_COLORS, type Pillar, type Skill, type Level } from '@/lib/skills'
 import { saveManagerScore } from '@/app/(app)/manager/[userId]/actions'
 
 interface ManagerSkillListProps {
   skills: Skill[]
   scores: Record<string, Level>
   roundId: string
-  pillar: string
+  pillar: Pillar
   activeSkillKey: string | null
   onSkillActivate: (skillKey: string) => void
   onScore: (skillKey: string, level: Level | undefined) => void
@@ -25,7 +25,7 @@ export function ManagerSkillList({
   onScore,
   drScores,
 }: ManagerSkillListProps) {
-  const [, startTransition] = useTransition()
+  const [isPending, startTransition] = useTransition()
 
   const handleRate = (skill: Skill, level: Level) => {
     if (scores[skill.key] === level) return
@@ -41,8 +41,10 @@ export function ManagerSkillList({
         if (!result.ok) {
           toast.error(result.error)
           onScore(skill.key, previousLevel)
+          return
         }
       } catch {
+        toast.error('Failed to save. Please try again.')
         onScore(skill.key, previousLevel)
       }
     })
@@ -103,6 +105,7 @@ export function ManagerSkillList({
                     key={level}
                     title={level}
                     onClick={() => handleRate(skill, level)}
+                    disabled={isPending}
                     style={{
                       height: 28,
                       padding: '0 8px',
@@ -114,6 +117,7 @@ export function ManagerSkillList({
                       fontSize: 10,
                       fontWeight: isSelected ? 700 : 500,
                       color: isSelected ? LEVEL_COLORS[level] : '#64748b',
+                      opacity: isPending ? 0.5 : 1,
                     }}
                   >
                     {level}
