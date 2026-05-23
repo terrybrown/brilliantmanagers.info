@@ -11,11 +11,11 @@ vi.mock('sonner', () => ({
 
 import { toast } from 'sonner'
 
-beforeEach(() => {
-  vi.clearAllMocks()
-})
-
 describe('useMutation', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
   it('starts not pending', () => {
     const { result } = renderHook(() => useMutation())
     expect(result.current.isPending).toBe(false)
@@ -63,5 +63,22 @@ describe('useMutation', () => {
       result.current.mutate(() => Promise.resolve({ ok: true as const }))
     })
     expect(toast.success).not.toHaveBeenCalled()
+  })
+
+  it('calls toast.error with generic message when action throws', async () => {
+    const { result } = renderHook(() => useMutation())
+    await act(async () => {
+      result.current.mutate(() => Promise.reject(new Error('Network failure')))
+    })
+    expect(toast.error).toHaveBeenCalledWith('Network failure')
+  })
+
+  it('calls onError when action throws', async () => {
+    const onError = vi.fn()
+    const { result } = renderHook(() => useMutation({ onError }))
+    await act(async () => {
+      result.current.mutate(() => Promise.reject(new Error('boom')))
+    })
+    expect(onError).toHaveBeenCalledWith('boom')
   })
 })
