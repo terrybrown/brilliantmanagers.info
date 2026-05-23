@@ -8,8 +8,10 @@ const STATUS_LABEL: Record<string, string> = {
 }
 
 import { AddConnectionForm } from '@/components/people/AddConnectionForm'
-import { acceptConnectionAction } from '@/app/(app)/connections/actions'
+import { acceptConnectionActionResult } from '@/app/(app)/connections/actions'
 import { trackConnectionAccepted } from '@/lib/analytics'
+import { Button } from '@/components/ui/button'
+import { useMutation } from '@/hooks/use-mutation'
 import type { EnrichedConnection, DirectReportRoundSummary } from './types'
 import type { PendingInvitation } from '@/lib/db/pending-invitations'
 
@@ -32,6 +34,22 @@ function Avatar({ name, color = '#0891b2' }: { name: string; color?: string }) {
     >
       {letters || '?'}
     </div>
+  )
+}
+
+function AcceptButton({ connectionId }: { connectionId: string }) {
+  const { mutate, isPending } = useMutation({ onSuccess: 'Connection accepted' })
+  return (
+    <Button
+      size="sm"
+      onClick={() => {
+        trackConnectionAccepted()
+        mutate(() => acceptConnectionActionResult(connectionId))
+      }}
+      loading={isPending}
+    >
+      Accept
+    </Button>
   )
 }
 
@@ -163,19 +181,7 @@ export function YourConnections({ connections, roundSummaries, userId, pendingIn
                       {other.email} · {rel}
                     </p>
                   </div>
-                  <form action={acceptConnectionAction.bind(null, c.id)}>
-                    <button
-                      type="submit"
-                      onClick={trackConnectionAccepted}
-                      style={{
-                        padding: '5px 12px', background: 'rgba(34,197,94,0.15)',
-                        color: '#4ade80', border: '1px solid rgba(34,197,94,0.3)',
-                        borderRadius: 6, fontSize: 12, fontWeight: 600, cursor: 'pointer',
-                      }}
-                    >
-                      Accept
-                    </button>
-                  </form>
+                  <AcceptButton connectionId={c.id} />
                 </div>
               )
             })}

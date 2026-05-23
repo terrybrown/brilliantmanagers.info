@@ -4,6 +4,7 @@ import { AddConnectionForm } from '@/components/people/AddConnectionForm'
 
 const mockTrackManagerInvited = vi.hoisted(() => vi.fn())
 const mockInviteConnection = vi.hoisted(() => vi.fn())
+const mockToastError = vi.hoisted(() => vi.fn())
 
 vi.mock('@/lib/analytics', () => ({
   trackManagerInvited: mockTrackManagerInvited,
@@ -13,9 +14,17 @@ vi.mock('@/app/(app)/connections/actions', () => ({
   inviteConnection: mockInviteConnection,
 }))
 
+vi.mock('sonner', () => ({
+  toast: {
+    error: mockToastError,
+    success: vi.fn(),
+  },
+}))
+
 beforeEach(() => {
   mockTrackManagerInvited.mockReset()
   mockInviteConnection.mockReset()
+  mockToastError.mockReset()
 })
 
 describe('AddConnectionForm analytics', () => {
@@ -47,7 +56,7 @@ describe('AddConnectionForm analytics', () => {
     fireEvent.submit(emailInput.closest('form')!)
 
     await waitFor(() => {
-      expect(screen.getByText('Some error')).toBeInTheDocument()
+      expect(mockToastError).toHaveBeenCalledWith('Some error')
     })
     expect(mockTrackManagerInvited).not.toHaveBeenCalled()
   })

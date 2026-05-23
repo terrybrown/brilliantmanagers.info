@@ -160,10 +160,3 @@ export async function acceptConnectionActionResult(connectionId: string): Promis
   revalidatePath('/people')
   return ok()
 }
-
-// Void wrapper for native form action use in YourConnections.tsx (.bind pattern).
-// Migrate YourConnections to useMutation + acceptConnectionActionResult in Task 16.
-export async function acceptConnectionAction(connectionId: string): Promise<void> {
-  const result = await acceptConnectionActionResult(connectionId)
-  if (!result.ok) throw new Error(result.error)
-}

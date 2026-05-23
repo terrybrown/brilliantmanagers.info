@@ -1,58 +1,39 @@
 'use client'
-import { useState, useTransition, useEffect, useRef } from 'react'
-import { inviteConnection } from '@/app/(app)/connections/actions'
-import type { ActionResult } from '@/lib/action-result'
-import { trackManagerInvited } from '@/lib/analytics'
 
-const initial: ActionResult = { ok: false, error: '' }
+import { useState } from 'react'
+import { inviteConnection } from '@/app/(app)/connections/actions'
+import { useMutation } from '@/hooks/use-mutation'
+import { Button } from '@/components/ui/button'
+import { trackManagerInvited } from '@/lib/analytics'
 
 export function AddConnectionForm() {
   const [open, setOpen] = useState(false)
-  const [state, setState] = useState<ActionResult>(initial)
-  const [pending, startTransition] = useTransition()
-
-  const trackedRef = useRef(false)
-  useEffect(() => {
-    if (state.ok && !trackedRef.current) {
-      trackedRef.current = true
+  const { mutate, isPending } = useMutation({
+    onSuccess: () => {
       trackManagerInvited()
-    }
-  }, [state.ok])
-
-  if (state.ok) {
-    return (
-      <p className="text-sm text-green-400">Invite sent successfully.</p>
-    )
-  }
+      setOpen(false)
+    },
+  })
 
   if (!open) {
     return (
-      <button
-        type="button"
+      <Button
+        variant="secondary"
+        size="sm"
         onClick={() => setOpen(true)}
-        style={{
-          padding: '7px 16px', background: 'rgba(99,102,241,0.12)',
-          color: '#a78bfa', fontWeight: 600, fontSize: 13,
-          border: '1px solid rgba(99,102,241,0.3)', borderRadius: 8, cursor: 'pointer',
-        }}
       >
         + Add connection
-      </button>
+      </Button>
     )
-  }
-
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault()
-    const formData = new FormData(e.currentTarget)
-    startTransition(async () => {
-      const result = await inviteConnection(formData)
-      setState(result)
-    })
   }
 
   return (
     <form
-      onSubmit={handleSubmit}
+      onSubmit={e => {
+        e.preventDefault()
+        const formData = new FormData(e.currentTarget)
+        mutate(() => inviteConnection(formData))
+      }}
       style={{
         background: '#111827', border: '1px solid #1f2937',
         borderRadius: 10, padding: 20,
@@ -78,29 +59,17 @@ export function AddConnectionForm() {
             They report to me
           </label>
         </div>
-        {!state.ok && state.error && <p className="text-sm text-red-400">{state.error}</p>}
         <div className="flex gap-2">
-          <button
-            type="submit"
-            disabled={pending}
-            style={{
-              padding: '7px 18px', background: '#4f46e5', color: '#fff',
-              fontWeight: 600, fontSize: 13, border: 'none', borderRadius: 6,
-              cursor: pending ? 'not-allowed' : 'pointer', opacity: pending ? 0.6 : 1,
-            }}
-          >
-            {pending ? 'Sending…' : 'Send invite'}
-          </button>
-          <button
+          <Button type="submit" loading={isPending}>
+            Send invite
+          </Button>
+          <Button
             type="button"
+            variant="secondary"
             onClick={() => setOpen(false)}
-            style={{
-              padding: '7px 14px', background: 'transparent', color: '#6b7280',
-              fontSize: 13, border: '1px solid #1f2937', borderRadius: 6, cursor: 'pointer',
-            }}
           >
             Cancel
-          </button>
+          </Button>
         </div>
       </div>
     </form>
