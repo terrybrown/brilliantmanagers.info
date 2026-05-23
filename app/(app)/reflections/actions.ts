@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { createRound } from '@/lib/db/rounds'
 import { createNotification } from '@/lib/notifications'
+import { sendRoundScheduledEmail } from '@/lib/email/notifications'
 import { ok, err, type ActionResult } from '@/lib/action-result'
 
 export async function createRoundAction(formData: FormData): Promise<ActionResult> {
@@ -59,5 +60,6 @@ export async function scheduleRoundAction(
   if (error) return err(error.message)
 
   await createNotification(userId, 'round_scheduled', { scheduledDate })
+  void sendRoundScheduledEmail(userId, scheduledDate)
   return ok()
 }
