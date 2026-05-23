@@ -120,7 +120,11 @@ export async function acceptConnectionAction(connectionId: string): Promise<Acti
   } = await supabase.auth.getUser()
   if (!user) return err('Not authenticated')
 
-  await acceptConnection(connectionId)
+  try {
+    await acceptConnection(connectionId)
+  } catch {
+    return err('Failed to accept connection.')
+  }
 
   // Fetch the connection to notify the initiator
   const { data: conn } = await supabase
