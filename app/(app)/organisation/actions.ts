@@ -135,8 +135,12 @@ export async function addMemberToNodeAction(formData: FormData): Promise<ActionR
     .maybeSingle()
 
   if (profile) {
-    await addUserToNode({ nodeId, userId: profile.id, actorId: actor.id })
-    await logAudit({ actorId: actor.id, action: 'org_node_member.add', entityType: 'org_node_member', entityId: nodeId, metadata: { email } })
+    try {
+      await addUserToNode({ nodeId, userId: profile.id, actorId: actor.id })
+      await logAudit({ actorId: actor.id, action: 'org_node_member.add', entityType: 'org_node_member', entityId: nodeId, metadata: { email } })
+    } catch {
+      return err('Failed to add member. Please try again.')
+    }
     revalidatePath('/people')
     return ok()
   }

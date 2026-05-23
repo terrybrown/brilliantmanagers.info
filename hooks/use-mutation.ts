@@ -1,7 +1,8 @@
 'use client'
 
-import { useCallback, useTransition } from 'react'
+import { useCallback, useEffect, useRef, useTransition } from 'react'
 import { toast } from 'sonner'
+import { isRedirectError } from 'next/dist/client/components/redirect-error'
 import type { ActionResult } from '@/lib/action-result'
 
 interface MutationOptions<T> {
@@ -11,6 +12,8 @@ interface MutationOptions<T> {
 
 export function useMutation<T = void>(options?: MutationOptions<T>) {
   const [isPending, startTransition] = useTransition()
+  const optionsRef = useRef(options)
+  useEffect(() => { optionsRef.current = options })
 
   const mutate = useCallback(
     (action: () => Promise<ActionResult<T>>) => {
@@ -19,23 +22,24 @@ export function useMutation<T = void>(options?: MutationOptions<T>) {
           const result = await action()
           if (!result.ok) {
             toast.error(result.error)
-            options?.onError?.(result.error)
+            optionsRef.current?.onError?.(result.error)
             return
           }
-          if (typeof options?.onSuccess === 'string') {
-            toast.success(options.onSuccess)
-          } else if (typeof options?.onSuccess === 'function') {
-            options.onSuccess(result.data)
+          const { onSuccess } = optionsRef.current ?? {}
+          if (typeof onSuccess === 'string') {
+            toast.success(onSuccess)
+          } else if (typeof onSuccess === 'function') {
+            onSuccess(result.data)
           }
         } catch (e) {
+          if (isRedirectError(e)) throw e
           const message = e instanceof Error ? e.message : 'Something went wrong'
           toast.error(message)
-          options?.onError?.(message)
+          optionsRef.current?.onError?.(message)
         }
       })
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [options?.onSuccess, options?.onError],
+    [],
   )
 
   return { mutate, isPending }

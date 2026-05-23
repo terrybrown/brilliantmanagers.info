@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import Lottie from 'lottie-react'
 import Link from 'next/link'
+import { toast } from 'sonner'
 import { getAffirmation } from '@/lib/affirmations'
 import { markGoalCompleteAction } from '@/app/(app)/growth/actions'
 import type { Pillar } from '@/lib/skills'
@@ -32,7 +33,9 @@ export function GoalCompleteOverlay({
   useEffect(() => {
     if (triggered.current) return
     triggered.current = true
-    markGoalCompleteAction(planId).catch(console.error)
+    markGoalCompleteAction(planId).then(result => {
+      if (!result.ok) toast.error(result.error)
+    }).catch(console.error)
   }, [planId])
 
   const affirmation = getAffirmation(pillar, completedCount)

@@ -81,4 +81,22 @@ describe('useMutation', () => {
     })
     expect(onError).toHaveBeenCalledWith('boom')
   })
+
+  it('does not show error toast when action throws a redirect error', async () => {
+    const redirectErr = new Error('NEXT_REDIRECT') as Error & { digest: string }
+    redirectErr.digest = 'NEXT_REDIRECT;push;/somewhere;307;'
+    const action = vi.fn().mockRejectedValue(redirectErr)
+
+    const { result } = renderHook(() => useMutation())
+    try {
+      await act(async () => {
+        result.current.mutate(action)
+        await new Promise(r => setTimeout(r, 50))
+      })
+    } catch {
+      // redirect errors are re-thrown — catching here is expected
+    }
+
+    expect(toast.error).not.toHaveBeenCalled()
+  })
 })
