@@ -16,7 +16,7 @@ vi.mock('@/app/(app)/growth/actions', () => ({
 beforeEach(() => {
   mockTrackGoalCheckin.mockReset()
   mockAddEvidenceAction.mockReset()
-  mockAddEvidenceAction.mockResolvedValue(undefined)
+  mockAddEvidenceAction.mockResolvedValue({ ok: true })
 })
 
 describe('EvidenceLog', () => {

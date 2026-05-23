@@ -6,6 +6,8 @@ import { saveGoalAction } from '@/app/(app)/growth/actions'
 import { SKILLS, PILLAR_LABELS, type Pillar } from '@/lib/skills'
 import type { Resource } from '@/lib/db/resources'
 import { trackGoalCreated } from '@/lib/analytics'
+import { Button } from '@/components/ui/button'
+import { useMutation } from '@/hooks/use-mutation'
 
 interface GoalFormProps {
   initialSkillKey?: string
@@ -29,13 +31,16 @@ export function GoalForm({ initialSkillKey, resources, allSkillsForSelector }: G
 
   const selectedSkill = SKILLS.find(s => s.key === selectedSkillKey)
   const checkinValue = checkin === 'custom' ? customWeeks : checkin
+  const { mutate, isPending } = useMutation()
 
   return (
-    <form action={async (fd: FormData) => {
+    <form onSubmit={e => {
+      e.preventDefault()
+      const fd = new FormData(e.currentTarget)
       fd.set('resource_ids', JSON.stringify(pinnedIds))
       if (checkinValue) fd.set('checkin_frequency_weeks', checkinValue)
       trackGoalCreated()
-      await saveGoalAction(fd)
+      mutate(() => saveGoalAction(fd))
     }}>
       <input type="hidden" name="skill_key" value={selectedSkillKey} />
       <input type="hidden" name="pillar" value={selectedSkill?.pillar ?? ''} />
@@ -131,18 +136,8 @@ export function GoalForm({ initialSkillKey, resources, allSkillsForSelector }: G
 
           {/* Actions */}
           <div className="flex gap-3">
-            <button
-              type="submit"
-              className="rounded-lg bg-indigo-600 px-5 py-2 text-sm font-semibold text-white hover:bg-indigo-500"
-            >
-              Save goal
-            </button>
-            <a
-              href="/growth"
-              className="rounded-lg px-5 py-2 text-sm text-slate-400 hover:text-white"
-            >
-              Cancel
-            </a>
+            <Button type="submit" loading={isPending}>Save goal</Button>
+            <Button variant="ghost" asChild><a href="/growth">Cancel</a></Button>
           </div>
         </div>
 
