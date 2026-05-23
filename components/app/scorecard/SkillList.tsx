@@ -1,5 +1,6 @@
 'use client'
 import { useTransition } from 'react'
+import { toast } from 'sonner'
 import { LEVELS, LEVEL_COLORS, type Skill, type Level } from '@/lib/skills'
 import { saveScore } from '@/app/(app)/scorecard/actions'
 import { trackPillarScored, trackRoundCompleted, trackScorecardCompleted } from '@/lib/analytics'
@@ -35,6 +36,7 @@ export function SkillList({
       try {
         const result = await saveScore(roundId, skill.pillar, skill.key, level)
         if (!result.ok) {
+          toast.error(result.error)
           onScore(skill.key, previousLevel)
           return
         }
