@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import type { DirectReportRoundSummary } from '@/lib/db/direct-reports'
+import type { ManagerScoringStatus } from '@/lib/db/manager-scores'
 
 export type EnrichedDRSummary = DirectReportRoundSummary & {
   userId: string
@@ -10,37 +11,84 @@ interface Props {
   summaries: EnrichedDRSummary[]
 }
 
+const STATE_COLORS: Record<ManagerScoringStatus, { border: string; bar: string; text: string }> = {
+  not_started: {
+    border: 'border-amber-600/50',
+    bar: 'bg-amber-500',
+    text: 'text-amber-400',
+  },
+  in_progress: {
+    border: 'border-blue-600/50',
+    bar: 'bg-blue-500',
+    text: 'text-blue-400',
+  },
+  complete: {
+    border: 'border-green-800/40',
+    bar: 'bg-green-600',
+    text: 'text-green-500',
+  },
+}
+
+function DrCard({ s }: { s: EnrichedDRSummary }) {
+  const { border, bar, text } = STATE_COLORS[s.managerScoringStatus]
+  const pct = s.managerScoringStatus === 'complete' ? 100 : (s.pillarsScored / 5) * 100
+  const href = `/manager/${s.userId}?roundId=${s.roundId}`
+
+  const statusText =
+    s.managerScoringStatus === 'complete'
+      ? '✓ Fully scored'
+      : s.managerScoringStatus === 'in_progress'
+      ? `${s.pillarsScored} of 5 pillars`
+      : 'Not scored'
+
+  const actionText =
+    s.managerScoringStatus === 'in_progress' ? 'Continue →' : 'Start →'
+
+  const inner = (
+    <div
+      className={`rounded-lg border bg-slate-900/60 p-3 flex flex-col gap-2 ${border} ${s.managerScoringStatus === 'complete' ? 'opacity-60' : ''}`}
+    >
+      <p className="text-sm font-medium text-white truncate">{s.name}</p>
+      <div className="h-1.5 w-full overflow-hidden rounded-full bg-slate-800">
+        <div
+          className={`h-full rounded-full transition-all ${bar}`}
+          style={{ width: `${pct}%` }}
+        />
+      </div>
+      <p className={`text-xs ${text}`}>
+        {statusText}
+        {s.managerScoringStatus !== 'complete' && (
+          <span className="ml-1.5 opacity-70">{actionText}</span>
+        )}
+      </p>
+    </div>
+  )
+
+  if (s.managerScoringStatus === 'complete') return <div>{inner}</div>
+  return <Link href={href} className="block hover:opacity-90 transition-opacity">{inner}</Link>
+}
+
 export function ManagerStrip({ summaries }: Props) {
-  if (summaries.length === 0) return null
+  const scoreable = summaries.filter(s => s.roundId !== null)
+  if (scoreable.length === 0) return null
+
+  const assessedCount = scoreable.filter(s => s.managerScoringStatus === 'complete').length
 
   return (
-    <section id="manager-strip" className="rounded-lg border border-amber-800/40 bg-amber-950/20 p-4 mb-6">
-      <h2 className="mb-3 text-sm font-semibold text-amber-400">Your team</h2>
-      <ul className="space-y-2">
-        {summaries.map(s => {
-          const canScore = s.completedAt !== null
-          const href = s.roundId
-            ? `/manager/${s.userId}?roundId=${s.roundId}`
-            : `/manager/${s.userId}`
-          return (
-            <li key={s.userId} className="flex items-center justify-between gap-4">
-              <span className="text-sm">{s.name}</span>
-              {!canScore ? (
-                <span className="text-xs text-neutral-500">Self-assessment in progress</span>
-              ) : s.managerScoringStatus === 'complete' ? (
-                <span className="text-xs text-neutral-400">Complete</span>
-              ) : (
-                <Link
-                  href={href}
-                  className="rounded-md bg-amber-600 px-3 py-1 text-xs font-medium text-white hover:bg-amber-500 transition-colors"
-                >
-                  {s.managerScoringStatus === 'not_started' ? 'Score now' : 'Continue scoring'}
-                </Link>
-              )}
-            </li>
-          )
-        })}
-      </ul>
+    <section id="manager-strip" className="mb-6 rounded-xl border border-amber-800/35 bg-amber-950/10 p-4">
+      <div className="mb-3 flex items-center justify-between gap-4">
+        <p className="text-xs font-bold uppercase tracking-widest text-amber-400/80">
+          Team scoring
+        </p>
+        <p className="text-xs text-slate-500">
+          {assessedCount} of {scoreable.length} assessed
+        </p>
+      </div>
+      <div className="grid gap-2" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))' }}>
+        {scoreable.map(s => (
+          <DrCard key={s.userId} s={s} />
+        ))}
+      </div>
     </section>
   )
 }
