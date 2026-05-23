@@ -26,6 +26,10 @@ function ManagerScoreCell({
       </span>
     )
   }
+  if (managerScoringStatus === 'complete') {
+    // Scored but no computable average (e.g. all scores filtered as invalid)
+    return <span className="text-xs text-neutral-500">—</span>
+  }
   if (managerScoringStatus === 'in_progress') {
     return (
       <Link

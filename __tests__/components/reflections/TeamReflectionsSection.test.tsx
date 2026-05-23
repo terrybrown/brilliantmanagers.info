@@ -99,4 +99,16 @@ describe('TeamReflectionsSection', () => {
     render(<TeamReflectionsSection summaries={[ALICE]} />)
     expect(screen.getByText(/1.*scoring/i)).toBeInTheDocument()
   })
+
+  it('shows — when managerScoringStatus is complete but managerScore is null', () => {
+    const member: EnrichedMember = {
+      ...ALICE,
+      rounds: [{ ...COMPLETE_ROUND, managerScoringStatus: 'complete', managerScore: null }],
+      pendingScoringCount: 0,
+    }
+    render(<TeamReflectionsSection summaries={[member]} />)
+    // Should render a dash, not a "Score →" link
+    expect(screen.queryByRole('link', { name: /score/i })).toBeNull()
+    expect(screen.getAllByText('—').length).toBeGreaterThan(0)
+  })
 })
