@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { GoalCompleteOverlay } from './GoalCompleteOverlay'
 import { ResourceRow } from './ResourceRow'
 import { addGoalResourceAction, removeGoalResourceAction } from '@/app/(app)/growth/actions'
+import { useMutation } from '@/hooks/use-mutation'
 import type { DevelopmentPlan } from '@/lib/db/development-plans'
 import type { Resource } from '@/lib/db/resources'
 import type { GoalResource } from '@/lib/db/goal-resources'
@@ -33,17 +34,18 @@ export function GoalDetailClient({
     new Set(goalResources.map(gr => gr.resource_id))
   )
   const [showBrowse, setShowBrowse] = useState(false)
+  const { mutate: mutateResource } = useMutation()
 
-  async function toggleResource(resourceId: string) {
+  function toggleResource(resourceId: string) {
     const next = new Set(pinnedIds)
     if (next.has(resourceId)) {
       next.delete(resourceId)
       setPinnedIds(next)
-      await removeGoalResourceAction(plan.id, resourceId)
+      mutateResource(() => removeGoalResourceAction(plan.id, resourceId))
     } else {
       next.add(resourceId)
       setPinnedIds(next)
-      await addGoalResourceAction(plan.id, resourceId)
+      mutateResource(() => addGoalResourceAction(plan.id, resourceId))
     }
   }
 

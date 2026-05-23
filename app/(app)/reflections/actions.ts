@@ -1,34 +1,37 @@
-// app/(app)/reflections/actions.ts
 'use server'
+
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { createRound } from '@/lib/db/rounds'
 import { createNotification } from '@/lib/notifications'
+import { ok, err, type ActionResult } from '@/lib/action-result'
 
-export async function createRoundAction(formData: FormData): Promise<void> {
+export async function createRoundAction(formData: FormData): Promise<ActionResult> {
   const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-  if (!user) redirect('/login')
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return err('Not authenticated')
 
   const title = (formData.get('title') as string) || 'Reflection'
   const notes = (formData.get('notes') as string) || null
   const remindAt = (formData.get('remind_at') as string) || null
 
-  await createRound(user.id, title, notes, remindAt)
+  try {
+    await createRound(user.id, title, notes, remindAt)
+  } catch {
+    return err('Failed to create round. Please try again.')
+  }
+
   redirect('/scorecard')
 }
 
 export async function scheduleRoundAction(
   userId: string,
   scheduledDate: string
-): Promise<{ error?: string }> {
+): Promise<ActionResult> {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return { error: 'Unauthenticated' }
+  if (!user) return err('Not authenticated')
 
-  // Only the user themselves, or their active manager, may schedule a round
   if (user.id !== userId) {
     const { data: conn } = await supabase
       .from('connections')
@@ -37,10 +40,9 @@ export async function scheduleRoundAction(
       .eq('direct_report_id', userId)
       .eq('status', 'active')
       .maybeSingle()
-    if (!conn) return { error: 'Forbidden' }
+    if (!conn) return err('Forbidden')
   }
 
-  // Check for an existing scheduled round — if one exists, nothing to do
   const { data: existing } = await supabase
     .from('assessment_rounds')
     .select('id')
@@ -48,17 +50,14 @@ export async function scheduleRoundAction(
     .eq('status', 'scheduled')
     .maybeSingle()
 
-  if (existing) {
-    // Already scheduled — nothing to do
-    return {}
-  }
+  if (existing) return ok()
 
   const { error } = await supabase
     .from('assessment_rounds')
     .insert({ user_id: userId, status: 'scheduled' })
 
-  if (error) return { error: error.message }
+  if (error) return err(error.message)
 
   await createNotification(userId, 'round_scheduled', { scheduledDate })
-  return {}
+  return ok()
 }

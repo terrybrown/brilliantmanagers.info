@@ -1,5 +1,6 @@
 'use client'
 import { useTransition } from 'react'
+import { toast } from 'sonner'
 import { LEVELS, LEVEL_COLORS, type Skill, type Level } from '@/lib/skills'
 import { saveScore } from '@/app/(app)/scorecard/actions'
 import { trackPillarScored, trackRoundCompleted, trackScorecardCompleted } from '@/lib/analytics'
@@ -33,9 +34,14 @@ export function SkillList({
     onSkillActivate(nextSkill ? nextSkill.key : skill.key)
     startTransition(async () => {
       try {
-        const { roundCompleted } = await saveScore(roundId, skill.pillar, skill.key, level)
+        const result = await saveScore(roundId, skill.pillar, skill.key, level)
+        if (!result.ok) {
+          toast.error(result.error)
+          onScore(skill.key, previousLevel)
+          return
+        }
         trackPillarScored(skill.pillar, level)
-        if (roundCompleted) {
+        if (result.data?.roundCompleted) {
           trackRoundCompleted(roundId)
           trackScorecardCompleted()
         }

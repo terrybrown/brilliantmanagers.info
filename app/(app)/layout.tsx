@@ -4,6 +4,7 @@ import { getSignedAvatarUrl } from '@/lib/db/profiles'
 import { isSuperAdmin } from '@/lib/auth/roles'
 import { getUnreadCount } from '@/lib/notifications'
 import { AppShell } from '@/components/app/AppShell'
+import { Toaster } from '@/components/ui/sonner'
 
 function getInitials(displayName: string | null, email: string | null): string {
   const name = displayName ?? email ?? '?'
@@ -34,13 +35,16 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     : undefined
 
   return (
-    <AppShell
-      user={{ displayName, email, initials, avatarUrl: avatarUrl ?? undefined }}
-      showBeta={true}
-      isSuperAdmin={superAdmin}
-      unreadCount={unreadCount}
-    >
-      {children}
-    </AppShell>
+    <>
+      <AppShell
+        user={{ displayName, email, initials, avatarUrl: avatarUrl ?? undefined }}
+        showBeta={true}
+        isSuperAdmin={superAdmin}
+        unreadCount={unreadCount}
+      >
+        {children}
+      </AppShell>
+      <Toaster position="bottom-right" theme="dark" />
+    </>
   )
 }

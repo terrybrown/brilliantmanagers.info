@@ -52,13 +52,13 @@ describe('inviteConnection', () => {
     vi.resetModules()
   })
 
-  it('returns { success: true } when connection is created for an existing user', async () => {
+  it('returns { ok: true } when connection is created for an existing user', async () => {
     const { inviteConnection } = await import('@/app/(app)/connections/actions')
     const fd = new FormData()
     fd.set('email', 'boss@example.com')
     fd.set('role', 'direct_report')
-    const result = await inviteConnection({ success: false }, fd)
-    expect(result).toEqual({ success: true })
+    const result = await inviteConnection(fd)
+    expect(result).toEqual({ ok: true })
   })
 
   it('calls sendEmail with the manager-invite template when role is direct_report and user exists', async () => {
@@ -67,7 +67,7 @@ describe('inviteConnection', () => {
     const fd = new FormData()
     fd.set('email', 'boss@example.com')
     fd.set('role', 'direct_report')
-    await inviteConnection({ success: false }, fd)
+    await inviteConnection(fd)
     expect(sendEmail).toHaveBeenCalledOnce()
   })
 
@@ -77,11 +77,11 @@ describe('inviteConnection', () => {
     const fd = new FormData()
     fd.set('email', 'report@example.com')
     fd.set('role', 'manager')
-    await inviteConnection({ success: false }, fd)
+    await inviteConnection(fd)
     expect(sendEmail).not.toHaveBeenCalled()
   })
 
-  it('creates a pending invitation when no account is found, and returns success', async () => {
+  it('creates a pending invitation when no account is found, and returns ok', async () => {
     const { createConnection } = await import('@/lib/db/connections')
     vi.mocked(createConnection).mockResolvedValueOnce({
       error: 'No account found for that email. Ask them to sign up first.',
@@ -91,8 +91,8 @@ describe('inviteConnection', () => {
     const fd = new FormData()
     fd.set('email', 'nobody@example.com')
     fd.set('role', 'direct_report')
-    const result = await inviteConnection({ success: false }, fd)
-    expect(result).toEqual({ success: true })
+    const result = await inviteConnection(fd)
+    expect(result).toEqual({ ok: true })
     expect(vi.mocked(createPendingInvitation)).toHaveBeenCalledWith({
       inviterId: 'user-1',
       invitedEmail: 'nobody@example.com',
@@ -115,26 +115,26 @@ describe('inviteConnection', () => {
     const fd = new FormData()
     fd.set('email', 'nobody@example.com')
     fd.set('role', 'manager')
-    await inviteConnection({ success: false }, fd)
+    await inviteConnection(fd)
     expect(vi.mocked(buildConnectionInviteEmail)).toHaveBeenCalledWith(
       expect.objectContaining({ fromName: 'Alice', inviterRole: 'manager' })
     )
     expect(sendEmail).toHaveBeenCalledOnce()
   })
 
-  it('returns { success: false, error } for non-account errors from createConnection', async () => {
+  it('returns { ok: false, error } for non-account errors from createConnection', async () => {
     const { createConnection } = await import('@/lib/db/connections')
     vi.mocked(createConnection).mockResolvedValueOnce({ error: 'Connection already exists.' })
     const { inviteConnection } = await import('@/app/(app)/connections/actions')
     const fd = new FormData()
     fd.set('email', 'existing@example.com')
     fd.set('role', 'direct_report')
-    const result = await inviteConnection({ success: false }, fd)
-    expect(result.success).toBe(false)
-    expect(result.error).toBe('Connection already exists.')
+    const result = await inviteConnection(fd)
+    expect(result.ok).toBe(false)
+    if (!result.ok) expect(result.error).toBe('Connection already exists.')
   })
 
-  it('returns { success: false, error } when createPendingInvitation fails', async () => {
+  it('returns { ok: false, error } when createPendingInvitation fails', async () => {
     const { createConnection } = await import('@/lib/db/connections')
     vi.mocked(createConnection).mockResolvedValueOnce({
       error: 'No account found for that email. Ask them to sign up first.',
@@ -145,8 +145,8 @@ describe('inviteConnection', () => {
     const fd = new FormData()
     fd.set('email', 'nobody@example.com')
     fd.set('role', 'direct_report')
-    const result = await inviteConnection({ success: false }, fd)
-    expect(result.success).toBe(false)
-    expect(result.error).toBe('DB write failed')
+    const result = await inviteConnection(fd)
+    expect(result.ok).toBe(false)
+    if (!result.ok) expect(result.error).toBe('DB write failed')
   })
 })

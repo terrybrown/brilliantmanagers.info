@@ -2,6 +2,8 @@
 import { useEffect } from 'react'
 import { createRoundAction } from '@/app/(app)/reflections/actions'
 import { trackRoundStarted } from '@/lib/analytics'
+import { Button } from '@/components/ui/button'
+import { useMutation } from '@/hooks/use-mutation'
 
 interface CreateRoundModalProps {
   open: boolean
@@ -10,6 +12,8 @@ interface CreateRoundModalProps {
 }
 
 export function CreateRoundModal({ open, onClose, defaultTitle }: CreateRoundModalProps) {
+  const { mutate, isPending } = useMutation()
+
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
       if (e.key === 'Escape') onClose()
@@ -21,12 +25,6 @@ export function CreateRoundModal({ open, onClose, defaultTitle }: CreateRoundMod
   }, [open, onClose])
 
   if (!open) return null
-
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    const formData = new FormData(e.currentTarget)
-    const title = (formData.get('title') as string) || ''
-    trackRoundStarted(title)
-  }
 
   return (
     <div
@@ -62,7 +60,17 @@ export function CreateRoundModal({ open, onClose, defaultTitle }: CreateRoundMod
           Start a new reflection round
         </h2>
 
-        <form action={createRoundAction} onSubmit={handleSubmit} aria-label="Create round form" className="flex flex-col gap-4">
+        <form
+          onSubmit={e => {
+            e.preventDefault()
+            const formData = new FormData(e.currentTarget)
+            const title = (formData.get('title') as string) || ''
+            trackRoundStarted(title)
+            mutate(() => createRoundAction(formData))
+          }}
+          aria-label="Create round form"
+          className="flex flex-col gap-4"
+        >
           <div className="flex flex-col gap-1.5">
             <label
               htmlFor="round-title"
@@ -143,39 +151,21 @@ export function CreateRoundModal({ open, onClose, defaultTitle }: CreateRoundMod
           </div>
 
           <div className="flex gap-3 pt-1">
-            <button
+            <Button
               type="button"
+              variant="secondary"
               onClick={onClose}
-              style={{
-                flex: 1,
-                padding: '10px 0',
-                borderRadius: 8,
-                border: '1px solid #334155',
-                background: 'transparent',
-                color: '#94a3b8',
-                fontSize: 13,
-                fontWeight: 600,
-                cursor: 'pointer',
-              }}
+              style={{ flex: 1 }}
             >
               Cancel
-            </button>
-            <button
+            </Button>
+            <Button
               type="submit"
-              style={{
-                flex: 2,
-                padding: '10px 0',
-                borderRadius: 8,
-                background: '#f59e0b',
-                color: '#1a2a3a',
-                fontSize: 13,
-                fontWeight: 700,
-                cursor: 'pointer',
-                border: 'none',
-              }}
+              loading={isPending}
+              style={{ flex: 2 }}
             >
               Start reflection
-            </button>
+            </Button>
           </div>
         </form>
       </div>

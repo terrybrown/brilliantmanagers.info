@@ -1,9 +1,9 @@
 'use client'
-import { useActionState, useState } from 'react'
-import { inviteConnection } from '@/app/(app)/connections/actions'
-import type { InviteState } from '@/app/(app)/connections/actions'
 
-const initial: InviteState = { success: false }
+import { useState } from 'react'
+import { inviteConnection } from '@/app/(app)/connections/actions'
+import { useMutation } from '@/hooks/use-mutation'
+import { Button } from '@/components/ui/button'
 
 interface Props {
   trigger?: React.ReactNode
@@ -11,21 +11,9 @@ interface Props {
 
 export function InviteManagerModal({ trigger }: Props) {
   const [open, setOpen] = useState(false)
-  const [state, formAction, pending] = useActionState(inviteConnection, initial)
-
-  if (state.success) {
-    return (
-      <div
-        className="rounded-xl px-5 py-4"
-        style={{ background: '#1e3a5f', border: '1px solid rgba(34,197,94,0.3)' }}
-      >
-        <p className="text-sm font-semibold text-green-400">Invite sent!</p>
-        <p className="mt-1 text-xs text-slate-400">
-          We've emailed your manager — they'll see a pending invite when they sign in.
-        </p>
-      </div>
-    )
-  }
+  const { mutate, isPending } = useMutation({
+    onSuccess: () => setOpen(false),
+  })
 
   return (
     <>
@@ -48,7 +36,7 @@ export function InviteManagerModal({ trigger }: Props) {
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             padding: 16,
           }}
-          onClick={(e) => { if (e.target === e.currentTarget) setOpen(false) }}
+          onClick={e => { if (e.target === e.currentTarget) setOpen(false) }}
         >
           <div
             style={{
@@ -58,9 +46,16 @@ export function InviteManagerModal({ trigger }: Props) {
           >
             <h2 className="mb-1 text-lg font-bold text-white">Invite your manager</h2>
             <p className="mb-5 text-sm text-slate-400">
-              We'll send them an email so they can connect and score your reflections.
+              We&apos;ll send them an email so they can connect and score your reflections.
             </p>
-            <form action={formAction} className="flex flex-col gap-4">
+            <form
+              onSubmit={e => {
+                e.preventDefault()
+                const formData = new FormData(e.currentTarget)
+                mutate(() => inviteConnection(formData))
+              }}
+              className="flex flex-col gap-4"
+            >
               <input type="hidden" name="role" value="direct_report" />
               <div>
                 <label className="mb-1 block text-xs font-medium text-slate-400">
@@ -88,33 +83,18 @@ export function InviteManagerModal({ trigger }: Props) {
                            resize: 'vertical' }}
                 />
               </div>
-              {state.error && (
-                <p className="text-sm text-red-400">{state.error}</p>
-              )}
               <div className="flex gap-3">
-                <button
-                  type="submit"
-                  disabled={pending}
-                  style={{
-                    flex: 1, padding: '9px 0', background: '#4f46e5',
-                    color: '#fff', fontWeight: 600, fontSize: 14,
-                    border: 'none', borderRadius: 8, cursor: pending ? 'not-allowed' : 'pointer',
-                    opacity: pending ? 0.6 : 1,
-                  }}
-                >
-                  {pending ? 'Sending…' : 'Send invite'}
-                </button>
-                <button
+                <Button type="submit" loading={isPending} className="flex-1">
+                  Send invite
+                </Button>
+                <Button
                   type="button"
+                  variant="secondary"
                   onClick={() => setOpen(false)}
-                  style={{
-                    padding: '9px 18px', background: 'transparent',
-                    color: '#6b7280', fontWeight: 500, fontSize: 14,
-                    border: '1px solid #1f2937', borderRadius: 8, cursor: 'pointer',
-                  }}
+                  className="shrink-0"
                 >
                   Cancel
-                </button>
+                </Button>
               </div>
             </form>
           </div>

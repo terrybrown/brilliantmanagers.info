@@ -48,12 +48,16 @@ Prioritise high-quality, well-known resources. Mix types where possible. Return 
     if (!match) return []
     const parsed = JSON.parse(match[0])
     if (!Array.isArray(parsed)) return []
-    return parsed.filter((r: any) =>
-      typeof r.title === 'string' &&
-      typeof r.url === 'string' &&
-      typeof r.description === 'string' &&
-      ['book', 'article', 'course', 'video', 'person', 'podcast', 'tool'].includes(r.resource_type)
-    ) as RawResource[]
+    return (parsed as unknown[]).filter((r): r is RawResource =>
+      r !== null &&
+      typeof r === 'object' &&
+      typeof (r as Record<string, unknown>).title === 'string' &&
+      typeof (r as Record<string, unknown>).url === 'string' &&
+      typeof (r as Record<string, unknown>).description === 'string' &&
+      ['book', 'article', 'course', 'video', 'person', 'podcast', 'tool'].includes(
+        (r as Record<string, unknown>).resource_type as string
+      )
+    )
   } catch {
     console.error(`  ✗ JSON parse failed for ${skillKey}`)
     return []

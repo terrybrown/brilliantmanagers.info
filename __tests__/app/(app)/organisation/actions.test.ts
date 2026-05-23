@@ -91,7 +91,7 @@ describe('addMemberToNodeAction — invite path', () => {
 
     const result = await addMemberToNodeAction(fd)
 
-    expect(result).toEqual({})
+    expect(result).toEqual({ ok: true })
     expect(mocks.createPendingInvite).toHaveBeenCalledWith({
       inviterId: 'admin-1',
       invitedEmail: 'new@example.com',
@@ -112,7 +112,7 @@ describe('addMemberToNodeAction — invite path', () => {
 
     const result = await addMemberToNodeAction(fd)
 
-    expect(result).toEqual({})
+    expect(result).toEqual({ ok: true })
     expect(mocks.createPendingInvite).toHaveBeenCalled()
   })
 
@@ -128,7 +128,7 @@ describe('addMemberToNodeAction — invite path', () => {
 
     const result = await addMemberToNodeAction(fd)
 
-    expect(result).toEqual({})
+    expect(result).toEqual({ ok: true })
     expect(mocks.addUserToNode).toHaveBeenCalledWith({
       nodeId: 'node-1',
       userId: 'existing-user',

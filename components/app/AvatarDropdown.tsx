@@ -12,15 +12,34 @@ interface UserInfo {
   avatarUrl?: string
 }
 
+/**
+ * Renders the avatar image with its own isolated imgError state.
+ * Keying this component on `avatarUrl` in the parent causes it to remount
+ * (and reset imgError to false) whenever the URL changes — no effect needed.
+ */
+function AvatarImage({ avatarUrl, displayName, initials }: {
+  avatarUrl: string
+  displayName: string
+  initials: string
+}) {
+  const [imgError, setImgError] = useState(false)
+  if (imgError) {
+    return <>{initials}</>
+  }
+  return (
+    <img
+      src={avatarUrl}
+      alt={displayName}
+      onError={() => setImgError(true)}
+      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+    />
+  )
+}
+
 export function AvatarDropdown({ user }: { user: UserInfo }) {
   const [open, setOpen] = useState(false)
-  const [imgError, setImgError] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
   const router = useRouter()
-
-  useEffect(() => {
-    setImgError(false)
-  }, [user.avatarUrl])
 
   useEffect(() => {
     function handleOutsideClick(e: MouseEvent) {
@@ -37,8 +56,6 @@ export function AvatarDropdown({ user }: { user: UserInfo }) {
     await supabase.auth.signOut()
     router.push('/login')
   }
-
-  const showImage = user.avatarUrl && !imgError
 
   return (
     <div ref={ref} style={{ position: 'relative' }}>
@@ -65,12 +82,14 @@ export function AvatarDropdown({ user }: { user: UserInfo }) {
           padding: 0,
         }}
       >
-        {showImage ? (
-          <img
-            src={user.avatarUrl}
-            alt={user.displayName}
-            onError={() => setImgError(true)}
-            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+        {user.avatarUrl ? (
+          // Key on avatarUrl causes AvatarImage to remount when the URL changes,
+          // resetting its imgError state naturally without an effect.
+          <AvatarImage
+            key={user.avatarUrl}
+            avatarUrl={user.avatarUrl}
+            displayName={user.displayName}
+            initials={user.initials}
           />
         ) : (
           user.initials

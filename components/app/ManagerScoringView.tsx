@@ -1,5 +1,6 @@
 'use client'
 import { useState, useTransition } from 'react'
+import { toast } from 'sonner'
 import Link from 'next/link'
 import { SkillCard } from '@/components/app/SkillCard'
 import type { Skill, Level } from '@/lib/skills'
@@ -33,8 +34,12 @@ export function ManagerScoringView({
 
   function handleSelect(skillKey: string, level: Level) {
     setScores(prev => ({ ...prev, [skillKey]: level }))
-    startTransition(() => {
-      saveManagerScore(roundId, pillar, skillKey, level)
+    startTransition(async () => {
+      const result = await saveManagerScore(roundId, pillar, skillKey, level)
+      if (!result.ok) {
+        toast.error(result.error)
+        setScores(prev => ({ ...prev, [skillKey]: initialScores[skillKey] }))
+      }
     })
   }
 

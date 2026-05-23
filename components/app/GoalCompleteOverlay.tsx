@@ -1,8 +1,9 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Lottie from 'lottie-react'
 import Link from 'next/link'
+import { toast } from 'sonner'
 import { getAffirmation } from '@/lib/affirmations'
 import { markGoalCompleteAction } from '@/app/(app)/growth/actions'
 import type { Pillar } from '@/lib/skills'
@@ -32,12 +33,18 @@ export function GoalCompleteOverlay({
   useEffect(() => {
     if (triggered.current) return
     triggered.current = true
-    markGoalCompleteAction(planId).catch(console.error)
+    markGoalCompleteAction(planId).then(result => {
+      if (!result.ok) toast.error(result.error)
+    }).catch(console.error)
   }, [planId])
 
   const affirmation = getAffirmation(pillar, completedCount)
+  // Capture the current timestamp once at mount time (via useState initialiser)
+  // so the elapsed calculation is stable across re-renders and avoids the
+  // react-hooks/no-impure-calls-in-render rule for Date.now().
+  const [nowMs] = useState(() => Date.now())
   const monthsElapsed = Math.round(
-    (Date.now() - new Date(createdAt).getTime()) / (1000 * 60 * 60 * 24 * 30)
+    (nowMs - new Date(createdAt).getTime()) / (1000 * 60 * 60 * 24 * 30)
   )
 
   return (

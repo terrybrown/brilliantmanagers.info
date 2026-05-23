@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import Script from 'next/script'
 import { Sidebar } from './Sidebar'
 import { Topbar } from './Topbar'
@@ -27,15 +27,14 @@ export function AppShell({
   unreadCount?: number
   children: React.ReactNode
 }) {
-  const [isExpanded, setIsExpanded] = useState(false)
-
-  useEffect(() => {
+  const [isExpanded, setIsExpanded] = useState(() => {
     try {
-      setIsExpanded(localStorage.getItem(LS_KEY) === 'true')
+      return localStorage.getItem(LS_KEY) === 'true'
     } catch {
       // localStorage unavailable — keep default false
+      return false
     }
-  }, [])
+  })
 
   function handleToggle() {
     setIsExpanded(prev => {

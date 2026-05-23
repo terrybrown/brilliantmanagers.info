@@ -4,6 +4,8 @@ import { useState } from 'react'
 import { addEvidenceAction } from '@/app/(app)/growth/actions'
 import type { GoalEvidence } from '@/lib/db/goal-evidence'
 import { trackGoalCheckin } from '@/lib/analytics'
+import { Button } from '@/components/ui/button'
+import { useMutation } from '@/hooks/use-mutation'
 
 interface EvidenceLogProps {
   planId: string
@@ -12,6 +14,7 @@ interface EvidenceLogProps {
 
 export function EvidenceLog({ planId, entries }: EvidenceLogProps) {
   const [showForm, setShowForm] = useState(false)
+  const { mutate, isPending } = useMutation({ onSuccess: 'Evidence added' })
 
   return (
     <div>
@@ -27,19 +30,18 @@ export function EvidenceLog({ planId, entries }: EvidenceLogProps) {
 
       {showForm && (
         <form
-          action={async (fd: FormData) => {
+          onSubmit={e => {
+            e.preventDefault()
+            const fd = new FormData(e.currentTarget)
             fd.set('plan_id', planId)
-            let succeeded = false
-            try {
-              await addEvidenceAction(fd)
-              succeeded = true
-            } catch {
-              // addEvidenceAction failed — leave the form open so the user can retry
-            }
-            if (succeeded) {
-              trackGoalCheckin()
-              setShowForm(false)
-            }
+            mutate(async () => {
+              const result = await addEvidenceAction(fd)
+              if (result.ok) {
+                trackGoalCheckin()
+                setShowForm(false)
+              }
+              return result
+            })
           }}
           className="mb-6 rounded-xl border border-slate-700 bg-slate-800 p-4"
         >
@@ -79,19 +81,8 @@ export function EvidenceLog({ planId, entries }: EvidenceLogProps) {
             />
           </div>
           <div className="flex gap-2">
-            <button
-              type="submit"
-              className="rounded-lg bg-amber-500 px-4 py-2 text-xs font-semibold text-white hover:bg-amber-400"
-            >
-              Save
-            </button>
-            <button
-              type="button"
-              onClick={() => setShowForm(false)}
-              className="rounded-lg px-4 py-2 text-xs text-slate-400 hover:text-white"
-            >
-              Cancel
-            </button>
+            <Button type="submit" loading={isPending} size="sm">Save</Button>
+            <Button type="button" variant="ghost" size="sm" onClick={() => setShowForm(false)}>Cancel</Button>
           </div>
         </form>
       )}

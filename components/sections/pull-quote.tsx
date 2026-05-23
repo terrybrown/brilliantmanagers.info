@@ -19,7 +19,7 @@ export function PullQuote({ quote, attribution }: PullQuoteProps) {
             maxWidth: '640px',
           }}
         >
-          "{quote}"
+          &ldquo;{quote}&rdquo;
         </blockquote>
         <cite
           className="mt-4 block text-xs not-italic uppercase tracking-widest"

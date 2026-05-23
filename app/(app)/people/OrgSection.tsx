@@ -2,6 +2,8 @@
 import { useState } from 'react'
 import { OrgHierarchy } from '@/components/org/OrgHierarchy'
 import { createOrgAction } from '@/app/(app)/organisation/actions'
+import { Button } from '@/components/ui/button'
+import { useMutation } from '@/hooks/use-mutation'
 import type { Org } from '@/lib/db/organisations'
 import type { OrgNode } from '@/lib/db/org-nodes'
 
@@ -13,6 +15,7 @@ interface Props {
 
 export function OrgSection({ orgs, nodes, orgRole }: Props) {
   const [selectedOrgIndex, setSelectedOrgIndex] = useState(0)
+  const { mutate: createOrg, isPending: creatingOrg } = useMutation({ onSuccess: 'Organisation created' })
   const selectedOrg = orgs[selectedOrgIndex] ?? null
 
   return (
@@ -47,7 +50,14 @@ export function OrgSection({ orgs, nodes, orgRole }: Props) {
           <p style={{ fontSize: 14, color: '#9ca3af', marginBottom: 16 }}>
             You&apos;re not part of an organisation yet. Create one to map out your team structure.
           </p>
-          <form action={createOrgAction} style={{ display: 'flex', gap: 8 }}>
+          <form
+            onSubmit={e => {
+              e.preventDefault()
+              const fd = new FormData(e.currentTarget)
+              createOrg(() => createOrgAction(fd))
+            }}
+            style={{ display: 'flex', gap: 8 }}
+          >
             <input
               name="name"
               placeholder="Organisation name"
@@ -57,15 +67,7 @@ export function OrgSection({ orgs, nodes, orgRole }: Props) {
                 padding: '8px 12px', color: '#f1f5f9', fontSize: 14,
               }}
             />
-            <button
-              type="submit"
-              style={{
-                padding: '8px 18px', background: '#4f46e5', color: '#fff',
-                fontWeight: 600, fontSize: 13, border: 'none', borderRadius: 6, cursor: 'pointer',
-              }}
-            >
-              Create
-            </button>
+            <Button type="submit" loading={creatingOrg}>Create</Button>
           </form>
         </div>
       ) : (

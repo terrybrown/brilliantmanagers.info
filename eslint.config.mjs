@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Vendor/third-party JS files that are not authored code
+    "public/assets/js/**",
   ]),
 ]);
 
