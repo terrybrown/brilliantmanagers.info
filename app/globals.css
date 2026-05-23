@@ -22,6 +22,27 @@
   --section-gap: 96px;
 }
 
+/* ── Button colour tokens — change one value to retheme all buttons ── */
+:root {
+  --btn-primary-bg: #f59e0b;
+  --btn-primary-bg-hover: #fbbf24;
+  --btn-primary-fg: #1a2a3a;
+  --btn-secondary-border: #334155;
+  --btn-secondary-fg: #94a3b8;
+  --btn-danger-bg: rgba(239, 68, 68, 0.15);
+  --btn-danger-border: rgba(239, 68, 68, 0.3);
+  --btn-danger-fg: #f87171;
+}
+
+/* ── Dots loading animation ── */
+@keyframes dotBounce {
+  0%, 80%, 100% { transform: translateY(0); opacity: 0.4; }
+  40%           { transform: translateY(-5px); opacity: 1; }
+}
+.dot-1 { animation: dotBounce 1.1s infinite ease-in-out; }
+.dot-2 { animation: dotBounce 1.1s 0.16s infinite ease-in-out; }
+.dot-3 { animation: dotBounce 1.1s 0.32s infinite ease-in-out; }
+
 /* ── Base styles ── */
 body {
   background-color: var(--color-bg-base);
