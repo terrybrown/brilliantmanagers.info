@@ -20,8 +20,7 @@ function getNotificationHref(n: Notification): string {
     const roundId = typeof n.payload.roundId === 'string' ? n.payload.roundId : ''
     return roundId ? `/manager/${drId}?roundId=${roundId}` : `/manager/${drId}`
   }
-  const links: Record<NotificationType, string> = {
-    manager_scoring_needed: '/people',
+  const links: Partial<Record<NotificationType, string>> = {
     connection_request_received: '/people',
     connection_accepted: '/people',
     round_scheduled: '/scorecard',
@@ -65,7 +64,7 @@ export function NotificationsList({ notifications }: { notifications: Notificati
 
   useEffect(() => {
     if (notifications.some(n => !n.readAt)) {
-      startTransition(() => { markAllReadAction() })
+      startTransition(() => { markAllReadAction().catch(console.error) })
     }
   }, [notifications])
 
