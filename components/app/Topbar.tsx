@@ -1,6 +1,7 @@
 'use client'
 import { usePathname } from 'next/navigation'
 import { AvatarDropdown } from './AvatarDropdown'
+import { MANAGER_TOUR_EVENT } from '@/components/dashboard/DashboardManagerTour'
 
 const PAGE_TITLES: Record<string, string> = {
   '/dashboard': 'Dashboard',
@@ -42,9 +43,28 @@ export function Topbar({ user, showBeta }: { user: UserInfo; showBeta: boolean }
         flexShrink: 0,
       }}
     >
-      <span style={{ fontWeight: 600, fontSize: 15, color: '#f8fafc', flex: 1, fontFamily: 'var(--font-display)' }}>{title}</span>
+      <span style={{ fontWeight: 600, fontSize: 14, color: '#f8fafc', fontFamily: 'var(--font-display)', minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{title}</span>
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginLeft: 'auto', flexShrink: 0 }}>
+        {pathname === '/dashboard' && (
+          <button
+            type="button"
+            onClick={() => window.dispatchEvent(new CustomEvent(MANAGER_TOUR_EVENT))}
+            style={{
+              background: 'transparent',
+              border: '1px solid rgba(255,255,255,0.12)',
+              borderRadius: 8,
+              padding: '4px 12px',
+              fontSize: 12,
+              fontWeight: 500,
+              color: 'rgba(255,255,255,0.45)',
+              cursor: 'pointer',
+              lineHeight: 1.5,
+            }}
+          >
+            Tour
+          </button>
+        )}
         {showBeta && (
           <span
             style={{
