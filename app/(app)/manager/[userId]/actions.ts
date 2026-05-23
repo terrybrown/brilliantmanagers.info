@@ -18,16 +18,15 @@ export async function saveManagerScore(
 
   try {
     await upsertManagerScore(roundId, user.id, skillKey, level)
+    await logAudit({
+      actorId: user.id,
+      action: 'manager_score.submit',
+      entityType: 'manager_score',
+      entityId: roundId,
+      metadata: { pillar, skillKey, level },
+    })
   } catch {
     return err('Failed to save score. Please try again.')
   }
-
-  await logAudit({
-    actorId: user.id,
-    action: 'manager_score.submit',
-    entityType: 'manager_score',
-    entityId: roundId,
-    metadata: { pillar, skillKey, level },
-  })
   return ok()
 }
