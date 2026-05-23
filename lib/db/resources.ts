@@ -20,7 +20,7 @@ export async function getResourcesForSkill(skillKey: string): Promise<Resource[]
     .order('relevance_score', { ascending: false })
     .limit(8)
   if (error) throw error
-  return (data ?? []).map((row: any) => row.resources as Resource)
+  return (data ?? []).map((row: { resources: unknown }) => row.resources as Resource)
 }
 
 export async function getAllResources(): Promise<Resource[]> {

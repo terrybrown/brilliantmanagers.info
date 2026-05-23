@@ -67,7 +67,7 @@ export default async function ManagerPage({
     return (
       <div className="flex items-center justify-center py-24">
         <p className="text-slate-400">
-          {profile?.display_name ?? 'This person'} hasn't completed a self-assessment yet.
+          {profile?.display_name ?? 'This person'} hasn&apos;t completed a self-assessment yet.
         </p>
       </div>
     )

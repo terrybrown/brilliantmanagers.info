@@ -46,7 +46,7 @@ export function InviteManagerModal({ trigger }: Props) {
           >
             <h2 className="mb-1 text-lg font-bold text-white">Invite your manager</h2>
             <p className="mb-5 text-sm text-slate-400">
-              We'll send them an email so they can connect and score your reflections.
+              We&apos;ll send them an email so they can connect and score your reflections.
             </p>
             <form
               onSubmit={e => {

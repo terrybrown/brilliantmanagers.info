@@ -40,22 +40,37 @@ export function extractHeadings(source: string): TocItem[] {
   return headings
 }
 
+// Minimal shape of an MDX JSX flow element node used by the rehype plugin below.
+interface MdxJsxAttribute {
+  type: string
+  name: string
+  value: string
+}
+
+interface MdxJsxNode {
+  type: string
+  name?: string
+  value?: string
+  children?: MdxJsxNode[]
+  attributes?: MdxJsxAttribute[]
+}
+
 // Rehype plugin: adds id to <details> based on its <summary> text.
 // In MDX, <details> are JSX flow elements (mdxJsxFlowElement), not HTML element
 // nodes, so we must visit that type and use jsx attribute syntax.
 function rehypeDetailsIds() {
-  return (tree: any) => {
-    visit(tree, 'mdxJsxFlowElement', (node: any) => {
+  return (tree: MdxJsxNode) => {
+    visit(tree, 'mdxJsxFlowElement', (node: MdxJsxNode) => {
       if (node.name !== 'details') return
       const summary = node.children?.find(
-        (c: any) => c.type === 'mdxJsxFlowElement' && c.name === 'summary'
+        (c) => c.type === 'mdxJsxFlowElement' && c.name === 'summary'
       )
       if (!summary) return
       const text = extractNodeText(summary)
       if (!text) return
       const id = toSlug(text)
       node.attributes = node.attributes ?? []
-      const existing = node.attributes.findIndex((a: any) => a.name === 'id')
+      const existing = node.attributes.findIndex((a) => a.name === 'id')
       if (existing >= 0) {
         node.attributes[existing].value = id
       } else {
@@ -65,7 +80,7 @@ function rehypeDetailsIds() {
   }
 }
 
-function extractNodeText(node: any): string {
+function extractNodeText(node: MdxJsxNode): string {
   if (node.type === 'text') return node.value ?? ''
   if (node.value && typeof node.value === 'string') return node.value
   if (node.children) return node.children.map(extractNodeText).join('')
@@ -86,13 +101,18 @@ export interface BlogFrontmatter {
 
 const contentDir = path.join(process.cwd(), 'content')
 
+// MDX component maps accept components with varied prop shapes; using `any` here
+// is intentional — the real union type is too complex and changes per-call-site.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type MdxComponents = Record<string, React.ComponentType<any>>
+
 async function readMdx(filePath: string) {
   return readFile(filePath, 'utf-8')
 }
 
 export async function getGuideChapter(
   slug: string[],
-  components: Record<string, React.ComponentType<any>> = {}
+  components: MdxComponents = {}
 ): Promise<{ content: React.ReactElement; frontmatter: GuideFrontmatter; headings: TocItem[] }> {
   const filePath = path.join(contentDir, 'guide', `${slug.join('/')}.mdx`)
   const source = await readMdx(filePath)
@@ -115,14 +135,14 @@ export async function getGuideChapter(
 }
 
 export async function getGuideIndex(
-  components: Record<string, React.ComponentType<any>> = {}
+  components: MdxComponents = {}
 ) {
   return getGuideChapter(['index'], components)
 }
 
 export async function getBlogPost(
   slug: string,
-  components: Record<string, React.ComponentType<any>> = {}
+  components: MdxComponents = {}
 ) {
   const filePath = path.join(contentDir, 'blog', `${slug}.mdx`)
   const source = await readMdx(filePath)
