@@ -3,7 +3,7 @@ export type ActionResult<T = void> =
   | { ok: false; error: string }
 
 export function ok<T>(data?: T): ActionResult<T> {
-  return { ok: true, data }
+  return data !== undefined ? { ok: true, data } : { ok: true }
 }
 
 export function err(error: string): ActionResult<never> {

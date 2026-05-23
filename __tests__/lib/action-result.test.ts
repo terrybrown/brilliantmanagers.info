@@ -4,7 +4,7 @@ import { ok, err, type ActionResult } from '@/lib/action-result'
 describe('ok', () => {
   it('returns ok:true with no data', () => {
     const result: ActionResult = ok()
-    expect(result).toEqual({ ok: true, data: undefined })
+    expect(result).toEqual({ ok: true })
   })
 
   it('returns ok:true with data', () => {
