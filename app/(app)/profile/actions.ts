@@ -14,8 +14,7 @@ const EXT_MAP: Record<string, string> = {
 }
 const MAX_BYTES = 2 * 1024 * 1024
 
-// Returns ActionResult — use in client components with useMutation (Task 12).
-export async function updateProfileActionResult(formData: FormData): Promise<ActionResult> {
+export async function updateProfileAction(formData: FormData): Promise<ActionResult> {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return err('Not authenticated')
@@ -37,13 +36,6 @@ export async function updateProfileActionResult(formData: FormData): Promise<Act
   })
   revalidatePath('/profile')
   return ok()
-}
-
-// Void wrapper for native form action use in profile/page.tsx.
-// Migrate to useMutation + updateProfileActionResult in Task 12.
-export async function updateProfileAction(formData: FormData): Promise<void> {
-  const result = await updateProfileActionResult(formData)
-  if (!result.ok) throw new Error(result.error)
 }
 
 export async function uploadAvatarAction(formData: FormData): Promise<ActionResult> {
