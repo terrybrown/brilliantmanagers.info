@@ -91,6 +91,37 @@ export default async function DashboardPage() {
 
   // ── Empty state ──────────────────────────────────────────────────────────────
   if (allRoundsWithScores.length === 0) {
+    const hasScoreableDRs = enrichedDRs.some(s => s.roundId !== null)
+
+    if (hasScoreableDRs) {
+      return (
+        <div style={{ padding: '40px 36px 40px' }}>
+          <DashboardManagerTour hasManagerStrip={enrichedDRs.length > 0} />
+          <ManagerStrip summaries={enrichedDRs} />
+          <div
+            style={{
+              marginTop: 32,
+              padding: '20px 24px',
+              background: 'rgba(255,255,255,0.02)',
+              border: '1px solid rgba(255,255,255,0.06)',
+              borderRadius: 12,
+            }}
+          >
+            <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)', marginBottom: 12 }}>
+              When you&apos;re ready, run your own self-assessment too.
+            </p>
+            <Link
+              id="dashboard-cta-btn"
+              href="/scorecard"
+              style={{ fontSize: 13, color: '#f59e0b', textDecoration: 'none', fontWeight: 600 }}
+            >
+              Start your scorecard →
+            </Link>
+          </div>
+        </div>
+      )
+    }
+
     return (
       <div style={{ display: 'flex', flexDirection: 'column' }}>
         {/* CTA area */}
