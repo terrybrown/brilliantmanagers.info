@@ -1,7 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
-import { getInProgressRound } from '@/lib/db/rounds'
-import { getScheduledRound } from '@/lib/db/scheduled-rounds'
 import { LEVEL_VALUES, PILLARS, getSkillsByPillar } from '@/lib/skills'
 import type { Level, Pillar } from '@/lib/skills'
 import { getManagerScoringStatus } from '@/lib/db/manager-scores'
@@ -23,20 +20,34 @@ export async function getDirectReportRoundSummaries(
 ): Promise<Record<string, DirectReportRoundSummary>> {
   if (directReportIds.length === 0) return {}
 
-  const supabase = await createClient()
+  const admin = createAdminClient()
 
   const entries = await Promise.all(
     directReportIds.map(async (userId) => {
-      const [inProgress, scheduled] = await Promise.all([
-        getInProgressRound(userId),
-        getScheduledRound(userId),
-      ])
+      // assessment_rounds RLS is scoped to auth.uid() = user_id, so managers
+      // cannot read DR rounds through the anon client — use admin throughout.
+      const { data: inProgressRound } = await admin
+        .from('assessment_rounds')
+        .select('id')
+        .eq('user_id', userId)
+        .eq('status', 'in_progress')
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle()
+      const inProgress = inProgressRound ?? null
+
+      const { data: scheduledRound } = await admin
+        .from('scheduled_rounds')
+        .select('scheduled_date')
+        .eq('user_id', userId)
+        .maybeSingle()
+      const scheduled = scheduledRound ?? null
 
       const roundStatus: DirectReportRoundSummary['roundStatus'] =
         inProgress ? 'in_progress' : scheduled ? 'scheduled' : 'none'
 
       // Most recent complete round
-      const { data: lastRound } = await supabase
+      const { data: lastRound } = await admin
         .from('assessment_rounds')
         .select('id, completed_at')
         .eq('user_id', userId)
@@ -50,7 +61,7 @@ export async function getDirectReportRoundSummaries(
 
       let lastScore: number | null = null
       if (lastRound) {
-        const { data: scoreRows } = await supabase
+        const { data: scoreRows } = await admin
           .from('scores')
           .select('level')
           .eq('round_id', lastRound.id)
@@ -61,16 +72,15 @@ export async function getDirectReportRoundSummaries(
         }
       }
 
-      const activeRound = inProgress
       // Use the last complete round as the scoring target — the manager scores after the DR finishes.
       // Fall back to the in-progress round only when no complete round exists yet.
-      const roundId = lastRound?.id ?? activeRound?.id ?? null
+      const roundId = lastRound?.id ?? inProgress?.id ?? null
 
       let managerScoringStatus: ManagerScoringStatus = 'not_started'
       let pillarsScored = 0
 
       if (roundId) {
-        const { data: mgrScores, error: mgrScoresError } = await supabase
+        const { data: mgrScores, error: mgrScoresError } = await admin
           .from('manager_scores')
           .select('skill_key')
           .eq('round_id', roundId)

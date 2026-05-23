@@ -1,7 +1,9 @@
 'use client'
 
+import { useEffect } from 'react'
 import { driver } from 'driver.js'
 import 'driver.js/dist/driver.css'
+import { MANAGER_TOUR_EVENT } from '@/components/dashboard/DashboardManagerTour'
 
 const TOUR_STEPS = [
   {
@@ -69,6 +71,12 @@ export function DashboardTour() {
 
     driverObj.drive()
   }
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    window.addEventListener(MANAGER_TOUR_EVENT, startTour)
+    return () => window.removeEventListener(MANAGER_TOUR_EVENT, startTour)
+  }, [])
 
   return (
     <button

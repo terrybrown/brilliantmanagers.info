@@ -1,12 +1,4 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import type { Round } from '@/lib/db/rounds'
-import type { ScheduledRound } from '@/lib/db/scheduled-rounds'
-
-let mockInProgress: Round | null = null
-let mockScheduled: ScheduledRound | null = null
-let mockLastRound: { id: string; completed_at: string | null } | null = null
-let mockScoreRows: { level: string }[] = []
-let mockManagerScoreRows: { skill_key: string }[] = []
 
 vi.mock('@/lib/skills', () => ({
   PILLARS: ['self', 'team'],
@@ -23,52 +15,18 @@ vi.mock('@/lib/skills', () => ({
   },
 }))
 
-vi.mock('@/lib/db/rounds', () => ({
-  getInProgressRound: vi.fn(() => Promise.resolve(mockInProgress)),
+vi.mock('@/lib/supabase/admin', () => ({
+  createAdminClient: vi.fn(),
 }))
 
-vi.mock('@/lib/db/scheduled-rounds', () => ({
-  getScheduledRound: vi.fn(() => Promise.resolve(mockScheduled)),
-}))
+import { createAdminClient } from '@/lib/supabase/admin'
+const adminMock = createAdminClient as ReturnType<typeof vi.fn>
 
-vi.mock('@/lib/supabase/server', () => ({
-  createClient: vi.fn(() =>
-    Promise.resolve({
-      from: (table: string) => {
-        if (table === 'assessment_rounds') {
-          return {
-            select: vi.fn().mockReturnThis(),
-            eq: vi.fn().mockReturnThis(),
-            not: vi.fn().mockReturnThis(),
-            order: vi.fn().mockReturnThis(),
-            limit: vi.fn().mockReturnThis(),
-            maybeSingle: vi.fn(() => Promise.resolve({ data: mockLastRound })),
-          }
-        }
-        if (table === 'scores') {
-          return {
-            select: vi.fn().mockReturnThis(),
-            eq: vi.fn(() => Promise.resolve({ data: mockScoreRows })),
-          }
-        }
-        // manager_scores — supports chained .eq().eq() returning { data, error }
-        const managerScoresChain = {
-          select: vi.fn().mockReturnThis(),
-          eq: vi.fn().mockReturnThis(),
-          then: undefined as unknown,
-        }
-        // Make the chain thenable so the last awaited .eq() resolves
-        Object.defineProperty(managerScoresChain, 'then', {
-          get() {
-            return (resolve: (v: unknown) => void) =>
-              resolve({ data: mockManagerScoreRows, error: null })
-          },
-        })
-        return managerScoresChain
-      },
-    })
-  ),
-}))
+let mockInProgress: { id: string } | null = null
+let mockScheduled: { scheduled_date: string } | null = null
+let mockLastRound: { id: string; completed_at: string | null } | null = null
+let mockScoreRows: { level: string }[] = []
+let mockManagerScoreRows: { skill_key: string }[] = []
 
 describe('getDirectReportRoundSummaries', () => {
   beforeEach(() => {
@@ -78,6 +36,61 @@ describe('getDirectReportRoundSummaries', () => {
     mockScoreRows = []
     mockManagerScoreRows = []
     vi.clearAllMocks()
+
+    // assessment_rounds is queried twice per DR:
+    //   odd call  → in-progress round query
+    //   even call → last complete round query
+    let assessmentRoundsCallCount = 0
+
+    function makeAssessmentChain(getResult: () => unknown) {
+      const chain: Record<string, unknown> = {}
+      const passthrough = vi.fn().mockReturnValue(chain)
+      chain.select = passthrough
+      chain.eq = passthrough
+      chain.not = passthrough
+      chain.order = passthrough
+      chain.limit = passthrough
+      chain.maybeSingle = vi.fn(() => Promise.resolve(getResult()))
+      return chain
+    }
+
+    adminMock.mockReturnValue({
+      from: (table: string) => {
+        if (table === 'assessment_rounds') {
+          assessmentRoundsCallCount++
+          return assessmentRoundsCallCount % 2 === 1
+            ? makeAssessmentChain(() => ({ data: mockInProgress }))
+            : makeAssessmentChain(() => ({ data: mockLastRound }))
+        }
+        if (table === 'scheduled_rounds') {
+          const chain: Record<string, unknown> = {}
+          const passthrough = vi.fn().mockReturnValue(chain)
+          chain.select = passthrough
+          chain.eq = passthrough
+          chain.maybeSingle = vi.fn(() => Promise.resolve({ data: mockScheduled }))
+          return chain
+        }
+        if (table === 'scores') {
+          return {
+            select: vi.fn().mockReturnThis(),
+            eq: vi.fn(() => Promise.resolve({ data: mockScoreRows })),
+          }
+        }
+        // manager_scores — chain is awaitable at the last .eq()
+        const mgChain = {
+          select: vi.fn().mockReturnThis(),
+          eq: vi.fn().mockReturnThis(),
+          then: undefined as unknown,
+        }
+        Object.defineProperty(mgChain, 'then', {
+          get() {
+            return (resolve: (v: unknown) => void) =>
+              resolve({ data: mockManagerScoreRows, error: null })
+          },
+        })
+        return mgChain
+      },
+    })
   })
 
   it('returns empty object for empty input', async () => {
@@ -86,14 +99,14 @@ describe('getDirectReportRoundSummaries', () => {
   })
 
   it('returns in_progress status when round is in progress', async () => {
-    mockInProgress = { id: 'r1', user_id: 'u1', status: 'in_progress', created_at: '', completed_at: null }
+    mockInProgress = { id: 'r1' }
     const { getDirectReportRoundSummaries } = await import('@/lib/db/direct-reports')
     const result = await getDirectReportRoundSummaries(['u1'], 'mgr1')
     expect(result['u1'].roundStatus).toBe('in_progress')
   })
 
   it('returns scheduled status when no in-progress but scheduled exists', async () => {
-    mockScheduled = { id: 's1', user_id: 'u1', scheduled_date: '2026-07-01', created_at: '', updated_at: '' }
+    mockScheduled = { scheduled_date: '2026-07-01' }
     const { getDirectReportRoundSummaries } = await import('@/lib/db/direct-reports')
     const result = await getDirectReportRoundSummaries(['u1'], 'mgr1')
     expect(result['u1'].roundStatus).toBe('scheduled')
@@ -121,7 +134,7 @@ describe('getDirectReportRoundSummaries', () => {
     expect(result['u1'].completedAt).toBe('2026-04-15T00:00:00Z')
   })
 
-  it('returns not_started managerScoringStatus when no in-progress round', async () => {
+  it('returns not_started managerScoringStatus when no roundId', async () => {
     const { getDirectReportRoundSummaries } = await import('@/lib/db/direct-reports')
     const result = await getDirectReportRoundSummaries(['u1'], 'mgr1')
     expect(result['u1'].managerScoringStatus).toBe('not_started')
@@ -129,15 +142,23 @@ describe('getDirectReportRoundSummaries', () => {
     expect(result['u1'].pillarsScored).toBe(0)
   })
 
-  it('returns roundId from the in-progress round', async () => {
-    mockInProgress = { id: 'r2', user_id: 'u1', status: 'in_progress', created_at: '', completed_at: null }
+  it('returns roundId from the in-progress round when no complete round exists', async () => {
+    mockInProgress = { id: 'r2' }
     const { getDirectReportRoundSummaries } = await import('@/lib/db/direct-reports')
     const result = await getDirectReportRoundSummaries(['u1'], 'mgr1')
     expect(result['u1'].roundId).toBe('r2')
   })
 
+  it('prefers the complete round id over the in-progress round id', async () => {
+    mockInProgress = { id: 'in-progress-id' }
+    mockLastRound = { id: 'complete-id', completed_at: '2026-04-15T00:00:00Z' }
+    const { getDirectReportRoundSummaries } = await import('@/lib/db/direct-reports')
+    const result = await getDirectReportRoundSummaries(['u1'], 'mgr1')
+    expect(result['u1'].roundId).toBe('complete-id')
+  })
+
   it('returns managerScoringStatus: in_progress when only some skills are scored', async () => {
-    mockInProgress = { id: 'round-1', user_id: 'u1', status: 'in_progress', created_at: '', completed_at: null }
+    mockInProgress = { id: 'round-1' }
     mockManagerScoreRows = [{ skill_key: 'sk1' }]
     const { getDirectReportRoundSummaries } = await import('@/lib/db/direct-reports')
     const result = await getDirectReportRoundSummaries(['u1'], 'manager-1')
@@ -146,7 +167,7 @@ describe('getDirectReportRoundSummaries', () => {
   })
 
   it('returns managerScoringStatus: complete and pillarsScored: 2 when all skills scored', async () => {
-    mockInProgress = { id: 'round-1', user_id: 'u1', status: 'in_progress', created_at: '', completed_at: null }
+    mockInProgress = { id: 'round-1' }
     mockManagerScoreRows = [{ skill_key: 'sk1' }, { skill_key: 'sk2' }, { skill_key: 'sk3' }]
     const { getDirectReportRoundSummaries } = await import('@/lib/db/direct-reports')
     const result = await getDirectReportRoundSummaries(['u1'], 'manager-1')
