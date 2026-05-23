@@ -32,7 +32,6 @@ async function deleteOrgActionImpl(formData: FormData): Promise<ActionResult> {
   return ok()
 }
 
-export async function deleteOrgAction(formData: FormData): Promise<void> {
-  const result = await deleteOrgActionImpl(formData)
-  if (!result.ok) throw new Error(result.error)
+export async function deleteOrgAction(formData: FormData): Promise<ActionResult> {
+  return deleteOrgActionImpl(formData)
 }

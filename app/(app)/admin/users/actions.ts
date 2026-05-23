@@ -57,12 +57,10 @@ async function revokeSuperAdminActionImpl(formData: FormData): Promise<ActionRes
   return ok()
 }
 
-export async function grantSuperAdminAction(formData: FormData): Promise<void> {
-  const result = await grantSuperAdminActionImpl(formData)
-  if (!result.ok) throw new Error(result.error)
+export async function grantSuperAdminAction(formData: FormData): Promise<ActionResult> {
+  return grantSuperAdminActionImpl(formData)
 }
 
-export async function revokeSuperAdminAction(formData: FormData): Promise<void> {
-  const result = await revokeSuperAdminActionImpl(formData)
-  if (!result.ok) throw new Error(result.error)
+export async function revokeSuperAdminAction(formData: FormData): Promise<ActionResult> {
+  return revokeSuperAdminActionImpl(formData)
 }
