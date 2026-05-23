@@ -1,11 +1,12 @@
 import { notFound, redirect } from 'next/navigation'
-import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { getLatestCompleteRound, getRoundById } from '@/lib/db/rounds'
 import { getManagerScoresForRound } from '@/lib/db/manager-scores'
 import { getSignedAvatarUrl, getProfile } from '@/lib/db/profiles'
-import { PILLARS, PILLAR_LABELS, getSkillsByPillar, type Pillar, type Level } from '@/lib/skills'
-import { ManagerScoringView } from '@/components/app/ManagerScoringView'
+import { SKILLS, type Level } from '@/lib/skills'
+import { getSkillGuideContent } from '@/lib/guide-content'
+import type { SkillGuideContent } from '@/lib/guide-content'
+import { ManagerScorecardShell } from '@/components/app/manager/ManagerScorecardShell'
 
 function shouldFetchDrScores(isBlindMode: boolean, roundStatus: string): boolean {
   return !isBlindMode && roundStatus === 'complete'
@@ -16,10 +17,10 @@ export default async function ManagerPage({
   searchParams,
 }: {
   params: Promise<{ userId: string }>
-  searchParams: Promise<{ pillar?: string; roundId?: string }>
+  searchParams: Promise<{ roundId?: string }>
 }) {
   const { userId } = await params
-  const { pillar, roundId: roundIdParam } = await searchParams
+  const { roundId: roundIdParam } = await searchParams
 
   const supabase = await createClient()
   const {
@@ -89,72 +90,45 @@ export default async function ManagerPage({
     }
   }
 
-  if (!pillar || !PILLARS.includes(pillar as Pillar)) {
-    const managerScores = await getManagerScoresForRound(round.id, user.id)
-    const scoredPillars = new Set(
-      PILLARS.filter(p =>
-        getSkillsByPillar(p as Pillar).every(s =>
-          managerScores.some(ms => ms.skill_key === s.key)
-        )
-      )
-    )
+  const managerScoreRows = await getManagerScoresForRound(round.id, user.id)
+  const allManagerScores: Record<string, Level> = Object.fromEntries(
+    managerScoreRows.map(ms => [ms.skill_key, ms.level])
+  )
 
-    return (
-      <div className="mx-auto max-w-5xl">
-        <div className="mb-2 flex items-center gap-3">
-          {directReportAvatarUrl && (
-            <img
-              src={directReportAvatarUrl}
-              alt={profile?.display_name ?? profile?.email ?? ''}
-              style={{ width: 40, height: 40, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }}
-            />
-          )}
-          <h1 className="text-2xl font-bold text-white">
-            Scoring {profile?.display_name ?? profile?.email}
-          </h1>
-        </div>
-        <p className="mb-8 text-sm text-slate-400">Select a pillar to score.</p>
-        <div className="flex flex-col gap-3">
-          {PILLARS.map(p => (
-            <Link
-              key={p}
-              href={`/manager/${userId}?pillar=${p}`}
-              className="flex items-center gap-4 rounded-xl bg-slate-800 px-5 py-4"
-            >
-              <span className="flex-1 font-medium text-white">
-                {PILLAR_LABELS[p as Pillar]}
-              </span>
-              {scoredPillars.has(p) && (
-                <span className="text-xs text-green-400">✓ scored</span>
-              )}
-              <span className="text-slate-600">›</span>
-            </Link>
-          ))}
-        </div>
-      </div>
-    )
-  }
-
-  const skills = getSkillsByPillar(pillar as Pillar)
-  const managerScores = await getManagerScoresForRound(round.id, user.id)
-  const initialScores: Record<string, Level> = {}
-  managerScores
-    .filter(ms => skills.some(s => s.key === ms.skill_key))
-    .forEach(ms => {
-      initialScores[ms.skill_key] = ms.level
+  const guideEntries = await Promise.all(
+    SKILLS.map(async s => {
+      try {
+        return [s.key, await getSkillGuideContent(s.key)] as const
+      } catch {
+        return [s.key, null] as const
+      }
     })
+  )
+  const allGuideContent: Record<string, SkillGuideContent | null> = Object.fromEntries(guideEntries)
+
+  const directReportName = profile?.display_name ?? profile?.email ?? 'your direct report'
 
   return (
-    <ManagerScoringView
-      roundId={round.id}
-      pillar={pillar}
-      pillarLabel={PILLAR_LABELS[pillar as Pillar]}
-      skills={skills}
-      initialScores={initialScores}
-      directReportName={profile?.display_name ?? profile?.email ?? 'your direct report'}
-      userId={userId}
-      directReportScores={directReportScores}
-      isBlindMode={isBlindMode}
-    />
+    <div>
+      <div className="mb-2 flex items-center gap-3">
+        {directReportAvatarUrl && (
+          <img
+            src={directReportAvatarUrl}
+            alt={directReportName}
+            style={{ width: 40, height: 40, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }}
+          />
+        )}
+        <div>
+          <h1 className="text-2xl font-bold text-white">Scoring {directReportName}</h1>
+          <p className="text-sm text-slate-400">Scores save automatically.</p>
+        </div>
+      </div>
+      <ManagerScorecardShell
+        roundId={round.id}
+        allManagerScores={allManagerScores}
+        directReportScores={directReportScores}
+        allGuideContent={allGuideContent}
+      />
+    </div>
   )
 }
