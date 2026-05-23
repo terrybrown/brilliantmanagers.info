@@ -9,6 +9,7 @@ import { sendEmail } from '@/lib/email/mailgun'
 import { buildManagerInviteEmail } from '@/lib/email/templates/manager-invite'
 import { buildConnectionInviteEmail } from '@/lib/email/templates/connection-invite'
 import { createNotification } from '@/lib/notifications'
+import { sendConnectionRequestEmail, sendConnectionAcceptedEmail } from '@/lib/email/notifications'
 import { ok, err, type ActionResult } from '@/lib/action-result'
 
 async function getDisplayName(
@@ -86,6 +87,7 @@ export async function inviteConnection(
       requesterId: user.id,
       requesterName: fromName,
     })
+    void sendConnectionRequestEmail(otherUserId, fromName)
   }
 
   await logAudit({
@@ -140,6 +142,7 @@ export async function acceptConnectionActionResult(connectionId: string): Promis
       acceptorId: user.id,
       acceptorName,
     })
+    void sendConnectionAcceptedEmail(conn.initiated_by, acceptorName)
   }
 
   if (conn && user.email) {
