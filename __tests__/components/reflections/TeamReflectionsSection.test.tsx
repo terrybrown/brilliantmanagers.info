@@ -1,17 +1,26 @@
 import { render, screen } from '@testing-library/react'
 import { describe, it, expect } from 'vitest'
 import { TeamReflectionsSection } from '@/components/reflections/TeamReflectionsSection'
-import type { TeamReflectionSummary } from '@/lib/db/direct-reports'
+import type { TeamMemberSummary } from '@/lib/db/direct-reports'
 
-type EnrichedSummary = TeamReflectionSummary & { name: string }
+type EnrichedSummary = TeamMemberSummary & { name: string }
 
 const ALICE: EnrichedSummary = {
   directReportId: 'dr-1',
   name: 'Alice Smith',
-  roundId: 'round-1',
-  roundStatus: 'complete',
-  managerScoringStatus: 'not_started',
-  selfCompletedAt: '2026-05-20T00:00:00Z',
+  pendingScoringCount: 1,
+  rounds: [
+    {
+      roundId: 'round-1',
+      roundLabel: 'Q2 2026',
+      roundStatus: 'complete',
+      managerScoringStatus: 'not_started',
+      selfScore: null,
+      managerScore: null,
+      pillarsScored: 0,
+      completedAt: '2026-05-20T00:00:00Z',
+    },
+  ],
 }
 
 describe('TeamReflectionsSection', () => {
@@ -32,12 +41,21 @@ describe('TeamReflectionsSection', () => {
   })
 
   it('shows Continue scoring link when in_progress', () => {
-    render(<TeamReflectionsSection summaries={[{ ...ALICE, managerScoringStatus: 'in_progress' }]} />)
+    const inProgress: EnrichedSummary = {
+      ...ALICE,
+      rounds: [{ ...ALICE.rounds[0], managerScoringStatus: 'in_progress' }],
+    }
+    render(<TeamReflectionsSection summaries={[inProgress]} />)
     expect(screen.getByRole('link', { name: /continue scoring/i })).toBeInTheDocument()
   })
 
   it('shows no CTA link when scoring is complete', () => {
-    render(<TeamReflectionsSection summaries={[{ ...ALICE, managerScoringStatus: 'complete' }]} />)
+    const complete: EnrichedSummary = {
+      ...ALICE,
+      pendingScoringCount: 0,
+      rounds: [{ ...ALICE.rounds[0], managerScoringStatus: 'complete' }],
+    }
+    render(<TeamReflectionsSection summaries={[complete]} />)
     expect(screen.queryByRole('link')).toBeNull()
   })
 })

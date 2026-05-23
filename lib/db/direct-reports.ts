@@ -136,6 +136,9 @@ export interface TeamMemberSummary {
   pendingScoringCount: number
 }
 
+/** @deprecated Use TeamMemberSummary — removed after TeamReflectionsSection migration */
+export type TeamReflectionSummary = TeamMemberSummary
+
 export async function getTeamReflectionSummaries(
   directReportIds: string[],
   managerId: string
@@ -200,8 +203,9 @@ export async function getTeamReflectionSummaries(
     let selfScore: number | null = null
     if (status === 'complete') {
       const sScores = selfScoresByRound.get(round.id) ?? []
-      if (sScores.length > 0) {
-        const avg = sScores.reduce((sum, s) => sum + LEVEL_VALUES[s.level as Level], 0) / sScores.length
+      const validScores = sScores.filter(s => s.level in LEVEL_VALUES)
+      if (validScores.length > 0) {
+        const avg = validScores.reduce((sum, s) => sum + LEVEL_VALUES[s.level as Level], 0) / validScores.length
         selfScore = Number(avg.toFixed(1))
       }
     }
@@ -220,13 +224,16 @@ export async function getTeamReflectionSummaries(
     const scoredPillarSet = new Set(
       [...scoredKeys]
         .map(key => PILLARS.find(p => getSkillsByPillar(p).some(s => s.key === key)))
-        .filter((p): p is string => p !== undefined)
+        .filter((p): p is Pillar => p !== undefined)
     )
 
     let managerScore: number | null = null
     if (managerScoringStatus === 'complete' && mScores.length > 0) {
-      const avg = mScores.reduce((sum, s) => sum + LEVEL_VALUES[s.level as Level], 0) / mScores.length
-      managerScore = Number(avg.toFixed(1))
+      const validMgrScores = mScores.filter(s => s.level in LEVEL_VALUES)
+      if (validMgrScores.length > 0) {
+        const avg = validMgrScores.reduce((sum, s) => sum + LEVEL_VALUES[s.level as Level], 0) / validMgrScores.length
+        managerScore = Number(avg.toFixed(1))
+      }
     }
 
     const d = new Date(round.created_at)
