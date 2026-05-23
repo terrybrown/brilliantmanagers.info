@@ -1,10 +1,10 @@
 'use client'
-import { useState, useTransition } from 'react'
 import {
   addMemberToNodeAction,
   removeMemberFromNodeAction,
   cancelPendingOrgNodeInvitationAction,
 } from '@/app/(app)/organisation/actions'
+import { useMutation } from '@/hooks/use-mutation'
 import type { OrgNode } from '@/lib/db/org-nodes'
 
 const AVATAR_COLORS = [
@@ -27,6 +27,85 @@ const AVATAR_SIZE = 22
 const AVATAR_BORDER = 2
 const MAX_VISIBLE = 3
 
+function RemoveMemberButton({ nodeId, orgId, userId }: { nodeId: string; orgId: string; userId: string }) {
+  const { mutate, isPending } = useMutation({ onSuccess: 'Member removed' })
+  return (
+    <button
+      type="button"
+      onClick={() => {
+        const fd = new FormData()
+        fd.set('nodeId', nodeId)
+        fd.set('userId', userId)
+        fd.set('orgId', orgId)
+        mutate(() => removeMemberFromNodeAction(fd))
+      }}
+      disabled={isPending}
+      style={{ background: 'none', border: 'none', color: isPending ? '#4b5563' : '#6b7280', cursor: isPending ? 'default' : 'pointer', fontSize: 12, padding: '0 0 0 4px', lineHeight: 1 }}
+    >
+      ✕
+    </button>
+  )
+}
+
+function CancelInviteButton({ invitationId, orgId }: { invitationId: string; orgId: string }) {
+  const { mutate, isPending } = useMutation({ onSuccess: 'Invite cancelled' })
+  return (
+    <button
+      type="button"
+      onClick={() => {
+        const fd = new FormData()
+        fd.set('orgId', orgId)
+        fd.set('invitationId', invitationId)
+        mutate(() => cancelPendingOrgNodeInvitationAction(fd))
+      }}
+      disabled={isPending}
+      style={{ background: 'none', border: 'none', color: isPending ? '#4b5563' : '#6b7280', cursor: isPending ? 'default' : 'pointer', fontSize: 12, padding: '0 0 0 4px', lineHeight: 1 }}
+    >
+      ✕
+    </button>
+  )
+}
+
+interface AddMemberFormProps { nodeId: string; orgId: string }
+function AddMemberForm({ nodeId, orgId }: AddMemberFormProps) {
+  const { mutate, isPending } = useMutation({ onSuccess: 'Member added' })
+  return (
+    <form
+      style={{ display: 'flex', gap: 6, flex: 1 }}
+      onSubmit={e => {
+        e.preventDefault()
+        const fd = new FormData(e.currentTarget)
+        fd.set('orgId', orgId)
+        fd.set('nodeId', nodeId)
+        mutate(() => addMemberToNodeAction(fd))
+      }}
+    >
+      <input
+        name="email"
+        type="email"
+        placeholder="Add member by email…"
+        disabled={isPending}
+        style={{
+          flex: 1, background: '#0d1117', border: '1px solid #1f2937',
+          color: '#f1f5f9', padding: '5px 8px', borderRadius: 4, fontSize: 11,
+          outline: 'none', maxWidth: 280,
+        }}
+      />
+      <button
+        type="submit"
+        disabled={isPending}
+        style={{
+          background: 'rgba(99,102,241,0.2)', border: '1px solid rgba(99,102,241,0.3)',
+          color: '#a78bfa', padding: '5px 10px', borderRadius: 4, fontSize: 11,
+          cursor: isPending ? 'default' : 'pointer', opacity: isPending ? 0.6 : 1,
+        }}
+      >
+        {isPending ? '…' : 'Add'}
+      </button>
+    </form>
+  )
+}
+
 interface MemberStackProps {
   members: OrgNode['members']
   pendingInvites: OrgNode['pendingInvites']
@@ -46,9 +125,6 @@ export function MemberStack({
   isOpen,
   onToggle,
 }: MemberStackProps) {
-  const [memberError, setMemberError] = useState<string | null>(null)
-  const [isPending, startTransition] = useTransition()
-
   const isEmpty = members.length === 0 && pendingInvites.length === 0
   const visible = members.slice(0, MAX_VISIBLE)
   const overflow = members.length - MAX_VISIBLE
@@ -173,19 +249,7 @@ export function MemberStack({
                   {initials(m.display_name, m.email)}
                 </div>
                 {m.display_name ?? m.email}
-                <button
-                  type="button"
-                  onClick={() => {
-                    const fd = new FormData()
-                    fd.set('nodeId', nodeId)
-                    fd.set('userId', m.user_id)
-                    fd.set('orgId', orgId)
-                    startTransition(async () => { await removeMemberFromNodeAction(fd) })
-                  }}
-                  style={{ background: 'none', border: 'none', color: '#4b5563', cursor: 'pointer', fontSize: 12, padding: '0 0 0 4px', lineHeight: 1 }}
-                >
-                  ✕
-                </button>
+                <RemoveMemberButton nodeId={nodeId} orgId={orgId} userId={m.user_id} />
               </div>
             ))}
 
@@ -201,63 +265,15 @@ export function MemberStack({
               >
                 {invite.invited_email}
                 <span style={{ fontSize: 9, color: '#6366f1', marginLeft: 2 }}>awaiting registration</span>
-                <button
-                  type="button"
-                  onClick={() => {
-                    const fd = new FormData()
-                    fd.set('orgId', orgId)
-                    fd.set('invitationId', invite.id)
-                    startTransition(async () => { await cancelPendingOrgNodeInvitationAction(fd) })
-                  }}
-                  style={{ background: 'none', border: 'none', color: '#4b5563', cursor: 'pointer', fontSize: 12, padding: '0 0 0 4px', lineHeight: 1 }}
-                >
-                  ✕
-                </button>
+                <CancelInviteButton invitationId={invite.id} orgId={orgId} />
               </div>
             ))}
           </div>
 
           {/* Add member input */}
           <div style={{ display: 'flex', gap: 6 }}>
-            <form
-              style={{ display: 'flex', gap: 6, flex: 1 }}
-              action={async (fd) => {
-                fd.set('orgId', orgId)
-                fd.set('nodeId', nodeId)
-                setMemberError(null)
-                startTransition(async () => {
-                  const result = await addMemberToNodeAction(fd)
-                  if (!result.ok) setMemberError(result.error)
-                })
-              }}
-            >
-              <input
-                name="email"
-                type="email"
-                placeholder="Add member by email…"
-                disabled={isPending}
-                style={{
-                  flex: 1, background: '#0d1117', border: '1px solid #1f2937',
-                  color: '#f1f5f9', padding: '5px 8px', borderRadius: 4, fontSize: 11,
-                  outline: 'none', maxWidth: 280,
-                }}
-              />
-              <button
-                type="submit"
-                disabled={isPending}
-                style={{
-                  background: 'rgba(99,102,241,0.2)', border: '1px solid rgba(99,102,241,0.3)',
-                  color: '#a78bfa', padding: '5px 10px', borderRadius: 4, fontSize: 11,
-                  cursor: isPending ? 'default' : 'pointer', opacity: isPending ? 0.6 : 1,
-                }}
-              >
-                {isPending ? '…' : 'Add'}
-              </button>
-            </form>
+            <AddMemberForm nodeId={nodeId} orgId={orgId} />
           </div>
-          {memberError && (
-            <p style={{ margin: '6px 0 0', fontSize: 11, color: '#ef4444' }}>{memberError}</p>
-          )}
         </div>
       )}
     </>

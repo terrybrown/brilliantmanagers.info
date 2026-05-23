@@ -5,9 +5,16 @@ import { addMemberToNodeAction } from '@/app/(app)/organisation/actions'
 import type { OrgNode } from '@/lib/db/org-nodes'
 
 vi.mock('@/app/(app)/organisation/actions', () => ({
-  addMemberToNodeAction: vi.fn().mockResolvedValue({}),
-  removeMemberFromNodeAction: vi.fn(),
-  cancelPendingOrgNodeInvitationAction: vi.fn(),
+  addMemberToNodeAction: vi.fn().mockResolvedValue({ ok: true }),
+  removeMemberFromNodeAction: vi.fn().mockResolvedValue({ ok: true }),
+  cancelPendingOrgNodeInvitationAction: vi.fn().mockResolvedValue({ ok: true }),
+}))
+
+vi.mock('sonner', () => ({
+  toast: {
+    success: vi.fn(),
+    error: vi.fn(),
+  },
 }))
 
 const makeMember = (id: string, name: string): OrgNode['members'][0] => ({
@@ -192,8 +199,9 @@ describe('MemberStack', () => {
     expect(screen.getByRole('button', { name: '✕' })).toBeInTheDocument()
   })
 
-  it('shows an error message when addMemberToNodeAction returns an error', async () => {
-    vi.mocked(addMemberToNodeAction).mockResolvedValueOnce({ error: 'User not found' })
+  it('shows a toast error when addMemberToNodeAction returns an error', async () => {
+    const { toast } = await import('sonner')
+    vi.mocked(addMemberToNodeAction).mockResolvedValueOnce({ ok: false, error: 'User not found' })
 
     render(
       <MemberStack
@@ -211,6 +219,6 @@ describe('MemberStack', () => {
     fireEvent.change(emailInput, { target: { value: 'notfound@x.com' } })
     fireEvent.submit(emailInput.closest('form')!)
 
-    await waitFor(() => expect(screen.getByText('User not found')).toBeInTheDocument())
+    await waitFor(() => expect(toast.error).toHaveBeenCalledWith('User not found'))
   })
 })

@@ -1,5 +1,6 @@
 'use client'
 import { useState, useOptimistic, useTransition } from 'react'
+import { toast } from 'sonner'
 import type { OrgNode } from '@/lib/db/org-nodes'
 import { createNodeAction } from '@/app/(app)/organisation/actions'
 import { NodeRow, type OrgNodeWithChildren } from './NodeRow'
@@ -49,7 +50,8 @@ export function OrgHierarchy({ nodes, orgId, orgRole }: Props) {
           pendingInvites: [],
           _provisional: true,
         })
-        await createNodeAction(formData)
+        const result = await createNodeAction(formData)
+        if (!result.ok) toast.error(result.error)
       })
     }
   }

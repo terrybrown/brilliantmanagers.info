@@ -5,7 +5,7 @@ import { OrgHierarchy } from '@/components/org/OrgHierarchy'
 import type { OrgNode } from '@/lib/db/org-nodes'
 
 vi.mock('@/app/(app)/organisation/actions', () => ({
-  createNodeAction: vi.fn(),
+  createNodeAction: vi.fn().mockResolvedValue({ ok: true }),
 }))
 
 vi.mock('@/components/org/NodeRow', () => ({

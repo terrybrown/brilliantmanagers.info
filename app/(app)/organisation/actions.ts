@@ -29,8 +29,7 @@ async function requireOrgAdmin(orgId: string) {
 
 // ── Org creation ──────────────────────────────────────────────────────────────
 
-// Returns ActionResult — use this in client components with useMutation.
-export async function createOrgActionResult(formData: FormData): Promise<ActionResult> {
+export async function createOrgAction(formData: FormData): Promise<ActionResult> {
   const user = await getUser()
   const name = (formData.get('name') as string).trim()
   if (!name) return err('Organisation name is required.')
@@ -42,13 +41,6 @@ export async function createOrgActionResult(formData: FormData): Promise<ActionR
   }
   revalidatePath('/people')
   return ok()
-}
-
-// Void wrapper for native form action use in OrgSection.tsx (server-component-compatible form).
-// Migrate OrgSection to useMutation + createOrgActionResult when converting to full client pattern.
-export async function createOrgAction(formData: FormData): Promise<void> {
-  const result = await createOrgActionResult(formData)
-  if (!result.ok) throw new Error(result.error)
 }
 
 // ── Org settings ─────────────────────────────────────────────────────────────
