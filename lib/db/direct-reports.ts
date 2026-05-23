@@ -136,8 +136,6 @@ export interface TeamMemberSummary {
   pendingScoringCount: number
 }
 
-/** @deprecated Use TeamMemberSummary — removed after TeamReflectionsSection migration */
-export type TeamReflectionSummary = TeamMemberSummary
 
 export async function getTeamReflectionSummaries(
   directReportIds: string[],
