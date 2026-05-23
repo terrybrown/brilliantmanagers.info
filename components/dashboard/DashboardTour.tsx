@@ -1,9 +1,11 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { driver } from 'driver.js'
 import 'driver.js/dist/driver.css'
 import { MANAGER_TOUR_EVENT } from '@/components/dashboard/DashboardManagerTour'
+
+const TOUR_SEEN_KEY = 'bm_tour_seen'
 
 const TOUR_STEPS = [
   {
@@ -48,7 +50,17 @@ const TOUR_STEPS = [
   },
 ]
 
+function readLocalStorage(key: string) {
+  try {
+    return typeof window !== 'undefined' && localStorage.getItem(key) === '1'
+  } catch {
+    return false
+  }
+}
+
 export function DashboardTour() {
+  const [promptHidden, setPromptHidden] = useState(() => readLocalStorage(TOUR_SEEN_KEY))
+
   function startTour() {
     const driverObj = driver({
       animate: true,
@@ -58,14 +70,11 @@ export function DashboardTour() {
       stageRadius: 8,
       popoverClass: 'bm-tour-popover',
       steps: TOUR_STEPS,
-      // bm_tour_seen is write-only — the button always shows so users can
-      // re-run the tour. driver.js calls destroy() itself; we just persist the flag.
       onDestroyed: () => {
         try {
-          localStorage.setItem('bm_tour_seen', '1')
-        } catch {
-          // localStorage unavailable in some private browsing contexts
-        }
+          localStorage.setItem(TOUR_SEEN_KEY, '1')
+        } catch { /* ignore */ }
+        setPromptHidden(true)
       },
     })
 
@@ -78,35 +87,75 @@ export function DashboardTour() {
     return () => window.removeEventListener(MANAGER_TOUR_EVENT, startTour)
   }, [])
 
+  function dismissPrompt() {
+    try {
+      localStorage.setItem(TOUR_SEEN_KEY, '1')
+    } catch { /* ignore */ }
+    setPromptHidden(true)
+  }
+
+  if (promptHidden) return null
+
   return (
-    <button
-      type="button"
-      onClick={startTour}
+    <div
       style={{
-        display: 'inline-flex',
+        display: 'flex',
         alignItems: 'center',
-        gap: 10,
         background: 'rgba(45,212,191,0.08)',
         border: '1px solid rgba(45,212,191,0.35)',
         borderRadius: 12,
-        padding: '11px 20px',
-        fontSize: 13,
-        fontWeight: 600,
-        color: '#2dd4bf',
-        cursor: 'pointer',
-        letterSpacing: '0.01em',
         marginBottom: 32,
+        overflow: 'hidden',
       }}
     >
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-        <polygon points="5,3 19,12 5,21" />
-      </svg>
-      <span style={{ display: 'flex', flexDirection: 'column', gap: 1, textAlign: 'left' }}>
-        <span>Take a 30-second tour of Brilliant Managers</span>
-        <span style={{ fontSize: 11, fontWeight: 400, color: 'rgba(45,212,191,0.55)' }}>
-          Let us show you around the tool
+      <button
+        type="button"
+        onClick={startTour}
+        style={{
+          flex: 1,
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: 10,
+          padding: '11px 20px',
+          fontSize: 13,
+          fontWeight: 600,
+          color: '#2dd4bf',
+          cursor: 'pointer',
+          background: 'transparent',
+          border: 'none',
+          textAlign: 'left',
+        }}
+      >
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <polygon points="5,3 19,12 5,21" />
+        </svg>
+        <span style={{ display: 'flex', flexDirection: 'column', gap: 1, textAlign: 'left' }}>
+          <span>Take a 30-second tour of Brilliant Managers</span>
+          <span style={{ fontSize: 11, fontWeight: 400, color: 'rgba(45,212,191,0.55)' }}>
+            Let us show you around the tool
+          </span>
         </span>
-      </span>
-    </button>
+      </button>
+      <button
+        type="button"
+        onClick={dismissPrompt}
+        aria-label="Dismiss tour prompt"
+        style={{
+          padding: '11px 16px',
+          color: 'rgba(45,212,191,0.35)',
+          background: 'transparent',
+          border: 'none',
+          borderLeft: '1px solid rgba(45,212,191,0.15)',
+          cursor: 'pointer',
+          fontSize: 18,
+          lineHeight: 1,
+          alignSelf: 'stretch',
+          display: 'flex',
+          alignItems: 'center',
+        }}
+      >
+        ×
+      </button>
+    </div>
   )
 }

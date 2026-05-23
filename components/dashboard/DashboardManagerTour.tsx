@@ -1,13 +1,31 @@
 'use client'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { driver } from 'driver.js'
 import 'driver.js/dist/driver.css'
 
-const STORAGE_KEY = 'bm_manager_tour_seen'
+const TOUR_SEEN_KEY = 'bm_manager_tour_seen'
+const PROMPT_HIDDEN_KEY = 'bm_manager_tour_prompt_hidden'
 
 export const MANAGER_TOUR_EVENT = 'bm:start-manager-tour'
 
+function readLocalStorage(key: string) {
+  try {
+    return typeof window !== 'undefined' && localStorage.getItem(key) === '1'
+  } catch {
+    return false
+  }
+}
+
 export function DashboardManagerTour({ hasManagerStrip }: { hasManagerStrip: boolean }) {
+  const [promptHidden, setPromptHidden] = useState(() => readLocalStorage(PROMPT_HIDDEN_KEY))
+
+  function dismissPrompt() {
+    try {
+      localStorage.setItem(PROMPT_HIDDEN_KEY, '1')
+    } catch { /* ignore */ }
+    setPromptHidden(true)
+  }
+
   function buildSteps() {
     const steps: { element: string; popover: { title: string; description: string } }[] = []
 
@@ -97,17 +115,15 @@ export function DashboardManagerTour({ hasManagerStrip }: { hasManagerStrip: boo
       steps,
       onDestroyed: () => {
         try {
-          localStorage.setItem(STORAGE_KEY, '1')
-        } catch {
-          // localStorage unavailable in some private browsing contexts
-        }
+          localStorage.setItem(TOUR_SEEN_KEY, '1')
+        } catch { /* ignore */ }
       },
     })
     driverObj.drive()
   }
 
   useEffect(() => {
-    if (typeof localStorage !== 'undefined' && localStorage.getItem(STORAGE_KEY)) return
+    if (readLocalStorage(TOUR_SEEN_KEY)) return
     const timer = setTimeout(startTour, 300)
     return () => clearTimeout(timer)
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -119,5 +135,68 @@ export function DashboardManagerTour({ hasManagerStrip }: { hasManagerStrip: boo
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hasManagerStrip])
 
-  return null
+  if (promptHidden) return null
+
+  return (
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        background: 'rgba(45,212,191,0.08)',
+        border: '1px solid rgba(45,212,191,0.35)',
+        borderRadius: 12,
+        marginBottom: 32,
+        overflow: 'hidden',
+      }}
+    >
+      <button
+        type="button"
+        onClick={startTour}
+        style={{
+          flex: 1,
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: 10,
+          padding: '11px 20px',
+          fontSize: 13,
+          fontWeight: 600,
+          color: '#2dd4bf',
+          cursor: 'pointer',
+          background: 'transparent',
+          border: 'none',
+          textAlign: 'left',
+        }}
+      >
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <polygon points="5,3 19,12 5,21" />
+        </svg>
+        <span style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+          <span>Take a 30-second tour of Brilliant Managers</span>
+          <span style={{ fontSize: 11, fontWeight: 400, color: 'rgba(45,212,191,0.55)' }}>
+            Let us show you around the tool
+          </span>
+        </span>
+      </button>
+      <button
+        type="button"
+        onClick={dismissPrompt}
+        aria-label="Dismiss tour prompt"
+        style={{
+          padding: '11px 16px',
+          color: 'rgba(45,212,191,0.35)',
+          background: 'transparent',
+          border: 'none',
+          borderLeft: '1px solid rgba(45,212,191,0.15)',
+          cursor: 'pointer',
+          fontSize: 18,
+          lineHeight: 1,
+          alignSelf: 'stretch',
+          display: 'flex',
+          alignItems: 'center',
+        }}
+      >
+        ×
+      </button>
+    </div>
+  )
 }
