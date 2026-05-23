@@ -1,15 +1,17 @@
 'use client'
-import { useState, useTransition } from 'react'
+
+import { useState } from 'react'
 import { Switch } from '@/components/ui/switch'
 import { updateBlindScoringAction } from '@/app/(app)/profile/actions'
+import { useMutation } from '@/hooks/use-mutation'
 
 export function BlindScoringToggle({ initialValue }: { initialValue: boolean }) {
   const [enabled, setEnabled] = useState(initialValue)
-  const [, startTransition] = useTransition()
+  const { mutate } = useMutation({ onSuccess: 'Preference saved' })
 
   function handleChange(value: boolean) {
     setEnabled(value)
-    startTransition(() => { updateBlindScoringAction(value) })
+    mutate(() => updateBlindScoringAction(value))
   }
 
   return (
