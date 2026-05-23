@@ -173,14 +173,19 @@ export function MemberStack({
                   {initials(m.display_name, m.email)}
                 </div>
                 {m.display_name ?? m.email}
-                <form action={removeMemberFromNodeAction} style={{ display: 'inline' }}>
-                  <input type="hidden" name="nodeId" value={nodeId} />
-                  <input type="hidden" name="userId" value={m.user_id} />
-                  <input type="hidden" name="orgId" value={orgId} />
-                  <button type="submit" style={{ background: 'none', border: 'none', color: '#4b5563', cursor: 'pointer', fontSize: 12, padding: '0 0 0 4px', lineHeight: 1 }}>
-                    ✕
-                  </button>
-                </form>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const fd = new FormData()
+                    fd.set('nodeId', nodeId)
+                    fd.set('userId', m.user_id)
+                    fd.set('orgId', orgId)
+                    startTransition(async () => { await removeMemberFromNodeAction(fd) })
+                  }}
+                  style={{ background: 'none', border: 'none', color: '#4b5563', cursor: 'pointer', fontSize: 12, padding: '0 0 0 4px', lineHeight: 1 }}
+                >
+                  ✕
+                </button>
               </div>
             ))}
 
@@ -196,13 +201,18 @@ export function MemberStack({
               >
                 {invite.invited_email}
                 <span style={{ fontSize: 9, color: '#6366f1', marginLeft: 2 }}>awaiting registration</span>
-                <form action={cancelPendingOrgNodeInvitationAction} style={{ display: 'inline' }}>
-                  <input type="hidden" name="orgId" value={orgId} />
-                  <input type="hidden" name="invitationId" value={invite.id} />
-                  <button type="submit" style={{ background: 'none', border: 'none', color: '#4b5563', cursor: 'pointer', fontSize: 12, padding: '0 0 0 4px', lineHeight: 1 }}>
-                    ✕
-                  </button>
-                </form>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const fd = new FormData()
+                    fd.set('orgId', orgId)
+                    fd.set('invitationId', invite.id)
+                    startTransition(async () => { await cancelPendingOrgNodeInvitationAction(fd) })
+                  }}
+                  style={{ background: 'none', border: 'none', color: '#4b5563', cursor: 'pointer', fontSize: 12, padding: '0 0 0 4px', lineHeight: 1 }}
+                >
+                  ✕
+                </button>
               </div>
             ))}
           </div>
@@ -217,7 +227,7 @@ export function MemberStack({
                 setMemberError(null)
                 startTransition(async () => {
                   const result = await addMemberToNodeAction(fd)
-                  if (result.error) setMemberError(result.error)
+                  if (!result.ok) setMemberError(result.error)
                 })
               }}
             >

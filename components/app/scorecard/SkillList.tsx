@@ -33,9 +33,13 @@ export function SkillList({
     onSkillActivate(nextSkill ? nextSkill.key : skill.key)
     startTransition(async () => {
       try {
-        const { roundCompleted } = await saveScore(roundId, skill.pillar, skill.key, level)
+        const result = await saveScore(roundId, skill.pillar, skill.key, level)
+        if (!result.ok) {
+          onScore(skill.key, previousLevel)
+          return
+        }
         trackPillarScored(skill.pillar, level)
-        if (roundCompleted) {
+        if (result.data?.roundCompleted) {
           trackRoundCompleted(roundId)
           trackScorecardCompleted()
         }

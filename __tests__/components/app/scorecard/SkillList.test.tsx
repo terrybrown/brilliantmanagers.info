@@ -45,7 +45,7 @@ beforeEach(() => {
 
 describe('SkillList analytics', () => {
   it('trackPillarScored called with pillar and level on successful save', async () => {
-    mockSaveScore.mockResolvedValue({ roundCompleted: false })
+    mockSaveScore.mockResolvedValue({ ok: true, data: { roundCompleted: false } })
 
     render(<SkillList {...defaultProps} />)
     fireEvent.click(screen.getByRole('button', { name: /proficient/i }))
@@ -57,7 +57,7 @@ describe('SkillList analytics', () => {
   })
 
   it('trackScorecardCompleted called when saveScore returns roundCompleted: true', async () => {
-    mockSaveScore.mockResolvedValue({ roundCompleted: true })
+    mockSaveScore.mockResolvedValue({ ok: true, data: { roundCompleted: true } })
 
     render(<SkillList {...defaultProps} />)
     fireEvent.click(screen.getByRole('button', { name: /proficient/i }))
@@ -70,7 +70,7 @@ describe('SkillList analytics', () => {
   })
 
   it('trackScorecardCompleted NOT called when saveScore returns roundCompleted: false', async () => {
-    mockSaveScore.mockResolvedValue({ roundCompleted: false })
+    mockSaveScore.mockResolvedValue({ ok: true, data: { roundCompleted: false } })
 
     render(<SkillList {...defaultProps} />)
     fireEvent.click(screen.getByRole('button', { name: /proficient/i }))

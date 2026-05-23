@@ -62,7 +62,7 @@ export function CreateRoundModal({ open, onClose, defaultTitle }: CreateRoundMod
           Start a new reflection round
         </h2>
 
-        <form action={createRoundAction} onSubmit={handleSubmit} aria-label="Create round form" className="flex flex-col gap-4">
+        <form action={async (fd) => { await createRoundAction(fd) }} onSubmit={handleSubmit} aria-label="Create round form" className="flex flex-col gap-4">
           <div className="flex flex-col gap-1.5">
             <label
               htmlFor="round-title"

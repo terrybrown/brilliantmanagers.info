@@ -38,7 +38,7 @@ export function AvatarUpload({ initialAvatarUrl, initials }: AvatarUploadProps) 
 
     startUpload(async () => {
       const result = await uploadAvatarAction(formData)
-      if (result.error) {
+      if (!result.ok) {
         URL.revokeObjectURL(objectUrl)
         setPreviewUrl(null)
         setToast({ message: result.error, type: 'error' })
@@ -55,7 +55,7 @@ export function AvatarUpload({ initialAvatarUrl, initials }: AvatarUploadProps) 
   function handleRemove() {
     startRemove(async () => {
       const result = await removeAvatarAction()
-      if (result.error) {
+      if (!result.ok) {
         setToast({ message: result.error, type: 'error' })
         return
       }

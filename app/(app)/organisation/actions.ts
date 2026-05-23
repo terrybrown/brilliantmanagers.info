@@ -11,6 +11,7 @@ import { logAudit } from '@/lib/audit'
 import { createPendingOrgNodeInvitation, deletePendingOrgNodeInvitationById } from '@/lib/db/pending-org-node-invitations'
 import { buildOrgNodeInviteEmail } from '@/lib/email/templates/org-node-invite'
 import { sendEmail } from '@/lib/email/mailgun'
+import { ok, err, type ActionResult } from '@/lib/action-result'
 
 async function getUser() {
   const supabase = await createClient()
@@ -28,77 +29,109 @@ async function requireOrgAdmin(orgId: string) {
 
 // ── Org creation ──────────────────────────────────────────────────────────────
 
-export async function createOrgAction(formData: FormData): Promise<void> {
+// Returns ActionResult — use this in client components with useMutation.
+export async function createOrgActionResult(formData: FormData): Promise<ActionResult> {
   const user = await getUser()
   const name = (formData.get('name') as string).trim()
-  if (!name) return
-
-  const org = await createOrg(name)
-  await logAudit({ actorId: user.id, action: 'org.create', entityType: 'organisation', entityId: org.id, metadata: { name } })
+  if (!name) return err('Organisation name is required.')
+  try {
+    const org = await createOrg(name)
+    await logAudit({ actorId: user.id, action: 'org.create', entityType: 'organisation', entityId: org.id, metadata: { name } })
+  } catch {
+    return err('Failed to create organisation. Please try again.')
+  }
   revalidatePath('/people')
+  return ok()
+}
+
+// Void wrapper for native form action use in OrgSection.tsx (server-component-compatible form).
+// Migrate OrgSection to useMutation + createOrgActionResult when converting to full client pattern.
+export async function createOrgAction(formData: FormData): Promise<void> {
+  const result = await createOrgActionResult(formData)
+  if (!result.ok) throw new Error(result.error)
 }
 
 // ── Org settings ─────────────────────────────────────────────────────────────
 
-export async function updateOrgNameAction(formData: FormData): Promise<void> {
+export async function updateOrgNameAction(formData: FormData): Promise<ActionResult> {
   const orgId = formData.get('orgId') as string
   const name = (formData.get('name') as string).trim()
-  if (!orgId || !name) return
+  if (!orgId || !name) return err('Organisation name is required.')
 
   const user = await requireOrgAdmin(orgId)
-  await updateOrgName(orgId, name)
-  await logAudit({ actorId: user.id, action: 'org.update', entityType: 'organisation', entityId: orgId, metadata: { name } })
+  try {
+    await updateOrgName(orgId, name)
+    await logAudit({ actorId: user.id, action: 'org.update', entityType: 'organisation', entityId: orgId, metadata: { name } })
+  } catch {
+    return err('Failed to update organisation name. Please try again.')
+  }
   revalidatePath('/people')
+  return ok()
 }
 
 // ── Node management ───────────────────────────────────────────────────────────
 
-export async function createNodeAction(formData: FormData): Promise<void> {
+export async function createNodeAction(formData: FormData): Promise<ActionResult> {
   const orgId = formData.get('orgId') as string
   const parentId = (formData.get('parentId') as string | null) || null
   const name = (formData.get('name') as string).trim()
   const nodeType = (formData.get('nodeType') as string | null)?.trim() || null
 
-  if (!orgId || !name) return
+  if (!orgId || !name) return err('Node name is required.')
   const user = await requireOrgAdmin(orgId)
 
-  const node = await createNode({ orgId, parentId, name, nodeType })
-  await logAudit({ actorId: user.id, action: 'org_node.create', entityType: 'org_node', entityId: node.id, metadata: { name, nodeType, parentId } })
+  try {
+    const node = await createNode({ orgId, parentId, name, nodeType })
+    await logAudit({ actorId: user.id, action: 'org_node.create', entityType: 'org_node', entityId: node.id, metadata: { name, nodeType, parentId } })
+  } catch {
+    return err('Failed to create node. Please try again.')
+  }
   revalidatePath('/people')
+  return ok()
 }
 
-export async function renameNodeAction(formData: FormData): Promise<void> {
+export async function renameNodeAction(formData: FormData): Promise<ActionResult> {
   const orgId = formData.get('orgId') as string
   const nodeId = formData.get('nodeId') as string
   const name = (formData.get('name') as string).trim()
   const nodeType = (formData.get('nodeType') as string | null)?.trim() || null
 
-  if (!orgId || !nodeId || !name) return
+  if (!orgId || !nodeId || !name) return err('Node name is required.')
   const user = await requireOrgAdmin(orgId)
 
-  await renameNode(nodeId, orgId, name, nodeType)
-  await logAudit({ actorId: user.id, action: 'org_node.update', entityType: 'org_node', entityId: nodeId, metadata: { name, nodeType } })
+  try {
+    await renameNode(nodeId, orgId, name, nodeType)
+    await logAudit({ actorId: user.id, action: 'org_node.update', entityType: 'org_node', entityId: nodeId, metadata: { name, nodeType } })
+  } catch {
+    return err('Failed to rename node. Please try again.')
+  }
   revalidatePath('/people')
+  return ok()
 }
 
-export async function deleteNodeAction(formData: FormData): Promise<void> {
+export async function deleteNodeAction(formData: FormData): Promise<ActionResult> {
   const orgId = formData.get('orgId') as string
   const nodeId = formData.get('nodeId') as string
-  if (!orgId || !nodeId) return
+  if (!orgId || !nodeId) return err('Missing fields.')
 
   const user = await requireOrgAdmin(orgId)
-  await deleteNode(nodeId, orgId)
-  await logAudit({ actorId: user.id, action: 'org_node.delete', entityType: 'org_node', entityId: nodeId })
+  try {
+    await deleteNode(nodeId, orgId)
+    await logAudit({ actorId: user.id, action: 'org_node.delete', entityType: 'org_node', entityId: nodeId })
+  } catch {
+    return err('Failed to delete node. Please try again.')
+  }
   revalidatePath('/people')
+  return ok()
 }
 
 // ── Member management ─────────────────────────────────────────────────────────
 
-export async function addMemberToNodeAction(formData: FormData): Promise<{ error?: string }> {
+export async function addMemberToNodeAction(formData: FormData): Promise<ActionResult> {
   const orgId = formData.get('orgId') as string
   const nodeId = formData.get('nodeId') as string
   const email = (formData.get('email') as string).trim().toLowerCase()
-  if (!orgId || !nodeId || !email) return { error: 'Missing fields' }
+  if (!orgId || !nodeId || !email) return err('Missing fields')
 
   const actor = await requireOrgAdmin(orgId)
 
@@ -113,7 +146,7 @@ export async function addMemberToNodeAction(formData: FormData): Promise<{ error
     await addUserToNode({ nodeId, userId: profile.id, actorId: actor.id })
     await logAudit({ actorId: actor.id, action: 'org_node_member.add', entityType: 'org_node_member', entityId: nodeId, metadata: { email } })
     revalidatePath('/people')
-    return {}
+    return ok()
   }
 
   // Unregistered user — create pending invite and send email
@@ -133,68 +166,76 @@ export async function addMemberToNodeAction(formData: FormData): Promise<{ error
       nodeName: nodeData?.name ?? 'a team',
     })
     await sendEmail({ to: email, subject, html })
-  } catch (err) {
-    console.error('Failed to send org node invite email:', err)
+  } catch (emailErr) {
+    console.error('Failed to send org node invite email:', emailErr)
   }
 
   revalidatePath('/people')
-  return {}
+  return ok()
 }
 
-export async function cancelPendingOrgNodeInvitationAction(formData: FormData): Promise<void> {
+export async function cancelPendingOrgNodeInvitationAction(formData: FormData): Promise<ActionResult> {
   const orgId = formData.get('orgId') as string
   const invitationId = formData.get('invitationId') as string
-  if (!orgId || !invitationId) return
+  if (!orgId || !invitationId) return err('Missing fields.')
 
   const actor = await requireOrgAdmin(orgId)
-  await deletePendingOrgNodeInvitationById(invitationId, orgId)
-  await logAudit({ actorId: actor.id, action: 'org_node_invite.cancel', entityType: 'org_node', entityId: invitationId })
+  try {
+    await deletePendingOrgNodeInvitationById(invitationId, orgId)
+    await logAudit({ actorId: actor.id, action: 'org_node_invite.cancel', entityType: 'org_node', entityId: invitationId })
+  } catch {
+    return err('Failed to cancel invitation. Please try again.')
+  }
   revalidatePath('/people')
+  return ok()
 }
 
-export async function removeMemberFromNodeAction(formData: FormData): Promise<void> {
+export async function removeMemberFromNodeAction(formData: FormData): Promise<ActionResult> {
   const orgId = formData.get('orgId') as string
   const nodeId = formData.get('nodeId') as string
   const userId = formData.get('userId') as string
-  if (!orgId || !nodeId || !userId) return
+  if (!orgId || !nodeId || !userId) return err('Missing fields.')
 
   const actor = await requireOrgAdmin(orgId)
-  await removeUserFromNode(nodeId, userId)
-  await logAudit({ actorId: actor.id, action: 'org_node_member.remove', entityType: 'org_node_member', entityId: nodeId, metadata: { userId } })
-  revalidatePath('/people')
-}
-
-export async function promoteMemberAction(formData: FormData): Promise<void> {
-  const orgId = formData.get('orgId') as string
-  const userId = formData.get('userId') as string
-  if (!orgId || !userId) return
-
-  const actor = await requireOrgAdmin(orgId)
-  await setOrgRole(orgId, userId, 'org_admin')
-  await logAudit({ actorId: actor.id, action: 'org_member.promote', entityType: 'org_member', entityId: userId, metadata: { orgId } })
-  revalidatePath('/people')
-}
-
-// Void wrapper — used as a plain form action in server components where the
-// error return value from addMemberToNodeAction cannot be consumed.
-// On error, redirects to the org page with an addError query param so the
-// user sees feedback rather than a silent no-op.
-export async function addMemberToNodeVoidAction(formData: FormData): Promise<void> {
-  const orgId = formData.get('orgId') as string
-  const result = await addMemberToNodeAction(formData)
-  if (result.error) {
-    redirect(`/people?org=${orgId}&addError=${encodeURIComponent(result.error)}`)
+  try {
+    await removeUserFromNode(nodeId, userId)
+    await logAudit({ actorId: actor.id, action: 'org_node_member.remove', entityType: 'org_node_member', entityId: nodeId, metadata: { userId } })
+  } catch {
+    return err('Failed to remove member. Please try again.')
   }
+  revalidatePath('/people')
+  return ok()
 }
 
-export async function demoteMemberAction(formData: FormData): Promise<void> {
+export async function promoteMemberAction(formData: FormData): Promise<ActionResult> {
   const orgId = formData.get('orgId') as string
   const userId = formData.get('userId') as string
-  if (!orgId || !userId) return
+  if (!orgId || !userId) return err('Missing fields.')
 
   const actor = await requireOrgAdmin(orgId)
-  if (actor.id === userId) return // Cannot demote self
-  await setOrgRole(orgId, userId, 'member')
-  await logAudit({ actorId: actor.id, action: 'org_member.demote', entityType: 'org_member', entityId: userId, metadata: { orgId } })
+  try {
+    await setOrgRole(orgId, userId, 'org_admin')
+    await logAudit({ actorId: actor.id, action: 'org_member.promote', entityType: 'org_member', entityId: userId, metadata: { orgId } })
+  } catch {
+    return err('Failed to promote member. Please try again.')
+  }
   revalidatePath('/people')
+  return ok()
+}
+
+export async function demoteMemberAction(formData: FormData): Promise<ActionResult> {
+  const orgId = formData.get('orgId') as string
+  const userId = formData.get('userId') as string
+  if (!orgId || !userId) return err('Missing fields.')
+
+  const actor = await requireOrgAdmin(orgId)
+  if (actor.id === userId) return err('Cannot demote yourself.')
+  try {
+    await setOrgRole(orgId, userId, 'member')
+    await logAudit({ actorId: actor.id, action: 'org_member.demote', entityType: 'org_member', entityId: userId, metadata: { orgId } })
+  } catch {
+    return err('Failed to demote member. Please try again.')
+  }
+  revalidatePath('/people')
+  return ok()
 }
