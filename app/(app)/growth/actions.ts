@@ -39,13 +39,17 @@ export async function saveGoalAction(formData: FormData): Promise<ActionResult> 
       status: 'planned',
       checkin_frequency_weeks,
     })
+    if (resource_ids_raw) {
+      let resource_ids: string[]
+      try {
+        resource_ids = JSON.parse(resource_ids_raw)
+      } catch {
+        return err('Invalid resource data.')
+      }
+      await bulkAddGoalResources(plan.id, resource_ids, user.id)
+    }
   } catch {
     return err('Failed to save goal. Please try again.')
-  }
-
-  if (resource_ids_raw) {
-    const resource_ids: string[] = JSON.parse(resource_ids_raw)
-    await bulkAddGoalResources(plan.id, resource_ids, user.id)
   }
 
   await logAudit({
