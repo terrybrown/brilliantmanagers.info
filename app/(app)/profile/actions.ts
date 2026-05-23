@@ -1,6 +1,5 @@
 'use server'
 
-import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
 import { updateProfile } from '@/lib/db/profiles'
@@ -42,7 +41,7 @@ export async function updateProfileAction(formData: FormData): Promise<ActionRes
 export async function uploadAvatarAction(formData: FormData): Promise<ActionResult> {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect('/login')
+  if (!user) return err('Not authenticated')
 
   const avatarFile = formData.get('avatar') as File | null
   if (!avatarFile || avatarFile.size === 0) return err('No file selected.')
@@ -70,7 +69,7 @@ export async function uploadAvatarAction(formData: FormData): Promise<ActionResu
 export async function removeAvatarAction(): Promise<ActionResult> {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect('/login')
+  if (!user) return err('Not authenticated')
 
   const paths = ['jpg', 'png', 'webp'].map(ext => `${user.id}/avatar.${ext}`)
   const { error: storageError } = await supabase.storage.from('avatars').remove(paths)
@@ -91,12 +90,12 @@ export async function removeAvatarAction(): Promise<ActionResult> {
 export async function updateBlindScoringAction(value: boolean): Promise<ActionResult> {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect('/login')
+  if (!user) return err('Not authenticated')
 
   try {
     await updateProfile(user.id, { manager_scoring_blind: value })
   } catch {
-    return err('Failed to update preference')
+    return err('Failed to update preference.')
   }
   await logAudit({
     actorId: user.id,
