@@ -7,13 +7,18 @@ export async function sendManagerScoringNeededEmail(
 ): Promise<void> {
   const profile = await getProfile(managerId)
   if (!profile?.email) return
+  // false = explicitly opted out; true = opted in (DB default)
   if (!profile.email_notifications_enabled) return
-  await sendEmail({
-    to: profile.email,
-    subject: `${directReportDisplayName} has completed their self-assessment`,
-    html: `<p>Hi ${profile.display_name ?? ''},</p>
+  try {
+    await sendEmail({
+      to: profile.email,
+      subject: `${directReportDisplayName} has completed their self-assessment`,
+      html: `<p>Hi ${profile.display_name ?? ''},</p>
 <p>${directReportDisplayName} has completed their self-assessment. Head to your <a href="https://brilliantmanagers.info/people">team page</a> to score them.</p>`,
-  })
+    })
+  } catch (e) {
+    console.error('Failed to send manager scoring needed email:', e)
+  }
 }
 
 export async function sendConnectionRequestEmail(
@@ -22,6 +27,7 @@ export async function sendConnectionRequestEmail(
 ): Promise<void> {
   const profile = await getProfile(recipientId)
   if (!profile?.email) return
+  // false = explicitly opted out; true = opted in (DB default)
   if (!profile.email_notifications_enabled) return
   try {
     await sendEmail({
@@ -41,6 +47,7 @@ export async function sendConnectionAcceptedEmail(
 ): Promise<void> {
   const profile = await getProfile(recipientId)
   if (!profile?.email) return
+  // false = explicitly opted out; true = opted in (DB default)
   if (!profile.email_notifications_enabled) return
   try {
     await sendEmail({
@@ -60,6 +67,7 @@ export async function sendRoundScheduledEmail(
 ): Promise<void> {
   const profile = await getProfile(recipientId)
   if (!profile?.email) return
+  // false = explicitly opted out; true = opted in (DB default)
   if (!profile.email_notifications_enabled) return
   try {
     await sendEmail({

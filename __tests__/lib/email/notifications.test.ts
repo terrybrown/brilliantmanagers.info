@@ -68,6 +68,12 @@ describe('sendConnectionRequestEmail', () => {
 
     await expect(sendConnectionRequestEmail('u1', 'Jamie')).resolves.toBeUndefined()
   })
+
+  it('does nothing when profile is not found', async () => {
+    mockGetProfile.mockResolvedValue(null)
+    await sendConnectionRequestEmail('u1', 'Jamie')
+    expect(mockSendEmail).not.toHaveBeenCalled()
+  })
 })
 
 describe('sendConnectionAcceptedEmail', () => {
