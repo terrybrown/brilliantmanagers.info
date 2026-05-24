@@ -78,6 +78,21 @@ export function PillarAccordion({ pillars, openPillar, onOpenChange }: PillarAcc
               <span className="w-8 text-right text-xs font-semibold text-amber-400">
                 {pillar.score.toFixed(1)}
               </span>
+              {pillar.managerScore !== undefined && (
+                <span
+                  className="flex-shrink-0"
+                  style={{
+                    fontSize: 10,
+                    fontWeight: 700,
+                    color: '#a78bfa',
+                    background: 'rgba(167,139,250,0.15)',
+                    padding: '2px 7px',
+                    borderRadius: 99,
+                  }}
+                >
+                  Mgr {pillar.managerScore.toFixed(1)}
+                </span>
+              )}
               {delta !== null && delta !== 0 && (
                 <span
                   className="flex-shrink-0 rounded font-bold"
