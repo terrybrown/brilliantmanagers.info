@@ -47,10 +47,11 @@ describe('ManagerStrip', () => {
     expect(screen.getByText(/3 of 5/i)).toBeInTheDocument()
   })
 
-  it('shows fully scored card (no link) when complete', () => {
+  it('shows fully scored card with link to /dr/[userId] when complete', () => {
     render(<ManagerStrip summaries={[{ ...BASE, managerScoringStatus: 'complete', pillarsScored: 5 }]} />)
     expect(screen.getByText(/fully scored/i)).toBeInTheDocument()
-    expect(screen.queryByRole('link')).toBeNull()
+    const link = screen.getByRole('link', { name: /fully scored/i })
+    expect(link).toHaveAttribute('href', '/dr/dr-1?roundId=round-1')
   })
 
   it('shows "N of M assessed" subtext', () => {
