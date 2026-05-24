@@ -363,21 +363,6 @@ export default async function DashboardPage() {
     }
   })
 
-  // ── Sparkline data (overall score per round) ──────────────────────────────────
-  const sparklineData = allRoundsWithScores.map(({ round: r, scores: s }) => {
-    const avg =
-      s.length > 0
-        ? s.reduce((sum, sc) => sum + LEVEL_VALUES[sc.level as Level], 0) / s.length
-        : 0
-    return {
-      date: new Date(r.completed_at ?? r.created_at).toLocaleDateString('en-US', {
-        month: 'short',
-        year: 'numeric',
-      }),
-      score: Number(avg.toFixed(2)),
-    }
-  })
-
   // ── History chart data (per-pillar per round) ─────────────────────────────────
   const historyData: HistoryPoint[] = allRoundsWithScores.map(({ round: r, scores: s }) => {
     const date = new Date(r.completed_at ?? r.created_at).toLocaleDateString('en-US', {
@@ -415,7 +400,6 @@ export default async function DashboardPage() {
         pillarScoresForRadar={pillarScoresForRadar}
         hasManagerScores={hasManagerScores}
         pillarsForAccordion={pillarsForAccordion}
-        sparklineData={sparklineData}
         historyData={historyData}
         overallAvg={overallAvg}
         roundDate={roundDate}
