@@ -11,6 +11,7 @@ const APP_ROUTES = [
   '/reflections',
   '/profile',
   '/notifications',
+  '/dr',
 ]
 
 export async function middleware(request: NextRequest) {
