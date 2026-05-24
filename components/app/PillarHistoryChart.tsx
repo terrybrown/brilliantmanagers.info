@@ -125,7 +125,7 @@ export function PillarHistoryChart({ data }: Props) {
           {TOGGLES.slice(1).map(({ key, label, color }) =>
             activePillars.has(key) ? (
               <Line key={key} type="monotone" dataKey={key} name={label}
-                stroke={color} strokeWidth={1} strokeDasharray="4 2" dot={false} />
+                stroke={color} strokeWidth={1} dot={false} />
             ) : null
           )}
 
