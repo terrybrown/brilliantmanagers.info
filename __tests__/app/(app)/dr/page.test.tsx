@@ -44,6 +44,7 @@ vi.mock('next/navigation', () => ({
 
 const PAGE_PARAMS = {
   params: Promise.resolve({ userId: 'dr-1' }),
+  searchParams: Promise.resolve({}),
 }
 
 describe('DrViewPage', () => {
@@ -85,5 +86,12 @@ describe('DrViewPage', () => {
     ])
     render(await DrViewPage(PAGE_PARAMS))
     expect(screen.getByText('Alice Smith')).toBeInTheDocument()
+  })
+
+  it('calls notFound when manager has no active connection to DR', async () => {
+    queryBuilder.maybeSingle.mockResolvedValueOnce({ data: null, error: null })
+    const { notFound } = await import('next/navigation')
+    await expect(DrViewPage(PAGE_PARAMS)).rejects.toThrow('NEXT_NOT_FOUND')
+    expect(notFound).toHaveBeenCalled()
   })
 })

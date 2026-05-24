@@ -19,10 +19,13 @@ import type { HistoryPoint } from '@/components/app/PillarHistoryChart'
 
 export default async function DrViewPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ userId: string }>
+  searchParams: Promise<{ roundId?: string }>
 }) {
   const { userId } = await params
+  const { roundId: requestedRoundId } = await searchParams
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
@@ -53,7 +56,10 @@ export default async function DrViewPage({
     )
   }
 
-  const { round, scores } = allRoundsWithScores[allRoundsWithScores.length - 1]
+  const targetRound = requestedRoundId
+    ? (allRoundsWithScores.find(r => r.round.id === requestedRoundId) ?? allRoundsWithScores[allRoundsWithScores.length - 1])
+    : allRoundsWithScores[allRoundsWithScores.length - 1]
+  const { round, scores } = targetRound
   const allRoundIds = allRoundsWithScores.map(r => r.round.id)
 
   const [managerScores, managerHistoryByRound] = await Promise.all([

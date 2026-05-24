@@ -393,6 +393,8 @@ export default async function DashboardPage() {
           : 0
       return [pillar, Number(avg.toFixed(2))]
     })
+    // Self-dashboard intentionally blends all managers' scores (employee sees all feedback combined).
+    // The /dr/[userId] page filters to ms.manager_id === user.id so each manager sees their own scores only.
     const mgrRoundScores = managerHistoryByRound[r.id] ?? []
     const mgrOverall =
       mgrRoundScores.length > 0
