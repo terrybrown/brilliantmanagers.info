@@ -13,6 +13,8 @@ export interface SkillData {
   score: number
   chipType: 'opportunity' | 'goal' | null
   goalText?: string
+  managerLevel?: Level
+  managerScore?: number
 }
 
 export interface PillarData {
@@ -22,6 +24,7 @@ export interface PillarData {
   isLowest: boolean
   skills: SkillData[]
   prevScore?: number
+  managerScore?: number
 }
 
 interface PillarAccordionProps {
