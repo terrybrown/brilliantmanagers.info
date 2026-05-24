@@ -21,20 +21,20 @@ export default async function DrViewPage({
   params,
 }: {
   params: Promise<{ userId: string }>
-  searchParams: Promise<{ roundId?: string }>
 }) {
   const { userId } = await params
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
-  const { data: connection } = await supabase
+  const { data: connection, error: connError } = await supabase
     .from('connections')
     .select('id')
     .eq('manager_id', user.id)
     .eq('direct_report_id', userId)
     .eq('status', 'active')
     .maybeSingle()
+  if (connError) throw connError
   if (!connection) notFound()
 
   const profile = await getProfile(userId)

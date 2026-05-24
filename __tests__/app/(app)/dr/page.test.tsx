@@ -44,7 +44,6 @@ vi.mock('next/navigation', () => ({
 
 const PAGE_PARAMS = {
   params: Promise.resolve({ userId: 'dr-1' }),
-  searchParams: Promise.resolve({}),
 }
 
 describe('DrViewPage', () => {
