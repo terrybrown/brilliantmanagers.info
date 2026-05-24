@@ -89,6 +89,8 @@ export async function getManagerScoringStatus(
   return allKeys.every(k => scored.has(k)) ? 'complete' : 'in_progress'
 }
 
+// NOTE: caller is responsible for passing only complete-round IDs.
+// This function does not filter by round status — pass only IDs from getAllCompleteRoundsWithScores.
 export async function getManagerScoresForAllRounds(
   roundIds: string[]
 ): Promise<Record<string, ManagerScore[]>> {

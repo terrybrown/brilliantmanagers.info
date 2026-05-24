@@ -412,7 +412,7 @@ export default async function DashboardPage() {
       overall: Number(overall.toFixed(2)),
       ...Object.fromEntries(pillarEntries),
       ...(mgrOverall !== undefined ? { mgr_overall: Number(mgrOverall.toFixed(2)) } : {}),
-      ...Object.fromEntries(mgrPillarEntries.filter(([, v]) => v !== undefined)),
+      ...Object.fromEntries(mgrPillarEntries.filter((e): e is [string, number] => e[1] !== undefined)),
     } as HistoryPoint
   })
 
