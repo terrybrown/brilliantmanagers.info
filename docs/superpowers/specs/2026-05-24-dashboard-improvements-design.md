@@ -143,8 +143,8 @@ Create `app/(app)/dr/[userId]/page.tsx`.
 
 **Data fetching:** Same as `DashboardPage` but for the DR's data:
 - `getAllCompleteRoundsWithScores(userId)` — DR's self scores across all rounds
-- `getManagerScoresForDirectReport(latestRound.id)` — the logged-in manager's scores for that DR (already gated on round being complete)
-- `getManagerScoresForAllRounds(allRoundIds)` — for history chart manager lines
+- `getManagerScoresForRound(latestRound.id, user.id)` — the logged-in manager's own scores for that DR's round (`getManagerScoresForDirectReport` omits the `manager_id` filter and is not appropriate here)
+- `getManagerScoresForAllRounds(allRoundIds)` — for history chart manager lines (filter by `manager_id === user.id` after fetching)
 - DR's profile for display name / avatar
 
 **Rendering:** Render `DashboardResults` (with all the improvements from sections 1–4) with the DR's data. Pass `isReadOnly={true}` to suppress the action cards (ActiveRoundCard, GrowthSummaryCard, CheckInNudgeCard, InviteManagerModal).
