@@ -3,17 +3,23 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { PILLARS, PILLAR_LABELS, getSkillsByPillar, type Pillar, type Level } from '@/lib/skills'
 import type { SkillGuideContent } from '@/lib/guide-content'
-import { PillarNav } from './PillarNav'
-import { SkillList } from './SkillList'
-import { GuidePanel } from './GuidePanel'
+import { PillarNav } from '@/components/app/scorecard/PillarNav'
+import { GuidePanel } from '@/components/app/scorecard/GuidePanel'
+import { ManagerSkillList } from '@/components/app/manager/ManagerSkillList'
 
-interface ScorecardShellProps {
+interface ManagerScorecardShellProps {
   roundId: string
-  allScores: Record<string, Level>
+  allManagerScores: Record<string, Level>
+  directReportScores: Record<string, Level> | null
   allGuideContent: Record<string, SkillGuideContent | null>
 }
 
-export function ScorecardShell({ roundId, allScores, allGuideContent }: ScorecardShellProps) {
+export function ManagerScorecardShell({
+  roundId,
+  allManagerScores,
+  directReportScores,
+  allGuideContent,
+}: ManagerScorecardShellProps) {
   const firstSelfSkill = getSkillsByPillar('self')[0]
   const [activePillar, setActivePillar] = useState<Pillar>('self')
   const [activeSkillKey, setActiveSkillKey] = useState<string | null>(
@@ -22,7 +28,7 @@ export function ScorecardShell({ roundId, allScores, allGuideContent }: Scorecar
   const [lastActiveByPillar, setLastActiveByPillar] = useState<Partial<Record<Pillar, string>>>(
     firstSelfSkill ? { self: firstSelfSkill.key } : {}
   )
-  const [scores, setScores] = useState<Record<string, Level>>(allScores)
+  const [scores, setScores] = useState<Record<string, Level>>(allManagerScores)
 
   const handlePillarChange = (pillar: Pillar) => {
     setActivePillar(pillar)
@@ -62,7 +68,6 @@ export function ScorecardShell({ roundId, allScores, allGuideContent }: Scorecar
   ) as Record<Pillar, { scored: number; total: number }>
 
   const skills = getSkillsByPillar(activePillar)
-
   const pillarIndex = PILLARS.indexOf(activePillar)
   const prevPillar = pillarIndex > 0 ? PILLARS[pillarIndex - 1] : null
   const nextPillar = pillarIndex < PILLARS.length - 1 ? PILLARS[pillarIndex + 1] : null
@@ -90,13 +95,15 @@ export function ScorecardShell({ roundId, allScores, allGuideContent }: Scorecar
           minWidth: 0,
         }}
       >
-        <SkillList
+        <ManagerSkillList
           skills={skills}
           scores={scores}
           roundId={roundId}
+          pillar={activePillar}
           activeSkillKey={activeSkillKey}
           onSkillActivate={handleSkillActivate}
           onScore={handleScore}
+          drScores={directReportScores}
         />
 
         <div
@@ -139,7 +146,6 @@ export function ScorecardShell({ roundId, allScores, allGuideContent }: Scorecar
                 border: 'none',
                 borderRadius: 8,
                 padding: '8px 18px',
-                cursor: 'pointer',
                 fontSize: 13,
                 fontWeight: 600,
                 color: '#0f172a',
@@ -149,7 +155,7 @@ export function ScorecardShell({ roundId, allScores, allGuideContent }: Scorecar
                 gap: 6,
               }}
             >
-              Show analysis →
+              Done →
             </Link>
           ) : nextPillar ? (
             <button
