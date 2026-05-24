@@ -23,9 +23,6 @@ vi.mock('@/components/app/CheckInNudgeCard', () => ({
 vi.mock('@/components/people/InviteManagerModal', () => ({
   InviteManagerModal: () => <div data-testid="invite-manager" />,
 }))
-vi.mock('@/components/app/ScoreSparkline', () => ({
-  ScoreSparkline: () => <div data-testid="score-sparkline" />,
-}))
 
 const BASE: Parameters<typeof DashboardResults>[0] = {
   pillarScoresForRadar: [],

@@ -56,7 +56,7 @@ export function DashboardResults({
       {/* Three-column grid */}
       <div className="grid grid-cols-1 gap-6 md:grid-cols-[280px_1fr_260px] lg:grid-cols-[320px_1fr_260px]">
 
-        {/* Left: Radar + score + sparkline */}
+        {/* Left: Radar + score boxes */}
         <aside className="flex flex-col gap-4">
           <ScorecardRadarChart
             pillarScores={pillarScoresForRadar}
