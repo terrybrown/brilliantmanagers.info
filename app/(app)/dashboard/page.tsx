@@ -385,7 +385,7 @@ export default async function DashboardPage() {
       date,
       overall: Number(overall.toFixed(2)),
       ...Object.fromEntries(pillarEntries),
-    } as HistoryPoint
+    } as HistoryPoint // TODO(task-7): add mgr_* fields from managerHistoryByRound
   })
 
   const inProgressScores = inProgress ? await getScoresForRound(inProgress.id) : []

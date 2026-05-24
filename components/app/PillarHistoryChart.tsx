@@ -44,6 +44,7 @@ export function PillarHistoryChart({ data }: Props) {
   const [showManager, setShowManager] = useState(true)
 
   if (data.length < 2) return null
+  // All hook calls are above this guard — safe per Rules of Hooks
 
   const toggle = (key: string) =>
     setActivePillars(prev => {
