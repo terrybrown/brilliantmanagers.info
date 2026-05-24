@@ -11,7 +11,7 @@ import { getConnectionsForUser } from '@/lib/db/connections'
 import { getDirectReportRoundSummaries } from '@/lib/db/direct-reports'
 import { getProfile } from '@/lib/db/profiles'
 import { getScoresForRound } from '@/lib/db/scores'
-import { getManagerScoresForDirectReport } from '@/lib/db/manager-scores'
+import { getManagerScoresForDirectReport, getManagerScoresForAllRounds } from '@/lib/db/manager-scores'
 import { getPlansForUser } from '@/lib/db/development-plans'
 import { nextRoundTitle as computeNextRoundTitle, computePillarScores } from '@/lib/reflections'
 import {
@@ -268,13 +268,20 @@ export default async function DashboardPage() {
   const { round, scores } = allRoundsWithScores[allRoundsWithScores.length - 1]
 
   // ── Parallel data fetch ───────────────────────────────────────────────────────
-  const [managerScores, plans, inProgress] = await Promise.all([
+  const allRoundIds = allRoundsWithScores.map(({ round: r }) => r.id)
+  const [managerScores, plans, inProgress, managerHistoryByRound] = await Promise.all([
     getManagerScoresForDirectReport(round.id),
     getPlansForUser(user.id),
     getInProgressRound(user.id),
+    getManagerScoresForAllRounds(allRoundIds),
   ])
 
   const hasManagerScores = managerScores.length > 0
+
+  const overallManagerAvg =
+    managerScores.length > 0
+      ? managerScores.reduce((sum, s) => sum + LEVEL_VALUES[s.level as Level], 0) / managerScores.length
+      : undefined
 
   const overdueCheckins = plans.filter(p => {
     if (p.status === 'completed' || !p.checkin_frequency_weeks) return false
@@ -335,6 +342,7 @@ export default async function DashboardPage() {
     const pillarSkills = getSkillsByPillar(pillar as Pillar)
     const pillarSelfScores = scores.filter(s => s.pillar === pillar)
     const selfAvg = pillarScoresForRadar.find(p => p.pillar === pillar)?.selfScore ?? 0
+    const managerPillarScore = pillarScoresForRadar.find(p => p.pillar === pillar)?.managerScore
 
     return {
       pillar,
@@ -342,6 +350,7 @@ export default async function DashboardPage() {
       score: selfAvg,
       isLowest: pillar === lowestPillar,
       prevScore: prevPillarScoreMap?.[pillar],
+      managerScore: managerPillarScore,
       skills: pillarSkills.map(skill => {
         const selfScore = pillarSelfScores.find(s => s.skill_key === skill.key)
         const level = (selfScore?.level ?? 'Basic') as Level
@@ -350,6 +359,7 @@ export default async function DashboardPage() {
         let chipType: 'opportunity' | 'goal' | null = null
         if (hasActiveGoal) chipType = 'goal'
         else if (score <= 2) chipType = 'opportunity'
+        const mgrScore = managerScores.find(ms => ms.skill_key === skill.key)
         return {
           key: skill.key,
           name: skill.label,
@@ -358,6 +368,8 @@ export default async function DashboardPage() {
           score,
           chipType,
           goalText: hasActiveGoal ? planGoalByKey[skill.key] : undefined,
+          managerLevel: mgrScore?.level as Level | undefined,
+          managerScore: mgrScore ? LEVEL_VALUES[mgrScore.level as Level] : undefined,
         }
       }),
     }
@@ -381,11 +393,27 @@ export default async function DashboardPage() {
           : 0
       return [pillar, Number(avg.toFixed(2))]
     })
+    const mgrRoundScores = managerHistoryByRound[r.id] ?? []
+    const mgrOverall =
+      mgrRoundScores.length > 0
+        ? mgrRoundScores.reduce((sum, ms) => sum + LEVEL_VALUES[ms.level as Level], 0) / mgrRoundScores.length
+        : undefined
+    const mgrPillarEntries = PILLARS.map(pillar => {
+      const skillKeys = getSkillsByPillar(pillar as Pillar).map(sk => sk.key)
+      const ps = mgrRoundScores.filter(ms => skillKeys.includes(ms.skill_key))
+      const avg =
+        ps.length > 0
+          ? ps.reduce((sum, ms) => sum + LEVEL_VALUES[ms.level as Level], 0) / ps.length
+          : undefined
+      return [`mgr_${pillar}`, avg !== undefined ? Number(avg.toFixed(2)) : undefined]
+    })
     return {
       date,
       overall: Number(overall.toFixed(2)),
       ...Object.fromEntries(pillarEntries),
-    } as HistoryPoint // TODO(task-7): add mgr_* fields from managerHistoryByRound
+      ...(mgrOverall !== undefined ? { mgr_overall: Number(mgrOverall.toFixed(2)) } : {}),
+      ...Object.fromEntries(mgrPillarEntries.filter(([, v]) => v !== undefined)),
+    } as HistoryPoint
   })
 
   const inProgressScores = inProgress ? await getScoresForRound(inProgress.id) : []
@@ -402,6 +430,7 @@ export default async function DashboardPage() {
         pillarsForAccordion={pillarsForAccordion}
         historyData={historyData}
         overallAvg={overallAvg}
+        overallManagerAvg={overallManagerAvg}
         roundDate={roundDate}
         inProgressRound={inProgress}
         scoredPillarCount={scoredPillarCount}

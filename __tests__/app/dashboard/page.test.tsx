@@ -4,6 +4,7 @@ import DashboardPage from '@/app/(app)/dashboard/page'
 import { getAllCompleteRoundsWithScores, getInProgressRound } from '@/lib/db/rounds'
 import { getScoresForRound } from '@/lib/db/scores'
 import { getConnectionsForUser } from '@/lib/db/connections'
+import { getManagerScoresForDirectReport } from '@/lib/db/manager-scores'
 
 vi.mock('@/lib/supabase/server', () => ({
   createClient: vi.fn().mockResolvedValue({
@@ -51,12 +52,14 @@ vi.mock('@/components/dashboard/DashboardResults', () => ({
     scoredPillarCount: number
     inProgressRound: unknown
     nextRoundTitle: string
+    overallManagerAvg?: number
   }) => (
     <div
       data-testid="dashboard-results"
       data-scored={props.scoredPillarCount}
       data-has-round={String(props.inProgressRound !== null)}
       data-title={props.nextRoundTitle}
+      data-mgr-avg={props.overallManagerAvg ?? ''}
     />
   ),
 }))
@@ -223,5 +226,27 @@ describe('DashboardPage — with completed rounds', () => {
 
     render(await DashboardPage())
     expect(screen.getByTestId('dashboard-results')).toHaveAttribute('data-has-round', 'true')
+  })
+
+  it('passes overallManagerAvg when manager scores exist', async () => {
+    vi.mocked(getAllCompleteRoundsWithScores).mockResolvedValueOnce([
+      {
+        round: {
+          id: 'round-1', user_id: 'user-123', status: 'complete' as const,
+          created_at: '2026-01-01T00:00:00Z', completed_at: '2026-03-01T00:00:00Z',
+          title: 'Q1 2026', notes: null, remind_at: null,
+        },
+        scores: [
+          { id: 's1', round_id: 'round-1', user_id: 'user-123', skill_key: 'self-resilience', pillar: 'self', level: 'Proficient' },
+        ],
+      },
+    ])
+    vi.mocked(getManagerScoresForDirectReport).mockResolvedValueOnce([
+      { id: 'ms1', round_id: 'round-1', manager_id: 'mgr-1', skill_key: 'self-resilience', level: 'Advanced', scored_at: '2026-03-01' },
+    ])
+
+    render(await DashboardPage())
+    // Advanced = LEVEL_VALUES.Advanced = 4, so overallManagerAvg = 4.0
+    expect(screen.getByTestId('dashboard-results')).toHaveAttribute('data-mgr-avg', '4')
   })
 })
