@@ -7,6 +7,7 @@ interface FeatureCard {
   body: string
   href: string
   linkLabel: string
+  primary?: boolean
 }
 
 interface FeatureGridProps {
@@ -16,15 +17,22 @@ interface FeatureGridProps {
 export function FeatureGrid({ cards }: FeatureGridProps) {
   return (
     <section className="px-6 pb-20" style={{ maxWidth: 'var(--container-width)', margin: '0 auto' }}>
-      <div className="grid gap-5 sm:grid-cols-3">
+      <div className="grid gap-5 sm:grid-cols-2">
         {cards.map((card) => (
           <div
             key={card.href}
             className="flex flex-col rounded-xl p-6"
-            style={{
-              background: 'rgba(254,252,247,0.05)',
-              border: '1px solid rgba(254,252,247,0.10)',
-            }}
+            style={
+              card.primary
+                ? {
+                    background: 'rgba(245,158,11,0.07)',
+                    border: '1px solid rgba(245,158,11,0.30)',
+                  }
+                : {
+                    background: 'rgba(254,252,247,0.05)',
+                    border: '1px solid rgba(254,252,247,0.10)',
+                  }
+            }
           >
             <div className="mb-2 flex items-center gap-2">
               {card.icon}
