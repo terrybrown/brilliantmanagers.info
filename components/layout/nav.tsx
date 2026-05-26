@@ -52,7 +52,7 @@ function NavLink({
     <Link
       href={href}
       onClick={onClick}
-      className={isCta ? `${className} rounded` : className}
+      className={isCta ? `${className} rounded-full` : className}
       style={
         isCta
           ? {
@@ -61,6 +61,7 @@ function NavLink({
               color: '#f59e0b',
               padding: '4px 10px',
               fontWeight: 600,
+              ...extraStyle,
             }
           : { color: isActive ? 'var(--color-text-primary)' : 'var(--color-text-muted)', ...extraStyle }
       }
