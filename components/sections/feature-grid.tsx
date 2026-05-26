@@ -1,12 +1,23 @@
 import Link from 'next/link'
 import { type ReactNode } from 'react'
 
+export const CARD_STYLE_DEFAULT = {
+  background: 'rgba(254,252,247,0.05)',
+  border: '1px solid rgba(254,252,247,0.10)',
+} as const
+
+export const CARD_STYLE_PRIMARY = {
+  background: 'rgba(245,158,11,0.07)',
+  border: '1px solid rgba(245,158,11,0.30)',
+} as const
+
 interface FeatureCard {
   icon: ReactNode
   title: string
   body: string
   href: string
   linkLabel: string
+  primary?: boolean
 }
 
 interface FeatureGridProps {
@@ -16,15 +27,13 @@ interface FeatureGridProps {
 export function FeatureGrid({ cards }: FeatureGridProps) {
   return (
     <section className="px-6 pb-20" style={{ maxWidth: 'var(--container-width)', margin: '0 auto' }}>
-      <div className="grid gap-5 sm:grid-cols-3">
+      <div className="grid gap-5 sm:grid-cols-2">
         {cards.map((card) => (
           <div
+            data-testid={`feature-card-${card.href}`}
             key={card.href}
             className="flex flex-col rounded-xl p-6"
-            style={{
-              background: 'rgba(254,252,247,0.05)',
-              border: '1px solid rgba(254,252,247,0.10)',
-            }}
+            style={card.primary ? CARD_STYLE_PRIMARY : CARD_STYLE_DEFAULT}
           >
             <div className="mb-2 flex items-center gap-2">
               {card.icon}

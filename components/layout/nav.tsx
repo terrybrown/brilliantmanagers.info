@@ -47,12 +47,25 @@ function NavLink({
   const isActive = pathname === item.href || pathname.startsWith(item.href + '/')
   const Icon = NAV_ICONS[item.href]
   const href = item.href === '/the-tool' && isAuthenticated ? '/dashboard' : item.href
+  const isCta = 'cta' in item && item.cta
+  // CTA items always render in amber regardless of active state
   return (
     <Link
       href={href}
       onClick={onClick}
-      className={className}
-      style={{ color: isActive ? 'var(--color-text-primary)' : 'var(--color-text-muted)', ...extraStyle }}
+      className={isCta ? `${className} rounded-full` : className}
+      style={
+        isCta
+          ? {
+              background: 'rgba(245,158,11,0.12)',
+              border: '1px solid rgba(245,158,11,0.25)',
+              color: '#f59e0b',
+              padding: '4px 10px',
+              fontWeight: 600,
+              ...extraStyle,
+            }
+          : { color: isActive ? 'var(--color-text-primary)' : 'var(--color-text-muted)', ...extraStyle }
+      }
     >
       {Icon && (
         <Icon size={iconSize} strokeWidth={1.75} style={{ color: 'var(--color-accent)', flexShrink: 0 }} />

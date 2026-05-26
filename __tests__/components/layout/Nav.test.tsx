@@ -10,8 +10,8 @@ vi.mock('@/components/app/LogoMark', () => ({
 vi.mock('@/config/site', () => ({
   siteConfig: {
     nav: [
-      { href: '/the-guide', label: 'The Guide' },
-      { href: '/the-tool', label: 'The Tool' },
+      { href: '/the-guide', label: 'Read the Guide' },
+      { href: '/the-tool', label: 'Try the Scorecard', cta: true },
     ],
     githubUrl: 'https://github.com/test',
     gaId: 'G-TEST',
@@ -35,15 +35,15 @@ describe('Nav', () => {
     expect(screen.queryByRole('link', { name: /sign in/i })).toBeNull()
   })
 
-  it('links The Tool to /the-tool when not authenticated', () => {
+  it('links Try the Scorecard to /the-tool when not authenticated', () => {
     render(<Nav isAuthenticated={false} />)
-    const toolLink = screen.getByRole('link', { name: /the tool/i })
+    const toolLink = screen.getByRole('link', { name: /try the scorecard/i })
     expect(toolLink).toHaveAttribute('href', '/the-tool')
   })
 
-  it('links The Tool to /dashboard when authenticated', () => {
+  it('links Try the Scorecard to /dashboard when authenticated', () => {
     render(<Nav isAuthenticated={true} />)
-    const toolLink = screen.getByRole('link', { name: /the tool/i })
+    const toolLink = screen.getByRole('link', { name: /try the scorecard/i })
     expect(toolLink).toHaveAttribute('href', '/dashboard')
   })
 
@@ -73,5 +73,17 @@ describe('Nav', () => {
     const mobileNav = screen.getByRole('navigation', { name: /mobile menu/i })
     fireEvent.click(mobileNav.querySelector('a')!)
     expect(screen.queryByRole('navigation', { name: /mobile menu/i })).toBeNull()
+  })
+
+  it('renders the CTA nav item with amber background style', () => {
+    render(<Nav isAuthenticated={false} />)
+    const ctaLink = screen.getAllByRole('link', { name: /try the scorecard/i })[0]
+    expect(ctaLink).toHaveStyle({ background: 'rgba(245,158,11,0.12)' })
+  })
+
+  it('does not render a non-CTA nav item with amber background style', () => {
+    render(<Nav isAuthenticated={false} />)
+    const guideLink = screen.getAllByRole('link', { name: /read the guide/i })[0]
+    expect(guideLink).not.toHaveStyle({ background: 'rgba(245,158,11,0.12)' })
   })
 })

@@ -7,7 +7,6 @@ import {
   HelpCircle,
   BookOpen,
   Gauge,
-  PenLine,
   type LucideIcon,
 } from 'lucide-react'
 import React from 'react'
@@ -47,8 +46,4 @@ export function GuideBookIcon({ size }: SectionIconProps) {
 
 export function GaugeIcon({ size }: SectionIconProps) {
   return <StyledIcon Icon={Gauge} size={size} />
-}
-
-export function BlogIcon({ size }: SectionIconProps) {
-  return <StyledIcon Icon={PenLine} size={size} />
 }
