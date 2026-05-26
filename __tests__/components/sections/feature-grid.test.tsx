@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { render, screen } from '@testing-library/react'
-import { FeatureGrid } from '@/components/sections/feature-grid'
+import { FeatureGrid, CARD_STYLE_DEFAULT, CARD_STYLE_PRIMARY } from '@/components/sections/feature-grid'
 
 const baseCard = {
   icon: null,
@@ -19,17 +19,15 @@ describe('FeatureGrid', () => {
   })
 
   it('applies default (non-primary) background to a standard card', () => {
-    const { container } = render(<FeatureGrid cards={[baseCard]} />)
-    const card = container.querySelector('.rounded-xl')
-    expect(card).toHaveStyle({ background: 'rgba(254,252,247,0.05)' })
+    render(<FeatureGrid cards={[baseCard]} />)
+    const card = screen.getByTestId('feature-card')
+    expect(card).toHaveStyle(CARD_STYLE_DEFAULT)
+    expect(card).not.toHaveStyle({ border: CARD_STYLE_PRIMARY.border })
   })
 
   it('applies amber background and border to a primary card', () => {
-    const { container } = render(
-      <FeatureGrid cards={[{ ...baseCard, primary: true }]} />
-    )
-    const card = container.querySelector('.rounded-xl')
-    expect(card).toHaveStyle({ background: 'rgba(245,158,11,0.07)' })
-    expect(card).toHaveStyle({ border: '1px solid rgba(245,158,11,0.30)' })
+    render(<FeatureGrid cards={[{ ...baseCard, primary: true }]} />)
+    const card = screen.getByTestId('feature-card')
+    expect(card).toHaveStyle(CARD_STYLE_PRIMARY)
   })
 })
