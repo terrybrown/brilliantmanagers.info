@@ -20,6 +20,7 @@ export default function HomePage() {
         }
         body="A framework — not a manual. It won't tell you what to do. It'll help you see where you are."
       />
+      {/* Card titles use short descriptive names; nav uses action-oriented CTAs */}
       <FeatureGrid
         cards={[
           {

@@ -30,7 +30,7 @@ export function FeatureGrid({ cards }: FeatureGridProps) {
       <div className="grid gap-5 sm:grid-cols-2">
         {cards.map((card) => (
           <div
-            data-testid="feature-card"
+            data-testid={`feature-card-${card.href}`}
             key={card.href}
             className="flex flex-col rounded-xl p-6"
             style={card.primary ? CARD_STYLE_PRIMARY : CARD_STYLE_DEFAULT}
