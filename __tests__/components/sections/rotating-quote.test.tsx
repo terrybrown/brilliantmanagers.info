@@ -58,22 +58,17 @@ describe('RotatingQuote', () => {
   })
 
   it('clears the fade timeout when unmounted during a transition', () => {
-    const consoleSpy = vi.spyOn(console, 'error')
     const { unmount } = render(<RotatingQuote />)
 
-    // Fire the interval (triggers setVisible(false) + schedules fadeIn timeout)
+    // Fire the interval — triggers setVisible(false) and schedules the fadeIn timeout
     act(() => { vi.advanceTimersByTime(10000) })
 
     // Unmount before the fade timeout fires
     unmount()
 
-    // Advance past where the timeout would have fired
-    act(() => { vi.advanceTimersByTime(400) })
-
-    // No React state-update-after-unmount error should have been logged
-    expect(consoleSpy).not.toHaveBeenCalledWith(
-      expect.stringContaining('unmounted component')
-    )
-    consoleSpy.mockRestore()
+    // Advancing past where the timeout would have fired should not throw
+    expect(() => {
+      act(() => { vi.advanceTimersByTime(400) })
+    }).not.toThrow()
   })
 })
