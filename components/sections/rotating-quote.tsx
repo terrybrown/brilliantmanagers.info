@@ -2,7 +2,11 @@
 
 import { useState, useEffect } from 'react'
 
-const QUOTES = [
+const FADE_MS = 400
+
+type Quote = { quote: string; attribution: string }
+
+const QUOTES: Quote[] = [
   { quote: "Management is doing things right; leadership is doing the right things.", attribution: "Peter Drucker" },
   { quote: "The most important thing in communication is hearing what isn't said.", attribution: "Peter Drucker" },
   { quote: "Your output is the output of your team.", attribution: "Andy Grove" },
@@ -41,18 +45,19 @@ export function RotatingQuote() {
       fadeIn = setTimeout(() => {
         setIndex(i => (i + 1) % quotes.length)
         setVisible(true)
-      }, 400)
+      }, FADE_MS)
     }, 10000)
     return () => {
       clearInterval(timer)
       clearTimeout(fadeIn)
     }
-  }, [quotes.length])
+  // quotes is stable by construction (initialised once via useState lazy initialiser)
+  }, [quotes])
 
   const current = quotes[index]
 
   return (
-    <section
+    <div
       className="border-t px-6 pt-8 pb-16"
       style={{ borderColor: 'rgba(254,252,247,0.08)' }}
     >
@@ -61,7 +66,7 @@ export function RotatingQuote() {
           maxWidth: 'var(--container-width)',
           margin: '0 auto',
           textAlign: 'center',
-          transition: 'opacity 0.4s ease',
+          transition: `opacity ${FADE_MS}ms ease`,
           opacity: visible ? 1 : 0,
         }}
       >
@@ -82,6 +87,6 @@ export function RotatingQuote() {
           — {current.attribution}
         </cite>
       </div>
-    </section>
+    </div>
   )
 }
