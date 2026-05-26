@@ -35,15 +35,18 @@ export function RotatingQuote() {
   const [visible, setVisible] = useState(true)
 
   useEffect(() => {
+    let fadeIn: ReturnType<typeof setTimeout>
     const timer = setInterval(() => {
       setVisible(false)
-      const fadeIn = setTimeout(() => {
+      fadeIn = setTimeout(() => {
         setIndex(i => (i + 1) % quotes.length)
         setVisible(true)
       }, 400)
-      return () => clearTimeout(fadeIn)
     }, 10000)
-    return () => clearInterval(timer)
+    return () => {
+      clearInterval(timer)
+      clearTimeout(fadeIn)
+    }
   }, [quotes.length])
 
   const current = quotes[index]

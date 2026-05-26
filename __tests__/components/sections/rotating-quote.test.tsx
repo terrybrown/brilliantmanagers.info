@@ -29,7 +29,7 @@ describe('RotatingQuote', () => {
     expect(screen.getByText(/— Peter Drucker/)).toBeInTheDocument()
   })
 
-  it('advances to the second quote after 10 seconds + fade delay', async () => {
+  it('advances to the second quote after 10 seconds + fade delay', () => {
     render(<RotatingQuote />)
 
     // Confirm first quote is shown
@@ -45,7 +45,7 @@ describe('RotatingQuote', () => {
     expect(screen.getByText(/— Peter Drucker/)).toBeInTheDocument()
   })
 
-  it('wraps back to the first quote after all 15 quotes have shown', async () => {
+  it('wraps back to the first quote after all 15 quotes have shown', () => {
     render(<RotatingQuote />)
 
     // Advance through all 15 quotes (14 transitions + 1 back to start)
