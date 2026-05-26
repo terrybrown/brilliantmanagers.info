@@ -5,8 +5,8 @@ export const siteConfig = {
   gaId: 'G-1BSMVXG0PJ',
   githubUrl: 'https://github.com/terrybrown/brilliantmanagers.info',
   nav: [
-    { label: 'The Guide', href: '/the-guide' },
-    { label: 'The Tool', href: '/the-tool' },
+    { label: 'Try the Scorecard', href: '/the-tool', cta: true },
+    { label: 'Read the Guide', href: '/the-guide' },
     { label: 'Blog', href: '/blog' },
     { label: 'Resources', href: '/resources' },
     { label: 'FAQ', href: '/the-guide/faq' },
