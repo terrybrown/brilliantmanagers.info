@@ -71,6 +71,7 @@ async function main() {
   if (errors.length > 0) {
     console.log('Errors:')
     errors.forEach(e => console.log(` - ${e}`))
+    process.exit(1)
   }
 }
 
