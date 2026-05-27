@@ -31,6 +31,10 @@ async function main() {
     const { data, error } = await supabase.auth.admin.listUsers({ page, perPage })
     if (error) {
       console.error('Failed to list users:', error.message)
+      if (errors.length > 0) {
+        console.log('Errors collected before failure:')
+        errors.forEach(e => console.log(` - ${e}`))
+      }
       process.exit(1)
     }
 
@@ -43,25 +47,27 @@ async function main() {
     totalFound += toDelete.length
 
     for (const user of toDelete) {
+      const label = user.email ?? `<no-email id=${user.id}>`
       if (DRY_RUN) {
-        console.log(`[dry-run] Would delete: ${user.email} (created ${user.created_at})`)
+        console.log(`[dry-run] Would delete: ${label} (created ${user.created_at})`)
         totalDeleted++
         continue
       }
       const { error: deleteError } = await supabase.auth.admin.deleteUser(user.id)
       if (deleteError) {
-        errors.push(`${user.email}: ${deleteError.message}`)
+        errors.push(`${label}: ${deleteError.message}`)
       } else {
-        console.log(`Deleted: ${user.email} (created ${user.created_at})`)
+        console.log(`Deleted: ${label} (created ${user.created_at})`)
         totalDeleted++
       }
     }
 
-    if (data.users.length < perPage) break
+    if (data.nextPage === null) break
     page++
   }
 
-  console.log(`\nScanned: ${totalScanned} | Found: ${totalFound} | Deleted: ${totalDeleted} | Errors: ${errors.length}`)
+  const deletedLabel = DRY_RUN ? 'Would delete' : 'Deleted'
+  console.log(`\nScanned: ${totalScanned} | Found: ${totalFound} | ${deletedLabel}: ${totalDeleted} | Errors: ${errors.length}`)
   if (errors.length > 0) {
     console.log('Errors:')
     errors.forEach(e => console.log(` - ${e}`))
