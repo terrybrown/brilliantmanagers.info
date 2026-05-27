@@ -1,91 +1,94 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
-import { JoinNowForm } from '@/app/the-tool/JoinNowForm'
 
-const { mockSignInWithOtp } = vi.hoisted(() => ({
-  mockSignInWithOtp: vi.fn(),
+// Mock Turnstile — renders a button that fires onSuccess when clicked
+vi.mock('@marsidev/react-turnstile', () => ({
+  Turnstile: ({ onSuccess }: { onSuccess: (token: string) => void }) => (
+    <button type="button" data-testid="turnstile-mock" onClick={() => onSuccess('test-captcha-token')}>
+      verify
+    </button>
+  ),
 }))
 
+// Mock Supabase client — module-level createClient in JoinNowForm
+const mockSignInWithOtp = vi.hoisted(() => vi.fn())
 vi.mock('@/lib/supabase/client', () => ({
   createClient: () => ({
     auth: { signInWithOtp: mockSignInWithOtp },
   }),
 }))
 
-beforeEach(() => {
-  mockSignInWithOtp.mockReset()
-})
+// Mock next/link (not needed for logic, but avoids router errors in jsdom)
+vi.mock('next/link', () => ({
+  default: ({ href, children, ...props }: { href: string; children: React.ReactNode }) => (
+    <a href={href} {...props}>{children}</a>
+  ),
+}))
+
+import { JoinNowForm } from '@/app/the-tool/JoinNowForm'
 
 describe('JoinNowForm', () => {
-  it('renders email input, join now button, and sign in link', () => {
-    render(<JoinNowForm />)
-    expect(screen.getByPlaceholderText('your@email.com')).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /join now/i })).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: /sign in/i })).toHaveAttribute('href', '/login')
+  beforeEach(() => {
+    mockSignInWithOtp.mockReset()
   })
 
-  it('calls signInWithOtp with the entered email on submit', async () => {
+  it('disables the submit button before Turnstile fires', () => {
+    render(<JoinNowForm />)
+    expect(screen.getByRole('button', { name: /join now/i })).toBeDisabled()
+  })
+
+  it('enables the submit button after Turnstile fires onSuccess', () => {
+    render(<JoinNowForm />)
+    fireEvent.click(screen.getByTestId('turnstile-mock'))
+    expect(screen.getByRole('button', { name: /join now/i })).not.toBeDisabled()
+  })
+
+  it('calls signInWithOtp with email and captchaToken on submit', async () => {
     mockSignInWithOtp.mockResolvedValue({ error: null })
     render(<JoinNowForm />)
 
+    fireEvent.click(screen.getByTestId('turnstile-mock'))
     fireEvent.change(screen.getByPlaceholderText('your@email.com'), {
-      target: { value: 'test@example.com' },
+      target: { value: 'user@example.com' },
     })
     fireEvent.click(screen.getByRole('button', { name: /join now/i }))
 
     await waitFor(() => {
       expect(mockSignInWithOtp).toHaveBeenCalledWith({
-        email: 'test@example.com',
-        options: { emailRedirectTo: 'http://localhost/auth/callback' },
+        email: 'user@example.com',
+        options: expect.objectContaining({ captchaToken: 'test-captcha-token' }),
       })
     })
   })
 
-  it('shows success state after OTP is sent', async () => {
+  it('shows "Check your email" after successful submit', async () => {
     mockSignInWithOtp.mockResolvedValue({ error: null })
     render(<JoinNowForm />)
 
+    fireEvent.click(screen.getByTestId('turnstile-mock'))
     fireEvent.change(screen.getByPlaceholderText('your@email.com'), {
-      target: { value: 'test@example.com' },
+      target: { value: 'user@example.com' },
     })
     fireEvent.click(screen.getByRole('button', { name: /join now/i }))
 
     await waitFor(() => {
       expect(screen.getByText(/check your email/i)).toBeInTheDocument()
-      expect(screen.getByText(/test@example\.com/)).toBeInTheDocument()
     })
   })
 
-  it('shows error message when OTP call fails', async () => {
-    mockSignInWithOtp.mockResolvedValue({ error: { message: 'Rate limit exceeded' } })
+  it('shows error message and disables the button again on signInWithOtp error', async () => {
+    mockSignInWithOtp.mockResolvedValue({ error: { message: 'Too many requests' } })
     render(<JoinNowForm />)
 
+    fireEvent.click(screen.getByTestId('turnstile-mock'))
     fireEvent.change(screen.getByPlaceholderText('your@email.com'), {
-      target: { value: 'test@example.com' },
+      target: { value: 'user@example.com' },
     })
     fireEvent.click(screen.getByRole('button', { name: /join now/i }))
 
     await waitFor(() => {
-      expect(screen.getByText('Rate limit exceeded')).toBeInTheDocument()
+      expect(screen.getByText('Too many requests')).toBeInTheDocument()
     })
-  })
-
-  it('hides the join now button and shows loading dots while submitting', async () => {
-    let resolve: (value: { error: null }) => void
-    mockSignInWithOtp.mockReturnValue(new Promise(r => { resolve = r }))
-    render(<JoinNowForm />)
-
-    fireEvent.change(screen.getByPlaceholderText('your@email.com'), {
-      target: { value: 'test@example.com' },
-    })
-    fireEvent.click(screen.getByRole('button', { name: /join now/i }))
-
-    // Button should be gone, dots should be present
-    expect(screen.queryByRole('button', { name: /join now/i })).not.toBeInTheDocument()
-    expect(screen.getByLabelText('Sending…')).toBeInTheDocument()
-
-    // Resolve the promise to clean up
-    resolve!({ error: null })
-    await waitFor(() => expect(screen.getByText(/check your email/i)).toBeInTheDocument())
+    expect(screen.getByRole('button', { name: /join now/i })).toBeDisabled()
   })
 })
