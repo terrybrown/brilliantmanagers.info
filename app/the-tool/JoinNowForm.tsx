@@ -15,7 +15,7 @@ export function JoinNowForm() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    if (!captchaToken) return
+    if (!captchaToken || loading) return
     setError('')
     setLoading(true)
     try {
@@ -76,6 +76,8 @@ export function JoinNowForm() {
       <Turnstile
         siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
         onSuccess={token => setCaptchaToken(token)}
+        onExpire={() => setCaptchaToken(null)}
+        onError={() => setCaptchaToken(null)}
         options={{ size: 'invisible' }}
       />
       {loading ? (

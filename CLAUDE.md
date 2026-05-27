@@ -97,6 +97,7 @@ Tests live in `__tests__/`, mirroring the source tree. Vitest + Testing Library.
 | `MAILGUN_SENDING_KEY` | Server only |
 | `NEXT_PUBLIC_SLEEKPLAN_PRODUCT_ID` | Client only (Sleekplan feedback widget) |
 | `NEXT_PUBLIC_SENTRY_DSN` | Client + server (Sentry error monitoring) |
+| `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | Client only (Cloudflare Turnstile bot prevention) |
 | `SENTRY_AUTH_TOKEN` | Netlify build env only — never commit, never `.env.local` |
 | `SENTRY_ORG` | Netlify build env only |
 | `SENTRY_PROJECT` | Netlify build env only |

@@ -1,12 +1,28 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 
-// Mock Turnstile — renders a button that fires onSuccess when clicked
+// Mock Turnstile — renders buttons that fire onSuccess, onExpire, and onError
 vi.mock('@marsidev/react-turnstile', () => ({
-  Turnstile: ({ onSuccess }: { onSuccess: (token: string) => void }) => (
-    <button type="button" data-testid="turnstile-mock" onClick={() => onSuccess('test-captcha-token')}>
-      verify
-    </button>
+  Turnstile: ({
+    onSuccess,
+    onExpire,
+    onError,
+  }: {
+    onSuccess: (token: string) => void
+    onExpire?: () => void
+    onError?: () => void
+  }) => (
+    <>
+      <button type="button" data-testid="turnstile-mock" onClick={() => onSuccess('test-captcha-token')}>
+        verify
+      </button>
+      <button type="button" data-testid="turnstile-expire" onClick={() => onExpire?.()}>
+        expire
+      </button>
+      <button type="button" data-testid="turnstile-error" onClick={() => onError?.()}>
+        error
+      </button>
+    </>
   ),
 }))
 
@@ -73,6 +89,7 @@ describe('JoinNowForm', () => {
 
     await waitFor(() => {
       expect(screen.getByText(/check your email/i)).toBeInTheDocument()
+      expect(screen.getByText('user@example.com')).toBeInTheDocument()
     })
   })
 
@@ -89,6 +106,22 @@ describe('JoinNowForm', () => {
     await waitFor(() => {
       expect(screen.getByText('Too many requests')).toBeInTheDocument()
     })
+    expect(screen.getByRole('button', { name: /join now/i })).toBeDisabled()
+  })
+
+  it('disables the submit button when the token expires', () => {
+    render(<JoinNowForm />)
+    fireEvent.click(screen.getByTestId('turnstile-mock'))
+    expect(screen.getByRole('button', { name: /join now/i })).not.toBeDisabled()
+    fireEvent.click(screen.getByTestId('turnstile-expire'))
+    expect(screen.getByRole('button', { name: /join now/i })).toBeDisabled()
+  })
+
+  it('disables the submit button on Turnstile error', () => {
+    render(<JoinNowForm />)
+    fireEvent.click(screen.getByTestId('turnstile-mock'))
+    expect(screen.getByRole('button', { name: /join now/i })).not.toBeDisabled()
+    fireEvent.click(screen.getByTestId('turnstile-error'))
     expect(screen.getByRole('button', { name: /join now/i })).toBeDisabled()
   })
 })
