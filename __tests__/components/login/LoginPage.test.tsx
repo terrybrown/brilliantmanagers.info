@@ -14,14 +14,14 @@ vi.mock('@marsidev/react-turnstile', () => ({
   ),
 }))
 
-import LoginPage from '@/app/login/page'
-
-const mockSignInWithOtp = vi.fn()
+const mockSignInWithOtp = vi.hoisted(() => vi.fn())
 vi.mock('@/lib/supabase/client', () => ({
   createClient: () => ({
     auth: { signInWithOtp: mockSignInWithOtp },
   }),
 }))
+
+import LoginPage from '@/app/login/page'
 
 beforeEach(() => {
   mockSignInWithOtp.mockReset()

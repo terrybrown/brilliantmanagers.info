@@ -121,4 +121,20 @@ describe('LoginPage', () => {
     fireEvent.click(screen.getByTestId('turnstile-error'))
     expect(screen.getByRole('button', { name: /send magic link/i })).toBeDisabled()
   })
+
+  it('shows fallback error message and disables the button on network failure', async () => {
+    mockSignInWithOtp.mockRejectedValue(new Error('network error'))
+    render(<LoginPage />)
+
+    fireEvent.click(screen.getByTestId('turnstile-mock'))
+    fireEvent.change(screen.getByPlaceholderText('your@email.com'), {
+      target: { value: 'user@example.com' },
+    })
+    fireEvent.click(screen.getByRole('button', { name: /send magic link/i }))
+
+    await waitFor(() => {
+      expect(screen.getByText(/something went wrong/i)).toBeInTheDocument()
+    })
+    expect(screen.getByRole('button', { name: /send magic link/i })).toBeDisabled()
+  })
 })
