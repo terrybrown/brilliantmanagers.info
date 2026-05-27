@@ -1,6 +1,7 @@
 'use client'
 import { useState } from 'react'
 import Link from 'next/link'
+import { Turnstile } from '@marsidev/react-turnstile'
 import { createClient } from '@/lib/supabase/client'
 
 const supabase = createClient()
@@ -10,20 +11,30 @@ export function JoinNowForm() {
   const [sent, setSent] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null)
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
+    if (!captchaToken || loading) return
     setError('')
     setLoading(true)
     try {
       const { error: err } = await supabase.auth.signInWithOtp({
         email,
-        options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
+        options: {
+          emailRedirectTo: `${window.location.origin}/auth/callback`,
+          captchaToken,
+        },
       })
-      if (err) setError(err.message)
-      else setSent(true)
+      if (err) {
+        setError(err.message)
+        setCaptchaToken(null)
+      } else {
+        setSent(true)
+      }
     } catch {
       setError('Something went wrong. Please try again.')
+      setCaptchaToken(null)
     } finally {
       setLoading(false)
     }
@@ -62,6 +73,13 @@ export function JoinNowForm() {
           {error}
         </p>
       )}
+      <Turnstile
+        siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
+        onSuccess={token => setCaptchaToken(token)}
+        onExpire={() => setCaptchaToken(null)}
+        onError={() => setCaptchaToken(null)}
+        options={{ size: 'invisible' }}
+      />
       {loading ? (
         <div
           className="flex items-end justify-center gap-1"
@@ -75,7 +93,8 @@ export function JoinNowForm() {
       ) : (
         <button
           type="submit"
-          className="w-full rounded-md py-2.5 text-sm font-bold"
+          disabled={!captchaToken}
+          className="w-full rounded-md py-2.5 text-sm font-bold disabled:opacity-50 disabled:cursor-not-allowed"
           style={{ background: '#f59e0b', color: '#1a3a5c' }}
         >
           Join now →

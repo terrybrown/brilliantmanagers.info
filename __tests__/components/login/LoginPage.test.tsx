@@ -1,13 +1,27 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
-import LoginPage from '@/app/login/page'
 
-const mockSignInWithOtp = vi.fn()
+// Turnstile must be mocked before importing LoginPage so captchaToken can be set in tests
+vi.mock('@marsidev/react-turnstile', () => ({
+  Turnstile: ({
+    onSuccess,
+  }: {
+    onSuccess: (token: string) => void
+  }) => (
+    <button type="button" data-testid="turnstile-mock" onClick={() => onSuccess('test-captcha-token')}>
+      verify
+    </button>
+  ),
+}))
+
+const mockSignInWithOtp = vi.hoisted(() => vi.fn())
 vi.mock('@/lib/supabase/client', () => ({
   createClient: () => ({
     auth: { signInWithOtp: mockSignInWithOtp },
   }),
 }))
+
+import LoginPage from '@/app/login/page'
 
 beforeEach(() => {
   mockSignInWithOtp.mockReset()
@@ -24,6 +38,8 @@ describe('LoginPage', () => {
 
   it('hides the sign-up link after the magic link is sent', async () => {
     render(<LoginPage />)
+    // Must verify Turnstile before the submit button is enabled
+    fireEvent.click(screen.getByTestId('turnstile-mock'))
     fireEvent.change(screen.getByPlaceholderText('your@email.com'), {
       target: { value: 'test@example.com' },
     })
@@ -42,6 +58,8 @@ describe('LoginPage', () => {
       }),
     )
     render(<LoginPage />)
+    // Must verify Turnstile before the submit button is enabled
+    fireEvent.click(screen.getByTestId('turnstile-mock'))
     fireEvent.change(screen.getByPlaceholderText('your@email.com'), {
       target: { value: 'test@example.com' },
     })

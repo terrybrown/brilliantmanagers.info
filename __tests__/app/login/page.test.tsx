@@ -1,7 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 
-// Mock Turnstile — renders buttons that fire onSuccess, onExpire, and onError
 vi.mock('@marsidev/react-turnstile', () => ({
   Turnstile: ({
     onSuccess,
@@ -26,7 +25,6 @@ vi.mock('@marsidev/react-turnstile', () => ({
   ),
 }))
 
-// Mock Supabase client — module-level createClient in JoinNowForm
 const mockSignInWithOtp = vi.hoisted(() => vi.fn())
 vi.mock('@/lib/supabase/client', () => ({
   createClient: () => ({
@@ -34,40 +32,39 @@ vi.mock('@/lib/supabase/client', () => ({
   }),
 }))
 
-// Mock next/link (not needed for logic, but avoids router errors in jsdom)
 vi.mock('next/link', () => ({
   default: ({ href, children, ...props }: { href: string; children: React.ReactNode }) => (
     <a href={href} {...props}>{children}</a>
   ),
 }))
 
-import { JoinNowForm } from '@/app/the-tool/JoinNowForm'
+import LoginPage from '@/app/login/page'
 
-describe('JoinNowForm', () => {
+describe('LoginPage', () => {
   beforeEach(() => {
     mockSignInWithOtp.mockReset()
   })
 
   it('disables the submit button before Turnstile fires', () => {
-    render(<JoinNowForm />)
-    expect(screen.getByRole('button', { name: /join now/i })).toBeDisabled()
+    render(<LoginPage />)
+    expect(screen.getByRole('button', { name: /send magic link/i })).toBeDisabled()
   })
 
   it('enables the submit button after Turnstile fires onSuccess', () => {
-    render(<JoinNowForm />)
+    render(<LoginPage />)
     fireEvent.click(screen.getByTestId('turnstile-mock'))
-    expect(screen.getByRole('button', { name: /join now/i })).not.toBeDisabled()
+    expect(screen.getByRole('button', { name: /send magic link/i })).not.toBeDisabled()
   })
 
   it('calls signInWithOtp with email and captchaToken on submit', async () => {
     mockSignInWithOtp.mockResolvedValue({ error: null })
-    render(<JoinNowForm />)
+    render(<LoginPage />)
 
     fireEvent.click(screen.getByTestId('turnstile-mock'))
     fireEvent.change(screen.getByPlaceholderText('your@email.com'), {
       target: { value: 'user@example.com' },
     })
-    fireEvent.click(screen.getByRole('button', { name: /join now/i }))
+    fireEvent.click(screen.getByRole('button', { name: /send magic link/i }))
 
     await waitFor(() => {
       expect(mockSignInWithOtp).toHaveBeenCalledWith({
@@ -77,15 +74,15 @@ describe('JoinNowForm', () => {
     })
   })
 
-  it('shows "Check your email" after successful submit', async () => {
+  it('shows "Check your email" and the submitted address after successful submit', async () => {
     mockSignInWithOtp.mockResolvedValue({ error: null })
-    render(<JoinNowForm />)
+    render(<LoginPage />)
 
     fireEvent.click(screen.getByTestId('turnstile-mock'))
     fireEvent.change(screen.getByPlaceholderText('your@email.com'), {
       target: { value: 'user@example.com' },
     })
-    fireEvent.click(screen.getByRole('button', { name: /join now/i }))
+    fireEvent.click(screen.getByRole('button', { name: /send magic link/i }))
 
     await waitFor(() => {
       expect(screen.getByText(/check your email/i)).toBeInTheDocument()
@@ -94,50 +91,50 @@ describe('JoinNowForm', () => {
   })
 
   it('shows error message and disables the button again on signInWithOtp error', async () => {
-    mockSignInWithOtp.mockResolvedValue({ error: { message: 'Too many requests' } })
-    render(<JoinNowForm />)
+    mockSignInWithOtp.mockResolvedValue({ error: { message: 'Invalid email' } })
+    render(<LoginPage />)
 
     fireEvent.click(screen.getByTestId('turnstile-mock'))
     fireEvent.change(screen.getByPlaceholderText('your@email.com'), {
-      target: { value: 'user@example.com' },
+      target: { value: 'bad@example.com' },
     })
-    fireEvent.click(screen.getByRole('button', { name: /join now/i }))
+    fireEvent.click(screen.getByRole('button', { name: /send magic link/i }))
 
     await waitFor(() => {
-      expect(screen.getByText('Too many requests')).toBeInTheDocument()
+      expect(screen.getByText('Invalid email')).toBeInTheDocument()
     })
-    expect(screen.getByRole('button', { name: /join now/i })).toBeDisabled()
+    expect(screen.getByRole('button', { name: /send magic link/i })).toBeDisabled()
   })
 
   it('disables the submit button when the token expires', () => {
-    render(<JoinNowForm />)
+    render(<LoginPage />)
     fireEvent.click(screen.getByTestId('turnstile-mock'))
-    expect(screen.getByRole('button', { name: /join now/i })).not.toBeDisabled()
+    expect(screen.getByRole('button', { name: /send magic link/i })).not.toBeDisabled()
     fireEvent.click(screen.getByTestId('turnstile-expire'))
-    expect(screen.getByRole('button', { name: /join now/i })).toBeDisabled()
+    expect(screen.getByRole('button', { name: /send magic link/i })).toBeDisabled()
   })
 
   it('disables the submit button on Turnstile error', () => {
-    render(<JoinNowForm />)
+    render(<LoginPage />)
     fireEvent.click(screen.getByTestId('turnstile-mock'))
-    expect(screen.getByRole('button', { name: /join now/i })).not.toBeDisabled()
+    expect(screen.getByRole('button', { name: /send magic link/i })).not.toBeDisabled()
     fireEvent.click(screen.getByTestId('turnstile-error'))
-    expect(screen.getByRole('button', { name: /join now/i })).toBeDisabled()
+    expect(screen.getByRole('button', { name: /send magic link/i })).toBeDisabled()
   })
 
   it('shows fallback error message and disables the button on network failure', async () => {
     mockSignInWithOtp.mockRejectedValue(new Error('network error'))
-    render(<JoinNowForm />)
+    render(<LoginPage />)
 
     fireEvent.click(screen.getByTestId('turnstile-mock'))
     fireEvent.change(screen.getByPlaceholderText('your@email.com'), {
       target: { value: 'user@example.com' },
     })
-    fireEvent.click(screen.getByRole('button', { name: /join now/i }))
+    fireEvent.click(screen.getByRole('button', { name: /send magic link/i }))
 
     await waitFor(() => {
       expect(screen.getByText(/something went wrong/i)).toBeInTheDocument()
     })
-    expect(screen.getByRole('button', { name: /join now/i })).toBeDisabled()
+    expect(screen.getByRole('button', { name: /send magic link/i })).toBeDisabled()
   })
 })

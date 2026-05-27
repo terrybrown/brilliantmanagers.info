@@ -1,6 +1,7 @@
 'use client'
 import { useState } from 'react'
 import Link from 'next/link'
+import { Turnstile } from '@marsidev/react-turnstile'
 import { createClient } from '@/lib/supabase/client'
 
 export default function LoginPage() {
@@ -8,9 +9,11 @@ export default function LoginPage() {
   const [sent, setSent] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null)
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
+    if (!captchaToken || loading) return
     setError('')
     setLoading(true)
     try {
@@ -19,15 +22,18 @@ export default function LoginPage() {
         email,
         options: {
           emailRedirectTo: `${window.location.origin}/auth/confirm`,
+          captchaToken,
         },
       })
       if (err) {
         setError(err.message)
+        setCaptchaToken(null)
       } else {
         setSent(true)
       }
     } catch {
       setError('Something went wrong. Please try again.')
+      setCaptchaToken(null)
     } finally {
       setLoading(false)
     }
@@ -60,9 +66,16 @@ export default function LoginPage() {
             className="rounded-lg border border-slate-200 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400"
           />
           {error && <p className="text-sm text-red-500">{error}</p>}
+          <Turnstile
+            siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
+            onSuccess={token => setCaptchaToken(token)}
+            onExpire={() => setCaptchaToken(null)}
+            onError={() => setCaptchaToken(null)}
+            options={{ size: 'invisible' }}
+          />
           <button
             type="submit"
-            disabled={loading}
+            disabled={loading || !captchaToken}
             className="rounded-lg bg-amber-500 px-4 py-3 text-sm font-semibold text-white hover:bg-amber-400 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Send magic link
