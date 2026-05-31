@@ -1,6 +1,11 @@
 import { createAdminClient } from '@/lib/supabase/admin'
 import { AdminOrgsTable } from './AdminOrgsTable'
 
+interface OrgMemberRaw {
+  role: string
+  user_id: string
+}
+
 interface OrgRow {
   id: string
   name: string
@@ -15,16 +20,55 @@ interface OrgRow {
 export default async function AdminOrganisationsPage() {
   const supabase = createAdminClient()
 
-  const { data } = await supabase
+  // Step 1: fetch orgs with members (no profile join — no FK from org_members to profiles)
+  const { data: orgsRaw, error } = await supabase
     .from('organisations')
-    .select(
-      'id, name, created_at, org_members(role, profiles(email, display_name)), org_nodes(id)'
-    )
+    .select('id, name, created_at, org_members(role, user_id), org_nodes(id)')
     .order('created_at', { ascending: false })
 
-  const orgs = (data ?? []) as unknown as OrgRow[]
+  if (error || !orgsRaw) {
+    return (
+      <div className="mx-auto max-w-6xl">
+        <h1 className="mb-6 text-2xl font-bold text-white">Organisations</h1>
+        <p className="text-sm text-red-400">Failed to load organisations.</p>
+      </div>
+    )
+  }
 
-  // Fetch last activity per org: most recent completed_at among any org member's assessment rounds
+  // Step 2: fetch profiles for all member user IDs
+  const allUserIds = [
+    ...new Set(
+      orgsRaw.flatMap(o =>
+        (o.org_members as OrgMemberRaw[]).map(m => m.user_id)
+      )
+    ),
+  ]
+
+  const profilesById: Record<string, { email: string | null; display_name: string | null }> = {}
+
+  if (allUserIds.length > 0) {
+    const { data: profilesData } = await supabase
+      .from('profiles')
+      .select('id, email, display_name')
+      .in('id', allUserIds)
+    for (const p of profilesData ?? []) {
+      profilesById[p.id] = { email: p.email, display_name: p.display_name }
+    }
+  }
+
+  // Step 3: merge profiles into the org_members shape AdminOrgsTable expects
+  const orgs: OrgRow[] = orgsRaw.map(org => ({
+    id: org.id,
+    name: org.name,
+    created_at: org.created_at,
+    org_nodes: org.org_nodes as { id: string }[],
+    org_members: (org.org_members as OrgMemberRaw[]).map(m => ({
+      role: m.role,
+      profiles: profilesById[m.user_id] ?? null,
+    })),
+  }))
+
+  // Fetch last activity per org
   const lastActivityMap: Record<string, string | null> = {}
 
   await Promise.all(
