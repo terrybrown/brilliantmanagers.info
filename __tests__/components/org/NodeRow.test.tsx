@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { NodeRow } from '@/components/org/NodeRow'
+import { NodeRow, peopleButtonLabel } from '@/components/org/NodeRow'
 import type { OrgNodeWithChildren } from '@/components/org/NodeRow'
 
 vi.mock('@/components/org/MemberStack', () => ({
@@ -208,5 +208,78 @@ describe('NodeRow', () => {
     const provisionalNode: OrgNodeWithChildren = { ...baseNode, id: 'provisional-123', name: 'New Team' }
     render(<NodeRow {...defaultProps} node={provisionalNode} />)
     expect(screen.queryByTestId('member-stack')).toBeNull()
+  })
+
+  // ── People button label — pending / combined branches ────────────────────────
+
+  it('shows pending count in People button when only pending invites exist', () => {
+    const nodeWithPending: OrgNodeWithChildren = {
+      ...baseNode,
+      members: [],
+      pendingInvites: [{ id: 'inv-1', invited_email: 'p@x.com' }],
+    }
+    render(<NodeRow {...defaultProps} node={nodeWithPending} />)
+    expect(screen.getByRole('button', { name: /1 pending/i })).toBeInTheDocument()
+  })
+
+  it('shows member and pending count combined in People button', () => {
+    const nodeWithBoth: OrgNodeWithChildren = {
+      ...baseNode,
+      members: [{ user_id: 'u1', display_name: 'Alice', email: 'a@x.com' }],
+      pendingInvites: [{ id: 'inv-1', invited_email: 'p@x.com' }],
+    }
+    render(<NodeRow {...defaultProps} node={nodeWithBoth} />)
+    expect(screen.getByRole('button', { name: /1 people · 1 pending/i })).toBeInTheDocument()
+  })
+
+  // ── Member panel — pending invite chips ──────────────────────────────────────
+
+  it('shows pending invite chips in member panel', () => {
+    const nodeWithPending: OrgNodeWithChildren = {
+      ...baseNode,
+      members: [],
+      pendingInvites: [{ id: 'inv-1', invited_email: 'pending@x.com' }],
+    }
+    render(<NodeRow {...defaultProps} node={nodeWithPending} openMemberPanelId="n1" />)
+    expect(screen.getByText('pending@x.com')).toBeInTheDocument()
+    expect(screen.getByText(/awaiting registration/i)).toBeInTheDocument()
+  })
+
+  // ── AddMemberForm submit ──────────────────────────────────────────────────────
+
+  it('submits AddMemberForm and calls addMemberToNodeAction', async () => {
+    const { addMemberToNodeAction } = await import('@/app/(app)/organisation/actions')
+    render(<NodeRow {...defaultProps} openMemberPanelId="n1" />)
+    const input = screen.getByPlaceholderText(/add member by email/i)
+    fireEvent.change(input, { target: { value: 'new@x.com' } })
+    fireEvent.submit(input.closest('form')!)
+    await vi.waitFor(() => expect(addMemberToNodeAction).toHaveBeenCalled())
+  })
+})
+
+describe('peopleButtonLabel', () => {
+  it('returns "+ People" when no members and no pending', () => {
+    expect(peopleButtonLabel([], [], false)).toBe('+ People')
+  })
+
+  it('returns "N people ▾" when members exist and panel closed', () => {
+    const members = [{ user_id: 'u1', display_name: 'A', email: 'a@x.com' }]
+    expect(peopleButtonLabel(members, [], false)).toBe('1 people ▾')
+  })
+
+  it('returns "N people ▴" when panel is open', () => {
+    const members = [{ user_id: 'u1', display_name: 'A', email: 'a@x.com' }]
+    expect(peopleButtonLabel(members, [], true)).toBe('1 people ▴')
+  })
+
+  it('returns "N pending ▾" when only pending invites exist', () => {
+    const pending = [{ id: 'i1', invited_email: 'p@x.com' }]
+    expect(peopleButtonLabel([], pending, false)).toBe('1 pending ▾')
+  })
+
+  it('returns combined label when both members and pending exist', () => {
+    const members = [{ user_id: 'u1', display_name: 'A', email: 'a@x.com' }]
+    const pending = [{ id: 'i1', invited_email: 'p@x.com' }]
+    expect(peopleButtonLabel(members, pending, false)).toBe('1 people · 1 pending ▾')
   })
 })
