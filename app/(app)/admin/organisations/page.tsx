@@ -47,10 +47,18 @@ export default async function AdminOrganisationsPage() {
   const profilesById: Record<string, { email: string | null; display_name: string | null }> = {}
 
   if (allUserIds.length > 0) {
-    const { data: profilesData } = await supabase
+    const { data: profilesData, error: profilesError } = await supabase
       .from('profiles')
       .select('id, email, display_name')
       .in('id', allUserIds)
+    if (profilesError) {
+      return (
+        <div className="mx-auto max-w-6xl">
+          <h1 className="mb-6 text-2xl font-bold text-white">Organisations</h1>
+          <p className="text-sm text-red-400">Failed to load organisations.</p>
+        </div>
+      )
+    }
     for (const p of profilesData ?? []) {
       profilesById[p.id] = { email: p.email, display_name: p.display_name }
     }
@@ -68,17 +76,12 @@ export default async function AdminOrganisationsPage() {
     })),
   }))
 
-  // Fetch last activity per org
+  // Fetch last activity per org (use orgsRaw which still has user_id on members)
   const lastActivityMap: Record<string, string | null> = {}
 
   await Promise.all(
-    orgs.map(async (org) => {
-      const { data: memberRows } = await supabase
-        .from('org_members')
-        .select('user_id')
-        .eq('org_id', org.id)
-
-      const userIds = (memberRows ?? []).map((m: { user_id: string }) => m.user_id)
+    orgsRaw.map(async (org) => {
+      const userIds = (org.org_members as OrgMemberRaw[]).map(m => m.user_id)
       if (userIds.length === 0) {
         lastActivityMap[org.id] = null
         return
