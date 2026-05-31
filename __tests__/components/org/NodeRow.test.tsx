@@ -4,7 +4,9 @@ import { NodeRow } from '@/components/org/NodeRow'
 import type { OrgNodeWithChildren } from '@/components/org/NodeRow'
 
 vi.mock('@/components/org/MemberStack', () => ({
-  MemberStack: () => <div data-testid="member-stack" />,
+  MemberStack: ({ members }: { members: unknown[] }) => (
+    <div data-testid="member-stack" data-count={members.length} />
+  ),
 }))
 vi.mock('@/components/org/AddNodeForm', () => ({
   AddNodeForm: ({ onCancel }: { onCancel: () => void }) => (
@@ -13,6 +15,14 @@ vi.mock('@/components/org/AddNodeForm', () => ({
       <button onClick={onCancel}>cancel</button>
     </div>
   ),
+}))
+vi.mock('@/app/(app)/organisation/actions', () => ({
+  addMemberToNodeAction: vi.fn().mockResolvedValue({ ok: true }),
+  removeMemberFromNodeAction: vi.fn().mockResolvedValue({ ok: true }),
+  cancelPendingOrgNodeInvitationAction: vi.fn().mockResolvedValue({ ok: true }),
+}))
+vi.mock('sonner', () => ({
+  toast: { success: vi.fn(), error: vi.fn() },
 }))
 
 const baseNode: OrgNodeWithChildren = {
@@ -52,27 +62,29 @@ describe('NodeRow', () => {
     expect(screen.getByText('Engineering')).toBeInTheDocument()
   })
 
-  it('shows the + child button for admins', () => {
+  // ── + Subgroup button ────────────────────────────────────────────────────────
+
+  it('shows the + Subgroup button for admins', () => {
     render(<NodeRow {...defaultProps} />)
-    expect(screen.getByRole('button', { name: /\+ child/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /\+ subgroup/i })).toBeInTheDocument()
   })
 
-  it('hides the + child button for non-admins', () => {
+  it('hides the + Subgroup button for non-admins', () => {
     render(<NodeRow {...defaultProps} isAdmin={false} />)
-    expect(screen.queryByRole('button', { name: /\+ child/i })).toBeNull()
+    expect(screen.queryByRole('button', { name: /\+ subgroup/i })).toBeNull()
   })
 
-  it('calls setOpenChildFormId with node id when + child is clicked', () => {
+  it('calls setOpenChildFormId with node id when + Subgroup is clicked', () => {
     const setOpenChildFormId = vi.fn()
     render(<NodeRow {...defaultProps} setOpenChildFormId={setOpenChildFormId} />)
-    fireEvent.click(screen.getByRole('button', { name: /\+ child/i }))
+    fireEvent.click(screen.getByRole('button', { name: /\+ subgroup/i }))
     expect(setOpenChildFormId).toHaveBeenCalledWith('n1')
   })
 
-  it('calls setOpenChildFormId with null when + child is clicked while form is open (toggle off)', () => {
+  it('calls setOpenChildFormId with null when + Subgroup is clicked while form is open (toggle off)', () => {
     const setOpenChildFormId = vi.fn()
     render(<NodeRow {...defaultProps} openChildFormId="n1" setOpenChildFormId={setOpenChildFormId} />)
-    fireEvent.click(screen.getByRole('button', { name: /\+ child/i }))
+    fireEvent.click(screen.getByRole('button', { name: /\+ subgroup/i }))
     expect(setOpenChildFormId).toHaveBeenCalledWith(null)
   })
 
@@ -80,6 +92,68 @@ describe('NodeRow', () => {
     render(<NodeRow {...defaultProps} openChildFormId="n1" />)
     expect(screen.getByPlaceholderText(/child group name/i)).toBeInTheDocument()
   })
+
+  it('disables the + Subgroup button for provisional nodes', () => {
+    const provisionalNode: OrgNodeWithChildren = { ...baseNode, id: 'provisional-123', name: 'New Team' }
+    render(<NodeRow {...defaultProps} node={provisionalNode} />)
+    expect(screen.getByRole('button', { name: /\+ subgroup/i })).toBeDisabled()
+  })
+
+  // ── + People button ──────────────────────────────────────────────────────────
+
+  it('shows "+ People" button for admins when no members', () => {
+    render(<NodeRow {...defaultProps} />)
+    expect(screen.getByRole('button', { name: /\+ people/i })).toBeInTheDocument()
+  })
+
+  it('hides the People button for non-admins', () => {
+    render(<NodeRow {...defaultProps} isAdmin={false} />)
+    expect(screen.queryByRole('button', { name: /people/i })).toBeNull()
+  })
+
+  it('shows member count in People button when members exist', () => {
+    const nodeWithMembers: OrgNodeWithChildren = {
+      ...baseNode,
+      members: [
+        { user_id: 'u1', display_name: 'Alice', email: 'a@x.com' },
+        { user_id: 'u2', display_name: 'Bob', email: 'b@x.com' },
+      ],
+    }
+    render(<NodeRow {...defaultProps} node={nodeWithMembers} />)
+    expect(screen.getByRole('button', { name: /2 people/i })).toBeInTheDocument()
+  })
+
+  it('calls setOpenMemberPanelId with node id when People button is clicked', () => {
+    const setOpenMemberPanelId = vi.fn()
+    render(<NodeRow {...defaultProps} setOpenMemberPanelId={setOpenMemberPanelId} />)
+    fireEvent.click(screen.getByRole('button', { name: /\+ people/i }))
+    expect(setOpenMemberPanelId).toHaveBeenCalledWith('n1')
+  })
+
+  it('calls setOpenMemberPanelId with null when People button is clicked while panel is open', () => {
+    const setOpenMemberPanelId = vi.fn()
+    render(<NodeRow {...defaultProps} openMemberPanelId="n1" setOpenMemberPanelId={setOpenMemberPanelId} />)
+    fireEvent.click(screen.getByRole('button', { name: /people/i }))
+    expect(setOpenMemberPanelId).toHaveBeenCalledWith(null)
+  })
+
+  it('shows member panel below the row when openMemberPanelId matches node id', () => {
+    const nodeWithMembers: OrgNodeWithChildren = {
+      ...baseNode,
+      members: [{ user_id: 'u1', display_name: 'Alice', email: 'a@x.com' }],
+      pendingInvites: [],
+    }
+    render(<NodeRow {...defaultProps} node={nodeWithMembers} openMemberPanelId="n1" />)
+    expect(screen.getByPlaceholderText(/add member by email/i)).toBeInTheDocument()
+    expect(screen.getByText('Alice')).toBeInTheDocument()
+  })
+
+  it('does not show member panel when openMemberPanelId is null', () => {
+    render(<NodeRow {...defaultProps} openMemberPanelId={null} />)
+    expect(screen.queryByPlaceholderText(/add member by email/i)).toBeNull()
+  })
+
+  // ── Collapse / children ──────────────────────────────────────────────────────
 
   it('shows collapse toggle when node has children', () => {
     const nodeWithChildren: OrgNodeWithChildren = {
@@ -122,32 +196,16 @@ describe('NodeRow', () => {
     expect(screen.queryByText('child-content')).toBeNull()
   })
 
+  // ── Provisional nodes ────────────────────────────────────────────────────────
+
   it('shows "saving…" indicator for provisional nodes', () => {
-    const provisionalNode: OrgNodeWithChildren = {
-      ...baseNode,
-      id: 'provisional-123',
-      name: 'New Team',
-    }
+    const provisionalNode: OrgNodeWithChildren = { ...baseNode, id: 'provisional-123', name: 'New Team' }
     render(<NodeRow {...defaultProps} node={provisionalNode} />)
     expect(screen.getByText(/saving/i)).toBeInTheDocument()
   })
 
-  it('disables the + child button for provisional nodes', () => {
-    const provisionalNode: OrgNodeWithChildren = {
-      ...baseNode,
-      id: 'provisional-123',
-      name: 'New Team',
-    }
-    render(<NodeRow {...defaultProps} node={provisionalNode} />)
-    expect(screen.getByRole('button', { name: /\+ child/i })).toBeDisabled()
-  })
-
   it('does not render MemberStack for provisional nodes', () => {
-    const provisionalNode: OrgNodeWithChildren = {
-      ...baseNode,
-      id: 'provisional-123',
-      name: 'New Team',
-    }
+    const provisionalNode: OrgNodeWithChildren = { ...baseNode, id: 'provisional-123', name: 'New Team' }
     render(<NodeRow {...defaultProps} node={provisionalNode} />)
     expect(screen.queryByTestId('member-stack')).toBeNull()
   })
