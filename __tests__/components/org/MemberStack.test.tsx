@@ -49,15 +49,37 @@ describe('MemberStack', () => {
     expect(screen.getByText('1')).toBeInTheDocument()
   })
 
-  it('does not attach any click handler (avatar stack is passive)', () => {
-    const handleClick = vi.fn()
+  it('root div has no onClick attribute (avatar stack is passive)', () => {
     const { container } = render(
       <MemberStack
         members={[makeMember('u1', 'Alice')]}
         pendingInvites={[]}
       />
     )
-    container.firstElementChild?.dispatchEvent(new MouseEvent('click', { bubbles: true }))
-    expect(handleClick).not.toHaveBeenCalled()
+    expect(container.firstElementChild).not.toBeNull()
+    // React attaches onClick as a property not an attribute, so check the React fiber
+    const el = container.firstElementChild as HTMLElement
+    expect(el.onclick).toBeNull()
+  })
+
+  it('does not show overflow when exactly 3 members', () => {
+    const members = [
+      makeMember('u1', 'Alice'),
+      makeMember('u2', 'Bob'),
+      makeMember('u3', 'Carol'),
+    ]
+    render(<MemberStack members={members} pendingInvites={[]} />)
+    expect(screen.queryByText(/^\+\d/)).toBeNull()
+  })
+
+  it('renders pending bubble alongside confirmed members', () => {
+    render(
+      <MemberStack
+        members={[makeMember('u1', 'Alice')]}
+        pendingInvites={[{ id: 'inv-1', invited_email: 'p@x.com' }, { id: 'inv-2', invited_email: 'q@x.com' }]}
+      />
+    )
+    expect(screen.getByText('AL')).toBeInTheDocument()
+    expect(screen.getByText('2')).toBeInTheDocument()
   })
 })

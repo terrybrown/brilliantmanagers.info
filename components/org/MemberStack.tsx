@@ -9,7 +9,7 @@ const AVATAR_COLORS = [
 function avatarColor(id: string): string {
   let h = 0
   for (let i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) | 0
-  return AVATAR_COLORS[Math.abs(h) % AVATAR_COLORS.length]
+  return AVATAR_COLORS[(h >>> 0) % AVATAR_COLORS.length]
 }
 
 function initials(name: string | null, email: string | null): string {
