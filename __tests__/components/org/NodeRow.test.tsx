@@ -229,7 +229,7 @@ describe('NodeRow', () => {
       pendingInvites: [{ id: 'inv-1', invited_email: 'p@x.com' }],
     }
     render(<NodeRow {...defaultProps} node={nodeWithBoth} />)
-    expect(screen.getByRole('button', { name: /1 people · 1 pending/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /1 person · 1 pending/i })).toBeInTheDocument()
   })
 
   // ── Member panel — pending invite chips ──────────────────────────────────────
@@ -262,24 +262,32 @@ describe('peopleButtonLabel', () => {
     expect(peopleButtonLabel([], [], false)).toBe('+ People')
   })
 
-  it('returns "N people ▾" when members exist and panel closed', () => {
+  it('returns "1 person ▾" for a single member (singular)', () => {
     const members = [{ user_id: 'u1', display_name: 'A', email: 'a@x.com' }]
-    expect(peopleButtonLabel(members, [], false)).toBe('1 people ▾')
+    expect(peopleButtonLabel(members, [], false)).toBe('1 person ▾')
   })
 
-  it('returns "N people ▴" when panel is open', () => {
-    const members = [{ user_id: 'u1', display_name: 'A', email: 'a@x.com' }]
-    expect(peopleButtonLabel(members, [], true)).toBe('1 people ▴')
+  it('returns "N people ▴" when panel is open and multiple members', () => {
+    const members = [
+      { user_id: 'u1', display_name: 'A', email: 'a@x.com' },
+      { user_id: 'u2', display_name: 'B', email: 'b@x.com' },
+    ]
+    expect(peopleButtonLabel(members, [], true)).toBe('2 people ▴')
   })
 
-  it('returns "N pending ▾" when only pending invites exist', () => {
+  it('returns "1 pending invite ▾" when only one pending invite exists (singular)', () => {
     const pending = [{ id: 'i1', invited_email: 'p@x.com' }]
-    expect(peopleButtonLabel([], pending, false)).toBe('1 pending ▾')
+    expect(peopleButtonLabel([], pending, false)).toBe('1 pending invite ▾')
+  })
+
+  it('returns "N pending invites ▾" when multiple pending invites exist (plural)', () => {
+    const pending = [{ id: 'i1', invited_email: 'p@x.com' }, { id: 'i2', invited_email: 'q@x.com' }]
+    expect(peopleButtonLabel([], pending, false)).toBe('2 pending invites ▾')
   })
 
   it('returns combined label when both members and pending exist', () => {
     const members = [{ user_id: 'u1', display_name: 'A', email: 'a@x.com' }]
     const pending = [{ id: 'i1', invited_email: 'p@x.com' }]
-    expect(peopleButtonLabel(members, pending, false)).toBe('1 people · 1 pending ▾')
+    expect(peopleButtonLabel(members, pending, false)).toBe('1 person · 1 pending ▾')
   })
 })

@@ -1,5 +1,6 @@
 'use client'
-import type { ReactNode } from 'react'
+import { useRef, type ReactNode } from 'react'
+import { toast } from 'sonner'
 import type { OrgNode } from '@/lib/db/org-nodes'
 import { MemberStack } from './MemberStack'
 import { AddNodeForm } from './AddNodeForm'
@@ -57,9 +58,16 @@ function CancelInviteButton({ invitationId, orgId }: { invitationId: string; org
 }
 
 function AddMemberForm({ nodeId, orgId }: { nodeId: string; orgId: string }) {
-  const { mutate, isPending } = useMutation({ onSuccess: 'Member added' })
+  const formRef = useRef<HTMLFormElement>(null)
+  const { mutate, isPending } = useMutation({
+    onSuccess: () => {
+      formRef.current?.reset()
+      toast.success('Member added')
+    },
+  })
   return (
     <form
+      ref={formRef}
       style={{ display: 'flex', gap: 6, flex: 1 }}
       onSubmit={e => {
         e.preventDefault()
@@ -107,9 +115,11 @@ export function peopleButtonLabel(
   const arrow = isOpen ? ' ▴' : n > 0 || p > 0 ? ' ▾' : ''
 
   if (n === 0 && p === 0) return '+ People'
-  if (n === 0) return `${p} pending${arrow}`
-  if (p === 0) return `${n} people${arrow}`
-  return `${n} people · ${p} pending${arrow}`
+  const peopleWord = n === 1 ? 'person' : 'people'
+  const pendingWord = p === 1 ? 'invite' : 'invites'
+  if (n === 0) return `${p} pending ${pendingWord}${arrow}`
+  if (p === 0) return `${n} ${peopleWord}${arrow}`
+  return `${n} ${peopleWord} · ${p} pending${arrow}`
 }
 
 // ── NodeRow ───────────────────────────────────────────────────────────────────
