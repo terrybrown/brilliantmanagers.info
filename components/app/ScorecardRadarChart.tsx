@@ -67,101 +67,115 @@ export function PillarTooltip({ pillarScore, hidden }: PillarTooltipProps) {
   const mScore = hasManager ? managerScore : undefined
   const mSkills = hasManager ? managerSkills : undefined
 
+  const accentColor = showSelf && showManager
+    ? 'linear-gradient(to bottom, #f59e0b, #a78bfa)'
+    : showManager ? '#a78bfa' : '#f59e0b'
+
   return (
     <div
       style={{
-        background: '#1e293b',
-        border: '1px solid #334155',
+        background: accentColor,
         borderRadius: 8,
-        padding: '10px 14px',
-        fontSize: 12,
-        maxWidth: 240,
+        padding: '0 0 0 3px',
+        boxShadow: '0 12px 40px rgba(0,0,0,0.7), 0 2px 8px rgba(0,0,0,0.5)',
+        display: 'inline-block',
       }}
     >
-      <div style={{ fontWeight: 600, color: '#f1f5f9', marginBottom: 8, fontSize: 13 }}>
-        {PILLAR_LABELS[pillar]}
+      <div
+        style={{
+          background: '#0d1117',
+          borderRadius: '0 8px 8px 0',
+          padding: '10px 14px',
+          fontSize: 12,
+          minWidth: 280,
+          maxWidth: 300,
+        }}
+      >
+        <div style={{ fontWeight: 600, color: '#f1f5f9', marginBottom: 8, fontSize: 13 }}>
+          {PILLAR_LABELS[pillar]}
+        </div>
+
+        {showSelf && (
+          <div style={{ marginBottom: showManager ? 10 : 0 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
+              <div style={{ width: 10, height: 2, background: '#f59e0b', borderRadius: 1 }} />
+              <span style={{ color: '#fbbf24', fontWeight: 600 }}>Self</span>
+              {selfScored ? (
+                <>
+                  <span
+                    style={{
+                      background: 'rgba(245,158,11,.15)',
+                      color: '#fbbf24',
+                      padding: '1px 5px',
+                      borderRadius: 3,
+                      fontSize: 10,
+                    }}
+                  >
+                    {`${Math.round(selfScore)} / 5`}
+                  </span>
+                  <span
+                    style={{
+                      background: '#0f172a',
+                      color: '#64748b',
+                      padding: '1px 4px',
+                      borderRadius: 3,
+                      fontSize: 10,
+                    }}
+                  >
+                    {levelName(selfScore)}
+                  </span>
+                </>
+              ) : (
+                <span style={{ color: '#475569', fontSize: 10 }}>Not scored</span>
+              )}
+            </div>
+            {selfSkills.map(skill => (
+              <SkillRow key={skill.skillKey} skill={skill} />
+            ))}
+          </div>
+        )}
+
+        {showManager && mScore !== undefined && mSkills !== undefined && (
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
+              <div
+                style={{
+                  width: 10,
+                  height: 2,
+                  background:
+                    'repeating-linear-gradient(90deg, #a78bfa 0, #a78bfa 4px, transparent 4px, transparent 7px)',
+                }}
+              />
+              <span style={{ color: '#c4b5fd', fontWeight: 600 }}>Manager</span>
+              <span
+                style={{
+                  background: 'rgba(167,139,250,.15)',
+                  color: '#c4b5fd',
+                  padding: '1px 5px',
+                  borderRadius: 3,
+                  fontSize: 10,
+                }}
+              >
+                {`${Math.round(mScore)} / 5`}
+              </span>
+              <span
+                style={{
+                  background: '#0f172a',
+                  color: '#64748b',
+                  padding: '1px 4px',
+                  borderRadius: 3,
+                  fontSize: 10,
+                }}
+              >
+                {levelName(mScore)}
+              </span>
+            </div>
+            {mSkills.map(skill => (
+              <SkillRow key={skill.skillKey} skill={skill} />
+            ))}
+          </div>
+        )}
       </div>
-
-      {showSelf && (
-        <div style={{ marginBottom: showManager ? 10 : 0 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
-            <div style={{ width: 10, height: 2, background: '#f59e0b', borderRadius: 1 }} />
-            <span style={{ color: '#fbbf24', fontWeight: 600 }}>Self</span>
-            {selfScored ? (
-              <>
-                <span
-                  style={{
-                    background: 'rgba(245,158,11,.15)',
-                    color: '#fbbf24',
-                    padding: '1px 5px',
-                    borderRadius: 3,
-                    fontSize: 10,
-                  }}
-                >
-                  {`${Math.round(selfScore)} / 5`}
-                </span>
-                <span
-                  style={{
-                    background: '#0f172a',
-                    color: '#64748b',
-                    padding: '1px 4px',
-                    borderRadius: 3,
-                    fontSize: 10,
-                  }}
-                >
-                  {levelName(selfScore)}
-                </span>
-              </>
-            ) : (
-              <span style={{ color: '#475569', fontSize: 10 }}>Not scored</span>
-            )}
-          </div>
-          {selfSkills.map(skill => (
-            <SkillRow key={skill.skillKey} skill={skill} />
-          ))}
-        </div>
-      )}
-
-      {showManager && mScore !== undefined && mSkills !== undefined && (
-        <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
-            <div
-              style={{
-                width: 10,
-                height: 2,
-                background:
-                  'repeating-linear-gradient(90deg, #a78bfa 0, #a78bfa 4px, transparent 4px, transparent 7px)',
-              }}
-            />
-            <span style={{ color: '#c4b5fd', fontWeight: 600 }}>Manager</span>
-            <span
-              style={{
-                background: 'rgba(167,139,250,.15)',
-                color: '#c4b5fd',
-                padding: '1px 5px',
-                borderRadius: 3,
-                fontSize: 10,
-              }}
-            >
-              {`${Math.round(mScore)} / 5`}
-            </span>
-            <span
-              style={{
-                background: '#0f172a',
-                color: '#64748b',
-                padding: '1px 4px',
-                borderRadius: 3,
-                fontSize: 10,
-              }}
-            >
-              {levelName(mScore)}
-            </span>
-          </div>
-          {mSkills.map(skill => (
-            <SkillRow key={skill.skillKey} skill={skill} />
-          ))}
-        </div>
-      )}
     </div>
   )
 }
