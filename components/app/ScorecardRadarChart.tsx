@@ -6,7 +6,6 @@ import {
   PolarAngleAxis,
   Radar,
   Legend,
-  Tooltip,
   ResponsiveContainer,
 } from 'recharts'
 import { PILLAR_LABELS, LEVELS, type Pillar, type Level } from '@/lib/skills'
@@ -173,6 +172,7 @@ export interface ScorecardPillarTickProps {
   payload?: { value: string }
   textAnchor?: 'middle' | 'start' | 'end' | 'inherit'
   onPillarClick?: (pillar: Pillar) => void
+  onPillarHover?: (pillar: Pillar | null) => void
 }
 
 export function ScorecardPillarTick({
@@ -181,6 +181,7 @@ export function ScorecardPillarTick({
   payload,
   textAnchor = 'middle',
   onPillarClick,
+  onPillarHover,
 }: ScorecardPillarTickProps) {
   const [hovered, setHovered] = useState(false)
   const label = payload?.value ?? ''
@@ -198,8 +199,8 @@ export function ScorecardPillarTick({
     <g
       style={{ cursor: onPillarClick ? 'pointer' : 'default', pointerEvents: 'all' }}
       onClick={() => pillarKey && onPillarClick?.(pillarKey)}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
+      onMouseEnter={() => { setHovered(true); pillarKey && onPillarHover?.(pillarKey) }}
+      onMouseLeave={() => { setHovered(false); onPillarHover?.(null) }}
     >
       <rect x={rectX} y={yNum - rectHeight / 2} width={64} height={rectHeight} fill="transparent" />
       {isTwoLine ? (
@@ -218,12 +219,17 @@ export function ScorecardPillarTick({
 
 export function ScorecardRadarChart({ pillarScores, onPillarClick }: Props) {
   const [hidden, setHidden] = useState<Set<'Self' | 'Manager'>>(new Set())
+  const [hoveredPillar, setHoveredPillar] = useState<Pillar | null>(null)
+
+  const hoveredPs = hoveredPillar
+    ? (pillarScores.find(ps => ps.pillar === hoveredPillar) ?? null)
+    : null
 
   const hasManagerData = pillarScores.some(ps => ps.managerScore !== undefined)
 
   const tickRenderer = useCallback(
     (props: ScorecardPillarTickProps) => (
-      <ScorecardPillarTick {...props} onPillarClick={onPillarClick} />
+      <ScorecardPillarTick {...props} onPillarClick={onPillarClick} onPillarHover={setHoveredPillar} />
     ),
     [onPillarClick]
   )
@@ -301,7 +307,10 @@ export function ScorecardRadarChart({ pillarScores, onPillarClick }: Props) {
         <g key={`dot-self-${index}`}>
           <circle cx={cx} cy={cy} r={12} fill="transparent"
             style={{ cursor: onPillarClick ? 'pointer' : 'default' }}
-            onClick={() => ps && onPillarClick?.(ps.pillar)} />
+            onClick={() => ps && onPillarClick?.(ps.pillar)}
+            onMouseEnter={() => ps && setHoveredPillar(ps.pillar)}
+            onMouseLeave={() => setHoveredPillar(null)}
+          />
           <circle cx={cx} cy={cy} r={4} fill="#f59e0b" style={{ pointerEvents: 'none' }} />
         </g>
       )
@@ -317,7 +326,10 @@ export function ScorecardRadarChart({ pillarScores, onPillarClick }: Props) {
         <g key={`dot-manager-${index}`}>
           <circle cx={cx} cy={cy} r={12} fill="transparent"
             style={{ cursor: onPillarClick ? 'pointer' : 'default' }}
-            onClick={() => ps && onPillarClick?.(ps.pillar)} />
+            onClick={() => ps && onPillarClick?.(ps.pillar)}
+            onMouseEnter={() => ps && setHoveredPillar(ps.pillar)}
+            onMouseLeave={() => setHoveredPillar(null)}
+          />
           <circle cx={cx} cy={cy} r={3.5} fill="#a78bfa" style={{ pointerEvents: 'none' }} />
         </g>
       )
@@ -326,7 +338,7 @@ export function ScorecardRadarChart({ pillarScores, onPillarClick }: Props) {
   )
 
   return (
-    <div style={{ cursor: 'default' }}>
+    <div style={{ cursor: 'default', position: 'relative' }}>
       <ResponsiveContainer width="100%" height={280}>
         <RadarChart data={data} margin={{ top: 10, right: 30, bottom: 10, left: 30 }}>
           <PolarGrid stroke="#1e293b" />
@@ -354,14 +366,6 @@ export function ScorecardRadarChart({ pillarScores, onPillarClick }: Props) {
               dot={renderManagerDot as never}
             />
           )}
-          <Tooltip
-            content={({ active, payload, label }) => {
-              if (!active || !payload?.length) return null
-              const ps = pillarScores.find(p => PILLAR_LABELS[p.pillar] === label)
-              if (!ps) return null
-              return <PillarTooltip pillarScore={ps} hidden={hidden} />
-            }}
-          />
           {hasManagerData && (
             <Legend
               wrapperStyle={{ cursor: 'pointer' }}
@@ -383,6 +387,20 @@ export function ScorecardRadarChart({ pillarScores, onPillarClick }: Props) {
           )}
         </RadarChart>
       </ResponsiveContainer>
+
+      {hoveredPs && (
+        <div
+          style={{
+            position: 'absolute',
+            top: 20,
+            left: 'calc(100% + 12px)',
+            zIndex: 50,
+            pointerEvents: 'none',
+          }}
+        >
+          <PillarTooltip pillarScore={hoveredPs} hidden={hidden} />
+        </div>
+      )}
     </div>
   )
 }
