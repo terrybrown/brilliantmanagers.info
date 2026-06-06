@@ -434,6 +434,7 @@ export default async function DashboardPage() {
     <div style={{ padding: '22px 28px' }}>
       <ManagerStrip summaries={enrichedDRs} />
       {isManager && <DashboardManagerTour hasManagerStrip={enrichedDRs.length > 0} />}
+      {!isManager && <DashboardTour />}
       <DashboardResults
         pillarScoresForRadar={pillarScoresForRadar}
         hasManagerScores={hasManagerScores}
