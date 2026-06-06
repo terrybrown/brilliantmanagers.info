@@ -41,7 +41,7 @@ export function PillarNav({ activePillar, pillarProgress, onPillarChange }: Pill
         Pillars
       </p>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 4, flex: 1 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
         {PILLARS.map(pillar => {
           const { scored, total } = pillarProgress[pillar]
           const isActive = pillar === activePillar
