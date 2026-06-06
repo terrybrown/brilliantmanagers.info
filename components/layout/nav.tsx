@@ -23,8 +23,12 @@ const APP_ROUTES = [
   '/profile',
   '/scorecard',
   '/results',
+  '/reflections',
   '/manager',
   '/notifications',
+  '/admin',
+  '/connections',
+  '/organisation',
 ]
 
 function NavLink({
@@ -80,6 +84,8 @@ export function Nav({ isAuthenticated }: { isAuthenticated: boolean }) {
   const pathname = usePathname()
   const isAppRoute = APP_ROUTES.some(r => pathname === r || pathname.startsWith(r + '/'))
   const [isOpen, setIsOpen] = useState(false)
+
+  if (isAppRoute) return null
   const headerRef = useRef<HTMLElement>(null)
   const prevPathname = useRef(pathname)
 
