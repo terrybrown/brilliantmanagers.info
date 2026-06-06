@@ -36,9 +36,14 @@ export default async function ScorecardPage() {
 
   return (
     <div>
-      <h1 className="mb-2 text-2xl font-bold" style={{ color: 'var(--color-text-primary)' }}>Your Scorecard</h1>
+      <h1
+        className="mb-1.5"
+        style={{ fontFamily: 'var(--font-display)', fontSize: 28, fontWeight: 700, color: 'var(--color-text-primary)' }}
+      >
+        Your scorecard
+      </h1>
       <p className="mb-6 text-sm" style={{ color: 'var(--color-text-muted)' }}>
-        Score yourself on each skill. Scores save automatically.
+        Score yourself honestly on each skill — there are no right answers. Scores save automatically.
       </p>
       <ScorecardShell roundId={round.id} allScores={allScores} allGuideContent={allGuideContent} />
     </div>
