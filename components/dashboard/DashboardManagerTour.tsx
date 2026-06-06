@@ -76,13 +76,13 @@ export function DashboardManagerTour({ hasManagerStrip }: { hasManagerStrip: boo
       })
     }
 
-    if (document.getElementById('nav-connections')) {
+    if (document.getElementById('nav-people')) {
       steps.push({
-        element: '#nav-connections',
+        element: '#nav-people',
         popover: {
           title: "Your team",
           description:
-            "Manage your connections, invite more direct reports, and see everyone in your management network.",
+            "Team & Org is where you manage connections — invite direct reports, accept manager invites, and see everyone in your management network.",
         },
       })
     }
@@ -142,8 +142,8 @@ export function DashboardManagerTour({ hasManagerStrip }: { hasManagerStrip: boo
       style={{
         display: 'flex',
         alignItems: 'center',
-        background: 'rgba(45,212,191,0.08)',
-        border: '1px solid rgba(45,212,191,0.35)',
+        background: 'var(--color-accent-wash)',
+        border: '1px solid var(--color-accent-border)',
         borderRadius: 12,
         marginBottom: 32,
         overflow: 'hidden',
@@ -160,7 +160,7 @@ export function DashboardManagerTour({ hasManagerStrip }: { hasManagerStrip: boo
           padding: '11px 20px',
           fontSize: 13,
           fontWeight: 600,
-          color: '#2dd4bf',
+          color: 'var(--color-accent)',
           cursor: 'pointer',
           background: 'transparent',
           border: 'none',
@@ -172,7 +172,7 @@ export function DashboardManagerTour({ hasManagerStrip }: { hasManagerStrip: boo
         </svg>
         <span style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
           <span>Take a 30-second tour of Brilliant Managers</span>
-          <span style={{ fontSize: 11, fontWeight: 400, color: 'rgba(45,212,191,0.55)' }}>
+          <span style={{ fontSize: 11, fontWeight: 400, color: 'var(--color-text-faint)' }}>
             Let us show you around the tool
           </span>
         </span>
@@ -183,10 +183,10 @@ export function DashboardManagerTour({ hasManagerStrip }: { hasManagerStrip: boo
         aria-label="Dismiss tour prompt"
         style={{
           padding: '11px 16px',
-          color: 'rgba(45,212,191,0.35)',
+          color: 'var(--color-text-faint)',
           background: 'transparent',
           border: 'none',
-          borderLeft: '1px solid rgba(45,212,191,0.15)',
+          borderLeft: '1px solid var(--color-border)',
           cursor: 'pointer',
           fontSize: 18,
           lineHeight: 1,

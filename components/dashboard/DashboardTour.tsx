@@ -7,49 +7,6 @@ import { MANAGER_TOUR_EVENT } from '@/components/dashboard/DashboardManagerTour'
 
 const TOUR_SEEN_KEY = 'bm_tour_seen'
 
-const TOUR_STEPS = [
-  {
-    element: '#nav-dashboard',
-    popover: {
-      title: 'Your command centre',
-      description:
-        "This is your dashboard — a live picture of where you stand as a manager. Once you've completed a scorecard, your radar, pillar scores, and growth goals all live here.",
-    },
-  },
-  {
-    element: '#nav-growth',
-    popover: {
-      title: "Track what you're working on",
-      description:
-        'The Growth section shows your active development goals and how your scores have shifted between rounds. Set a goal on any skill and revisit it at your next 1:1.',
-    },
-  },
-  {
-    element: '#nav-connections',
-    popover: {
-      title: 'Your management relationships',
-      description:
-        'Connections tracks the people in your world — direct reports, peers, and stakeholders. Use it to log what matters about your working relationships.',
-    },
-  },
-  {
-    element: '#nav-avatar',
-    popover: {
-      title: 'Your profile',
-      description:
-        'Your account settings and scorecard history live here. You can also download or share your scorecard from this menu.',
-    },
-  },
-  {
-    element: '#dashboard-cta-btn',
-    popover: {
-      title: 'Ready to get started?',
-      description:
-        'Your first scorecard takes about ten minutes. Answer honestly — there are no right answers, only useful ones.',
-    },
-  },
-]
-
 function readLocalStorage(key: string) {
   try {
     return typeof window !== 'undefined' && localStorage.getItem(key) === '1'
@@ -58,18 +15,86 @@ function readLocalStorage(key: string) {
   }
 }
 
+function el(id: string) {
+  return document.getElementById(id)
+}
+
+function buildSteps() {
+  const steps: { element: string; popover: { title: string; description: string } }[] = []
+
+  if (el('nav-dashboard')) {
+    steps.push({
+      element: '#nav-dashboard',
+      popover: {
+        title: 'Your command centre',
+        description:
+          "This is your dashboard — a live picture of where you stand as a manager. Once you've completed a scorecard, your radar, pillar scores, and growth goals all live here.",
+      },
+    })
+  }
+
+  if (el('nav-growth')) {
+    steps.push({
+      element: '#nav-growth',
+      popover: {
+        title: "Track what you're working on",
+        description:
+          'The Growth section shows your active development goals and how your scores have shifted between rounds. Set a goal on any skill and revisit it at your next 1:1.',
+      },
+    })
+  }
+
+  if (el('nav-people')) {
+    steps.push({
+      element: '#nav-people',
+      popover: {
+        title: 'Your team',
+        description:
+          'Team & Org is where you manage connections — invite direct reports, accept manager invites, and see everyone in your management network.',
+      },
+    })
+  }
+
+  if (el('nav-avatar')) {
+    steps.push({
+      element: '#nav-avatar',
+      popover: {
+        title: 'Your profile',
+        description:
+          'Your account settings and notification preferences live here. You can also control whether you score your direct reports blind or after seeing their self-assessment.',
+      },
+    })
+  }
+
+  if (el('dashboard-cta-btn')) {
+    steps.push({
+      element: '#dashboard-cta-btn',
+      popover: {
+        title: 'Ready to get started?',
+        description:
+          'Your first scorecard takes about ten minutes. Score yourself honestly across five pillars — there are no right answers, only useful ones.',
+      },
+    })
+  }
+
+  return steps
+}
+
 export function DashboardTour() {
   const [promptHidden, setPromptHidden] = useState(() => readLocalStorage(TOUR_SEEN_KEY))
 
   function startTour() {
+    const steps = buildSteps()
+    if (steps.length === 0) return
     const driverObj = driver({
       animate: true,
       smoothScroll: true,
       allowClose: true,
+      showProgress: true,
       stagePadding: 6,
       stageRadius: 8,
       popoverClass: 'bm-tour-popover',
-      steps: TOUR_STEPS,
+      steps,
       onDestroyed: () => {
         try {
           localStorage.setItem(TOUR_SEEN_KEY, '1')
@@ -77,14 +102,20 @@ export function DashboardTour() {
         setPromptHidden(true)
       },
     })
-
     driverObj.drive()
   }
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    if (readLocalStorage(TOUR_SEEN_KEY)) return
+    const timer = setTimeout(startTour, 300)
+    return () => clearTimeout(timer)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   useEffect(() => {
     window.addEventListener(MANAGER_TOUR_EVENT, startTour)
     return () => window.removeEventListener(MANAGER_TOUR_EVENT, startTour)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   function dismissPrompt() {
@@ -101,8 +132,8 @@ export function DashboardTour() {
       style={{
         display: 'flex',
         alignItems: 'center',
-        background: 'rgba(45,212,191,0.08)',
-        border: '1px solid rgba(45,212,191,0.35)',
+        background: 'var(--color-accent-wash)',
+        border: '1px solid var(--color-accent-border)',
         borderRadius: 12,
         marginBottom: 32,
         overflow: 'hidden',
@@ -119,7 +150,7 @@ export function DashboardTour() {
           padding: '11px 20px',
           fontSize: 13,
           fontWeight: 600,
-          color: '#2dd4bf',
+          color: 'var(--color-accent)',
           cursor: 'pointer',
           background: 'transparent',
           border: 'none',
@@ -131,7 +162,7 @@ export function DashboardTour() {
         </svg>
         <span style={{ display: 'flex', flexDirection: 'column', gap: 1, textAlign: 'left' }}>
           <span>Take a 30-second tour of Brilliant Managers</span>
-          <span style={{ fontSize: 11, fontWeight: 400, color: 'rgba(45,212,191,0.55)' }}>
+          <span style={{ fontSize: 11, fontWeight: 400, color: 'var(--color-text-faint)' }}>
             Let us show you around the tool
           </span>
         </span>
@@ -142,10 +173,10 @@ export function DashboardTour() {
         aria-label="Dismiss tour prompt"
         style={{
           padding: '11px 16px',
-          color: 'rgba(45,212,191,0.35)',
+          color: 'var(--color-text-faint)',
           background: 'transparent',
           border: 'none',
-          borderLeft: '1px solid rgba(45,212,191,0.15)',
+          borderLeft: '1px solid var(--color-border)',
           cursor: 'pointer',
           fontSize: 18,
           lineHeight: 1,

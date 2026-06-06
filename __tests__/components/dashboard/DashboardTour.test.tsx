@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import { DashboardTour } from '@/components/dashboard/DashboardTour'
 
@@ -17,12 +17,33 @@ vi.mock('driver.js', () => ({
 
 vi.mock('driver.js/dist/driver.css', () => ({}))
 
+const TOUR_ELEMENT_IDS = ['nav-dashboard', 'nav-growth', 'nav-people', 'nav-avatar', 'dashboard-cta-btn']
+
+function setupTourElements() {
+  TOUR_ELEMENT_IDS.forEach(id => {
+    const el = document.createElement('div')
+    el.id = id
+    document.body.appendChild(el)
+  })
+}
+
+function teardownTourElements() {
+  TOUR_ELEMENT_IDS.forEach(id => {
+    document.getElementById(id)?.remove()
+  })
+}
+
 beforeEach(() => {
   mockDrive.mockReset()
   mockDestroy.mockReset()
   localStorage.clear()
   capturedOnDestroyed = undefined
   capturedSteps = []
+  setupTourElements()
+})
+
+afterEach(() => {
+  teardownTourElements()
 })
 
 describe('DashboardTour', () => {
@@ -37,10 +58,17 @@ describe('DashboardTour', () => {
     expect(mockDrive).toHaveBeenCalledTimes(1)
   })
 
-  it('configures driver.js with exactly 5 steps', () => {
+  it('configures driver.js with exactly 5 steps when all nav elements exist', () => {
     render(<DashboardTour />)
     fireEvent.click(screen.getByRole('button', { name: /take a 30-second tour/i }))
     expect(capturedSteps).toHaveLength(5)
+  })
+
+  it('skips steps for elements that do not exist in the DOM', () => {
+    document.getElementById('nav-people')?.remove()
+    render(<DashboardTour />)
+    fireEvent.click(screen.getByRole('button', { name: /take a 30-second tour/i }))
+    expect(capturedSteps).toHaveLength(4)
   })
 
   it('sets bm_tour_seen in localStorage when the tour ends', () => {
