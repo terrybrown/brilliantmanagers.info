@@ -25,16 +25,16 @@ export function ActiveRoundCard({
       <>
         <div
           style={{
-            border: '2px dashed #334155',
-            background: 'rgba(255,255,255,0.02)',
+            border: '2px dashed var(--color-border)',
+            background: 'var(--color-surface)',
             borderRadius: 12,
             padding: '16px 20px',
           }}
         >
-          <p style={{ fontWeight: 600, color: '#fff', fontSize: 14, marginBottom: 4 }}>
+          <p style={{ fontWeight: 600, color: 'var(--color-text-primary)', fontSize: 14, marginBottom: 4 }}>
             Ready to reflect?
           </p>
-          <p style={{ fontSize: 12, color: '#64748b', marginBottom: 12 }}>
+          <p style={{ fontSize: 12, color: 'var(--color-text-muted)', marginBottom: 12 }}>
             Start a new round to track your progress this quarter.
           </p>
           <button
@@ -44,8 +44,8 @@ export function ActiveRoundCard({
               display: 'inline-flex',
               alignItems: 'center',
               gap: 6,
-              background: '#f59e0b',
-              color: '#1a2a3a',
+              background: 'var(--color-accent)',
+              color: 'var(--color-accent-fg)',
               fontWeight: 700,
               fontSize: 12,
               padding: '8px 16px',
@@ -74,22 +74,22 @@ export function ActiveRoundCard({
   return (
     <div
       style={{
-        background: 'rgba(245,158,11,0.08)',
-        border: '1px solid rgba(245,158,11,0.25)',
+        background: 'var(--color-accent-wash)',
+        border: '1px solid var(--color-accent-border)',
         borderRadius: 12,
         padding: '16px 20px',
       }}
     >
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8, marginBottom: 4 }}>
-        <p style={{ fontSize: 14, fontWeight: 600, color: '#f59e0b' }}>{title}</p>
+        <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-accent)' }}>{title}</p>
         <span
           style={{
             fontSize: 10,
             fontWeight: 700,
             letterSpacing: '0.1em',
             textTransform: 'uppercase' as const,
-            color: '#f59e0b',
-            background: 'rgba(245,158,11,0.15)',
+            color: 'var(--color-accent)',
+            background: 'var(--color-accent-wash2)',
             borderRadius: 4,
             padding: '2px 6px',
           }}
@@ -97,14 +97,14 @@ export function ActiveRoundCard({
           In progress
         </span>
       </div>
-      <p style={{ fontSize: 12, color: '#64748b', marginBottom: 8 }}>
+      <p style={{ fontSize: 12, color: 'var(--color-text-muted)', marginBottom: 8 }}>
         {scoredPillarCount} of 5 pillars scored
       </p>
       <div
         style={{
           height: 4,
           borderRadius: 2,
-          background: 'rgba(255,255,255,0.08)',
+          background: 'var(--color-track)',
           marginBottom: 12,
         }}
       >
@@ -113,7 +113,7 @@ export function ActiveRoundCard({
             height: '100%',
             width: `${pct}%`,
             borderRadius: 2,
-            background: '#f59e0b',
+            background: 'var(--color-accent)',
           }}
         />
       </div>
@@ -126,7 +126,7 @@ export function ActiveRoundCard({
           gap: 4,
           fontSize: 12,
           fontWeight: 700,
-          color: '#f59e0b',
+          color: 'var(--color-accent)',
           textDecoration: 'none',
         }}
       >

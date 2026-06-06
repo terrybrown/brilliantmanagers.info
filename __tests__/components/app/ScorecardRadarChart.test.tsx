@@ -58,11 +58,11 @@ describe('ScorecardPillarTick', () => {
     const g = container.querySelector('g')!
     const text = container.querySelector('text')!
 
-    expect(text.getAttribute('fill')).toBe('#94a3b8')
+    expect(text.getAttribute('fill')).toBe('#95A097')
     fireEvent.mouseEnter(g)
-    expect(text.getAttribute('fill')).toBe('#f59e0b')
+    expect(text.getAttribute('fill')).toBe('#0E7C6B')
     fireEvent.mouseLeave(g)
-    expect(text.getAttribute('fill')).toBe('#94a3b8')
+    expect(text.getAttribute('fill')).toBe('#95A097')
   })
 
   it('calls onPillarClick with the pillar key when a known label is clicked', () => {

@@ -18,45 +18,58 @@ export function ReflectionsHeader({
   const [open, setOpen] = useState(false)
   return (
     <>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <h1
-          style={{
-            fontSize: 22,
-            fontWeight: 800,
-            color: '#fff',
-            letterSpacing: '-0.02em',
-            fontFamily: 'var(--font-display)',
-          }}
-        >
-          Reflections
-        </h1>
-        <button
-          onClick={() => setOpen(true)}
-          style={{
-            background: '#f59e0b',
-            color: '#1a2a3a',
-            border: 'none',
-            borderRadius: 8,
-            padding: '8px 16px',
-            fontWeight: 700,
-            fontSize: 13,
-            cursor: 'pointer',
-          }}
-        >
-          + New round
-        </button>
+      <div className="grid grid-cols-1 gap-5 lg:grid-cols-[1fr_320px] items-start">
+        <div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 6 }}>
+            <h1
+              style={{
+                fontFamily: 'var(--font-display)',
+                fontSize: 24,
+                fontWeight: 750,
+                color: 'var(--color-text-primary)',
+                letterSpacing: '-0.02em',
+                margin: 0,
+              }}
+            >
+              Reflections
+            </h1>
+            <button
+              onClick={() => setOpen(true)}
+              style={{
+                background: 'var(--color-accent)',
+                color: 'var(--color-accent-fg)',
+                border: 'none',
+                borderRadius: 8,
+                padding: '8px 16px',
+                fontWeight: 700,
+                fontSize: 13,
+                cursor: 'pointer',
+                flexShrink: 0,
+              }}
+            >
+              + New round
+            </button>
+          </div>
+          <p
+            style={{
+              fontSize: 13.5,
+              color: 'var(--color-text-muted)',
+              margin: 0,
+              maxWidth: 520,
+              lineHeight: 1.6,
+            }}
+          >
+            Every round is a snapshot. Watch how your scores move over time — and where your manager sees you differently.
+          </p>
+        </div>
+        <ActiveRoundCard
+          inProgressRound={inProgressRound}
+          scoredPillarCount={scoredPillarCount}
+          nextRoundTitle={nextRoundTitle}
+          onNewRound={() => setOpen(true)}
+        />
       </div>
-      <ActiveRoundCard
-        inProgressRound={inProgressRound}
-        scoredPillarCount={scoredPillarCount}
-        nextRoundTitle={nextRoundTitle}
-        onNewRound={() => setOpen(true)}
-      />
-      <CreateRoundModal
-        open={open}
-        onClose={() => setOpen(false)}
-        defaultTitle={nextRoundTitle}
-      />
+      <CreateRoundModal open={open} onClose={() => setOpen(false)} defaultTitle={nextRoundTitle} />
     </>
   )
 }

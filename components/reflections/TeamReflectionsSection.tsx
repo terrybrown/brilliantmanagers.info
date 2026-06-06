@@ -1,12 +1,14 @@
 import Link from 'next/link'
+import { CheckCircle } from 'lucide-react'
 import type { TeamMemberSummary, TeamRoundSummary } from '@/lib/db/direct-reports'
+import type React from 'react'
 
 type EnrichedMember = TeamMemberSummary & { name: string }
 
-const STATUS_PILL: Record<string, { label: string; className: string }> = {
-  scheduled: { label: 'Scheduled', className: 'bg-slate-700 text-slate-300' },
-  in_progress: { label: 'In progress', className: 'bg-green-900/50 text-green-400' },
-  complete: { label: 'Complete', className: 'bg-slate-800 text-slate-400' },
+const STATUS_PILL: Record<string, { label: string; style: React.CSSProperties }> = {
+  scheduled: { label: 'Scheduled', style: { background: 'var(--color-chip-bg)', color: 'var(--color-text-muted)' } },
+  in_progress: { label: 'In progress', style: { background: 'var(--color-positive-bg)', color: 'var(--color-positive)' } },
+  complete: { label: 'Complete', style: { background: 'var(--color-chip-bg)', color: 'var(--color-text-faint)' } },
 }
 
 function ManagerScoreCell({
@@ -20,21 +22,20 @@ function ManagerScoreCell({
 
   if (managerScoringStatus === 'complete' && managerScore !== null) {
     return (
-      <span className="text-xs text-purple-400">
+      <span style={{ fontSize: 12, color: 'var(--color-manager)', display: 'inline-flex', alignItems: 'center', gap: 3 }}>
         <span>{managerScore}</span>
-        {' ✓'}
+        <CheckCircle size={11} />
       </span>
     )
   }
   if (managerScoringStatus === 'complete') {
-    // Scored but no computable average (e.g. all scores filtered as invalid)
-    return <span className="text-xs text-neutral-500">—</span>
+    return <span style={{ fontSize: 12, color: 'var(--color-text-faint)' }}>—</span>
   }
   if (managerScoringStatus === 'in_progress') {
     return (
       <Link
         href={`/manager/${drId}?roundId=${roundId}`}
-        className="text-xs text-blue-400 hover:text-blue-300"
+        style={{ fontSize: 12, color: 'var(--color-accent)', textDecoration: 'none' }}
       >
         {pillarsScored}/5 · Continue →
       </Link>
@@ -43,7 +44,7 @@ function ManagerScoreCell({
   return (
     <Link
       href={`/manager/${drId}?roundId=${roundId}`}
-      className="text-xs font-medium text-amber-400 hover:text-amber-300"
+      style={{ fontSize: 12, fontWeight: 500, color: 'var(--color-accent)', textDecoration: 'none' }}
     >
       Score →
     </Link>
@@ -54,43 +55,118 @@ function DrCard({ member }: { member: EnrichedMember }) {
   const { directReportId, name, rounds, pendingScoringCount } = member
 
   return (
-    <div className="rounded-xl border border-neutral-800 bg-neutral-900/50 overflow-hidden">
-      <div className="flex items-center justify-between gap-3 px-4 py-3 border-b border-neutral-800">
-        <div className="flex items-center gap-2">
-          <div className="h-8 w-8 rounded-full bg-slate-700 flex items-center justify-center text-xs font-semibold text-white flex-shrink-0">
+    <div
+      style={{
+        borderRadius: 'var(--radius-lg)',
+        border: '1px solid var(--color-border)',
+        background: 'var(--color-surface)',
+        boxShadow: 'var(--shadow-card)',
+        overflow: 'hidden',
+      }}
+    >
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: 12,
+          padding: '12px 16px',
+          borderBottom: '1px solid var(--color-border)',
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <div
+            style={{
+              height: 32,
+              width: 32,
+              borderRadius: '50%',
+              background: 'var(--color-manager)',
+              color: 'var(--color-accent-fg)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: 12,
+              fontWeight: 600,
+              flexShrink: 0,
+            }}
+          >
             {name.slice(0, 2).toUpperCase()}
           </div>
           <div>
-            <p className="text-sm font-medium text-white">{name}</p>
-            <p className="text-xs text-neutral-500">{rounds.length} round{rounds.length !== 1 ? 's' : ''}</p>
+            <p style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-text-primary)', margin: 0 }}>{name}</p>
+            <p style={{ fontSize: 12, color: 'var(--color-text-faint)', margin: 0 }}>
+              {rounds.length} round{rounds.length !== 1 ? 's' : ''}
+            </p>
           </div>
         </div>
         {pendingScoringCount > 0 ? (
-          <span className="rounded-full bg-amber-900/50 px-2 py-0.5 text-xs font-medium text-amber-400">
+          <span
+            style={{
+              borderRadius: 9999,
+              background: 'var(--color-alert-bg)',
+              border: '1px solid var(--color-alert-border)',
+              padding: '2px 8px',
+              fontSize: 11,
+              fontWeight: 600,
+              color: 'var(--color-alert-fg)',
+              flexShrink: 0,
+            }}
+          >
             {pendingScoringCount} needs scoring
           </span>
         ) : (
-          <span className="rounded-full bg-green-900/30 px-2 py-0.5 text-xs text-green-500">
-            ✓ All scored
+          <span
+            style={{
+              borderRadius: 9999,
+              background: 'var(--color-positive-bg)',
+              padding: '2px 8px',
+              fontSize: 11,
+              color: 'var(--color-positive)',
+              flexShrink: 0,
+            }}
+          >
+            <CheckCircle size={11} style={{ flexShrink: 0 }} /> All scored
           </span>
         )}
       </div>
 
       {rounds.length === 0 ? (
-        <p className="px-4 py-3 text-xs text-neutral-500">No rounds started yet.</p>
+        <p style={{ padding: '12px 16px', fontSize: 12, color: 'var(--color-text-faint)', margin: 0 }}>
+          No rounds started yet.
+        </p>
       ) : (
-        <div className="divide-y divide-neutral-800/50">
-          {rounds.map(round => {
+        <div>
+          {rounds.map((round, idx) => {
             const pill = STATUS_PILL[round.roundStatus] ?? STATUS_PILL.complete
             return (
               <div
                 key={round.roundId}
-                className="grid items-center gap-3 px-4 py-2.5 text-xs"
-                style={{ gridTemplateColumns: '1fr auto auto auto' }}
+                style={{
+                  display: 'grid',
+                  alignItems: 'center',
+                  gap: 12,
+                  padding: '10px 16px',
+                  fontSize: 12,
+                  gridTemplateColumns: '1fr auto auto auto',
+                  borderTop: idx > 0 ? '1px solid var(--color-border)' : undefined,
+                }}
               >
-                <span className="text-neutral-300 truncate">{round.roundLabel}</span>
-                <span className={`rounded px-1.5 py-0.5 font-medium ${pill.className}`}>{pill.label}</span>
-                <span className="text-neutral-400 w-8 text-right">
+                <span style={{ color: 'var(--color-text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {round.roundLabel}
+                </span>
+                <span
+                  style={{
+                    ...pill.style,
+                    borderRadius: 4,
+                    padding: '2px 6px',
+                    fontSize: 10,
+                    fontWeight: 600,
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  {pill.label}
+                </span>
+                <span style={{ color: 'var(--color-text-muted)', width: 32, textAlign: 'right' }}>
                   {round.roundStatus === 'complete' && round.selfScore !== null
                     ? round.selfScore
                     : '—'}
@@ -110,14 +186,23 @@ export function TeamReflectionsSection({ summaries }: { summaries: EnrichedMembe
 
   return (
     <section>
-      <div className="mb-4 flex items-center gap-3">
-        <div className="h-px flex-1 bg-neutral-800" />
-        <p className="text-xs font-bold uppercase tracking-widest text-purple-400/70">
+      <div style={{ marginBottom: 16, display: 'flex', alignItems: 'center', gap: 12 }}>
+        <div style={{ height: 1, flex: 1, background: 'var(--color-border)' }} />
+        <p
+          style={{
+            fontSize: 11,
+            fontWeight: 700,
+            textTransform: 'uppercase',
+            letterSpacing: '0.08em',
+            color: 'var(--color-text-muted)',
+            margin: 0,
+          }}
+        >
           Your team&apos;s reflections
         </p>
-        <div className="h-px flex-1 bg-neutral-800" />
+        <div style={{ height: 1, flex: 1, background: 'var(--color-border)' }} />
       </div>
-      <div className="flex flex-col gap-4">
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
         {summaries.map(member => (
           <DrCard key={member.directReportId} member={member} />
         ))}

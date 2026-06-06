@@ -13,6 +13,10 @@ interface Props {
   orgRole: 'org_admin' | 'member' | null
 }
 
+// TODO: multi-org selection is incomplete — nodes and orgRole are fetched server-side
+// for orgs[0] only. Switching to a second org shows stale hierarchy from the first org.
+// Fix: pass allOrgNodes: Record<string, OrgNode[]> so each org has its own nodes, or
+// push selectedOrgIndex to the page and re-fetch via a router param.
 export function OrgSection({ orgs, nodes, orgRole }: Props) {
   const [selectedOrgIndex, setSelectedOrgIndex] = useState(0)
   const { mutate: createOrg, isPending: creatingOrg } = useMutation({ onSuccess: 'Organisation created' })
@@ -23,7 +27,7 @@ export function OrgSection({ orgs, nodes, orgRole }: Props) {
       <div
         style={{
           fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.1em',
-          fontWeight: 600, color: '#a78bfa', marginBottom: 14,
+          fontWeight: 600, color: 'var(--color-text-muted)', marginBottom: 14,
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         }}
       >
@@ -31,8 +35,8 @@ export function OrgSection({ orgs, nodes, orgRole }: Props) {
         {selectedOrg && (
           <span
             style={{
-              fontSize: 10, background: 'rgba(99,102,241,0.15)',
-              color: '#a78bfa', padding: '2px 8px', borderRadius: 4, fontWeight: 500,
+              fontSize: 10, background: 'var(--color-chip-bg)',
+              color: 'var(--color-text-muted)', padding: '2px 8px', borderRadius: 4, fontWeight: 500,
             }}
           >
             {selectedOrg.name}
@@ -43,11 +47,12 @@ export function OrgSection({ orgs, nodes, orgRole }: Props) {
       {orgs.length === 0 ? (
         <div
           style={{
-            background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)',
+            background: 'var(--color-surface)', border: '1px solid var(--color-border)',
+            boxShadow: 'var(--shadow-card)',
             borderRadius: 10, padding: 24,
           }}
         >
-          <p style={{ fontSize: 14, color: '#9ca3af', marginBottom: 16 }}>
+          <p style={{ fontSize: 14, color: 'var(--color-text-muted)', marginBottom: 16 }}>
             You&apos;re not part of an organisation yet. Create one to map out your team structure.
           </p>
           <form
@@ -63,8 +68,8 @@ export function OrgSection({ orgs, nodes, orgRole }: Props) {
               placeholder="Organisation name"
               required
               style={{
-                flex: 1, background: '#0d1117', border: '1px solid #1f2937', borderRadius: 6,
-                padding: '8px 12px', color: '#f1f5f9', fontSize: 14,
+                flex: 1, background: 'var(--color-surface)', border: '1px solid var(--color-border)',
+                borderRadius: 6, padding: '8px 12px', color: 'var(--color-text-primary)', fontSize: 14,
               }}
             />
             <Button type="submit" loading={creatingOrg}>Create</Button>
@@ -81,9 +86,9 @@ export function OrgSection({ orgs, nodes, orgRole }: Props) {
                   onClick={() => setSelectedOrgIndex(i)}
                   style={{
                     padding: '4px 12px', fontSize: 12, borderRadius: 4, cursor: 'pointer',
-                    background: i === selectedOrgIndex ? 'rgba(99,102,241,0.25)' : 'rgba(255,255,255,0.04)',
-                    border: i === selectedOrgIndex ? '1px solid rgba(99,102,241,0.5)' : '1px solid rgba(255,255,255,0.08)',
-                    color: i === selectedOrgIndex ? '#a78bfa' : '#6b7280',
+                    background: i === selectedOrgIndex ? 'var(--color-accent-wash2)' : 'transparent',
+                    border: i === selectedOrgIndex ? '1px solid var(--color-accent-border)' : '1px solid var(--color-border)',
+                    color: i === selectedOrgIndex ? 'var(--color-accent)' : 'var(--color-text-faint)',
                   }}
                 >
                   {org.name}

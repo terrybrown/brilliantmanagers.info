@@ -1,5 +1,7 @@
 import Link from 'next/link'
-import { LEVEL_COLORS, PILLAR_LABELS, type Level, type Pillar } from '@/lib/skills'
+import { Sparkles } from 'lucide-react'
+import { PILLAR_LABELS, type Level, type Pillar } from '@/lib/skills'
+import { scoreColor, scoreBg } from '@/lib/utils/score-tokens'
 
 interface Opportunity {
   key: string
@@ -13,41 +15,79 @@ interface OpportunitiesPanelProps {
   opportunities: Opportunity[]
 }
 
+
 export function OpportunitiesPanel({ opportunities }: OpportunitiesPanelProps) {
   return (
-    <div className="flex flex-col gap-3">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
       <div>
-        <h2 className="text-sm font-semibold text-white">Top Opportunities</h2>
-        <p className="text-xs text-slate-500">Lowest-scoring, no active goal</p>
+        <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 700, color: 'var(--color-text-primary)', margin: 0 }}>
+          Top opportunities
+        </h2>
+        <p style={{ fontSize: 11.5, color: 'var(--color-text-faint)', margin: '2px 0 0' }}>
+          Lowest-scoring skills with no active goal
+        </p>
       </div>
 
       {opportunities.length === 0 ? (
-        <p className="text-sm text-slate-500">All low-scoring skills have active goals.</p>
+        <p style={{ fontSize: 13, color: 'var(--color-text-muted)' }}>All low-scoring skills have active goals.</p>
       ) : (
-        <div className="flex flex-col gap-2">
-          {opportunities.map(opp => (
+        <div style={{
+          background: 'var(--color-surface)',
+          border: '1px solid var(--color-border)',
+          borderRadius: 'var(--radius-lg)',
+          boxShadow: 'var(--shadow-card)',
+          overflow: 'hidden',
+        }}>
+          {opportunities.map((opp, i) => (
             <div
               key={opp.key}
-              className="flex items-center gap-3 rounded-xl bg-slate-800 px-4 py-3"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 12,
+                padding: '12px 12px',
+                borderTop: i > 0 ? '1px solid var(--color-border)' : undefined,
+              }}
             >
-              <div className="flex-1 min-w-0">
-                <p className="truncate text-sm font-medium text-white">{opp.label}</p>
-                <p className="text-xs text-slate-500">
+              <div style={{
+                flexShrink: 0,
+                width: 22,
+                height: 22,
+                borderRadius: 6,
+                background: scoreBg(opp.score),
+                color: scoreColor(opp.score),
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: 12,
+                fontWeight: 700,
+              }}>
+                {opp.score}
+              </div>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--color-text-primary)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {opp.label}
+                </p>
+                <p style={{ fontSize: 11, color: 'var(--color-text-faint)', margin: '1px 0 0' }}>
                   {PILLAR_LABELS[opp.pillar]} · {opp.level}
                 </p>
               </div>
-              <span
-                className="shrink-0 rounded-full px-2 py-0.5 text-xs font-semibold"
-                style={{
-                  color: LEVEL_COLORS[opp.level],
-                  background: `${LEVEL_COLORS[opp.level]}20`,
-                }}
-              >
-                {opp.score}
-              </span>
               <Link
                 href={`/growth/goal/new?skill=${opp.key}`}
-                className="shrink-0 rounded-lg bg-indigo-600 px-3 py-1 text-xs font-semibold text-white hover:bg-indigo-500"
+                style={{
+                  flexShrink: 0,
+                  background: 'var(--color-accent-wash2)',
+                  border: '1px solid var(--color-accent-border)',
+                  color: 'var(--color-accent)',
+                  height: 30,
+                  padding: '0 12px',
+                  borderRadius: 8,
+                  fontSize: 12,
+                  fontWeight: 700,
+                  display: 'flex',
+                  alignItems: 'center',
+                  textDecoration: 'none',
+                }}
               >
                 Set goal →
               </Link>
@@ -55,6 +95,22 @@ export function OpportunitiesPanel({ opportunities }: OpportunitiesPanelProps) {
           ))}
         </div>
       )}
+
+      {/* Nudge card */}
+      <div style={{
+        display: 'flex',
+        flexDirection: 'row',
+        gap: 12,
+        background: 'var(--color-nav-bg)',
+        border: '1px solid var(--color-border)',
+        borderRadius: 'var(--radius)',
+        padding: 16,
+      }}>
+        <Sparkles size={18} style={{ color: 'var(--color-accent)', flexShrink: 0, marginTop: 1 }} />
+        <p style={{ fontSize: 12.5, color: 'var(--color-text-muted)', margin: 0, lineHeight: 1.5 }}>
+          <strong style={{ color: 'var(--color-text-primary)' }}>Focus on one skill at a time.</strong> Setting a goal on your lowest-scoring skill has the biggest impact on your overall score.
+        </p>
+      </div>
     </div>
   )
 }

@@ -1,6 +1,5 @@
-'use client'
-
 import Link from 'next/link'
+import { Plus } from 'lucide-react'
 import { getCheckinChip } from '@/lib/utils/checkin'
 import type { DevelopmentPlan } from '@/lib/db/development-plans'
 import { SKILLS, PILLAR_LABELS, type Pillar } from '@/lib/skills'
@@ -21,27 +20,51 @@ export function ActiveGoalsPanel({ plans }: ActiveGoalsPanelProps) {
     })
 
   return (
-    <div className="flex flex-col gap-3">
-      <div className="flex items-center gap-2">
-        <h2 className="text-sm font-semibold text-white">Active Goals</h2>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+        <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 700, color: 'var(--color-text-primary)', margin: 0 }}>
+          Active goals
+        </h2>
         {active.length > 0 && (
-          <span className="rounded-full bg-amber-500/20 px-2 py-0.5 text-xs font-semibold text-amber-400">
+          <span style={{
+            borderRadius: 9999,
+            background: 'var(--color-accent-wash2)',
+            color: 'var(--color-accent)',
+            padding: '2px 8px',
+            fontSize: 11.5,
+            fontWeight: 600,
+          }}>
             {active.length}
           </span>
         )}
       </div>
 
       {active.length === 0 ? (
-        <p className="text-sm text-slate-500">No active goals yet.</p>
+        <p style={{ fontSize: 13, color: 'var(--color-text-muted)' }}>No active goals yet.</p>
       ) : (
         active.map(plan => <GoalCard key={plan.id} plan={plan} />)
       )}
 
       <Link
         href="/growth/goal/new"
-        className="mt-1 flex items-center justify-center rounded-xl border border-dashed border-indigo-500/40 px-4 py-3 text-sm font-medium text-indigo-400 hover:border-indigo-400 hover:text-indigo-300"
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: 6,
+          marginTop: 4,
+          background: 'var(--color-accent-wash)',
+          border: '1.5px dashed var(--color-accent-border)',
+          borderRadius: 'var(--radius)',
+          padding: 14,
+          fontSize: 14,
+          fontWeight: 500,
+          color: 'var(--color-accent)',
+          textDecoration: 'none',
+        }}
       >
-        + Add a goal
+        <Plus size={15} />
+        Add a goal
       </Link>
     </div>
   )
@@ -51,35 +74,63 @@ function GoalCard({ plan }: { plan: DevelopmentPlan }) {
   const skill = SKILLS.find(s => s.key === plan.skill_key)
   const chip = getCheckinChip(plan)
 
+  const chipStyle = chip
+    ? chip.color === 'amber'
+      ? {
+          background: 'var(--color-alert-bg)',
+          color: 'var(--color-alert-fg)',
+          border: '1px solid var(--color-alert-border)',
+        }
+      : {
+          background: 'var(--color-positive-bg)',
+          color: 'var(--color-positive)',
+          border: '1px solid transparent',
+        }
+    : null
+
   return (
     <Link
       href={`/growth/goal/${plan.id}`}
-      className="flex flex-col gap-2 rounded-xl bg-slate-800 px-4 py-3 hover:bg-slate-700"
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 8,
+        background: 'var(--color-surface)',
+        border: '1px solid var(--color-border)',
+        borderRadius: 'var(--radius)',
+        padding: 15,
+        boxShadow: 'var(--shadow-card)',
+        textDecoration: 'none',
+      }}
     >
-      <div className="flex items-start justify-between gap-2">
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8 }}>
         <div>
-          <p className="text-sm font-medium text-white">{skill?.label ?? plan.skill_key}</p>
-          <p className="text-xs text-slate-500">
+          <p style={{ fontSize: 13.5, fontWeight: 650, fontFamily: 'var(--font-body)', color: 'var(--color-text-primary)', margin: 0 }}>
+            {skill?.label ?? plan.skill_key}
+          </p>
+          <p style={{ fontSize: 11, color: 'var(--color-text-faint)', margin: '2px 0 0' }}>
             {PILLAR_LABELS[plan.pillar as Pillar] ?? plan.pillar}
           </p>
         </div>
-        {chip && (
-          <span
-            className="shrink-0 rounded-full px-2 py-0.5 text-xs font-medium"
-            style={
-              chip.color === 'amber'
-                ? { background: 'rgba(245,158,11,0.15)', color: '#f59e0b' }
-                : { background: 'rgba(74,222,128,0.15)', color: '#4ade80' }
-            }
-          >
+        {chip && chipStyle && (
+          <span style={{
+            flexShrink: 0,
+            borderRadius: 9999,
+            padding: '3px 8px',
+            fontSize: 11,
+            fontWeight: 500,
+            ...chipStyle,
+          }}>
             {chip.label}
           </span>
         )}
       </div>
-      <p className="line-clamp-2 text-xs text-slate-400">{plan.goal}</p>
+      <p style={{ fontSize: 12.5, color: 'var(--color-text-muted)', lineHeight: 1.5, margin: 0, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+        {plan.goal}
+      </p>
       {plan.target_date && (
-        <p className="text-xs text-slate-600">
-          Target: {new Date(plan.target_date).toLocaleDateString()}
+        <p style={{ fontSize: 11, color: 'var(--color-text-faint)', margin: 0 }}>
+          Target {new Date(plan.target_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
         </p>
       )}
     </Link>

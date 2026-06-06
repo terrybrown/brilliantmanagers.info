@@ -6,15 +6,15 @@ export function Footer() {
     <footer
       className="border-t"
       style={{
-        background: '#1a3a5c',
-        borderColor: 'rgba(254,252,247,0.08)',
+        background: 'var(--color-nav-bg)',
+        borderColor: 'var(--color-border)',
       }}
     >
       <div
         className="mx-auto flex flex-col items-center justify-between gap-4 px-6 py-8 sm:flex-row"
         style={{ maxWidth: 'var(--container-width)' }}
       >
-        <p className="text-xs" style={{ color: 'rgba(254,252,247,0.35)' }}>
+        <p className="text-xs" style={{ color: 'var(--color-text-faint)' }}>
           © {new Date().getFullYear()} Brilliant Managers
         </p>
         <div className="flex gap-5">
@@ -25,7 +25,7 @@ export function Footer() {
               target="_blank"
               rel="noopener noreferrer"
               className="text-xs capitalize"
-              style={{ color: 'rgba(254,252,247,0.35)' }}
+              style={{ color: 'var(--color-text-muted)' }}
             >
               {key}
             </Link>

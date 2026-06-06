@@ -57,9 +57,13 @@ export function RotatingQuote() {
   const current = quotes[index]
 
   return (
-    <div
-      className="border-t px-6 pt-8 pb-16"
-      style={{ borderColor: 'rgba(254,252,247,0.08)' }}
+    <section
+      className="px-6 pt-8 pb-16"
+      style={{
+        background: 'var(--color-surface)',
+        borderTop: '1px solid var(--color-border)',
+        borderBottom: '1px solid var(--color-border)',
+      }}
     >
       <div
         style={{
@@ -75,18 +79,18 @@ export function RotatingQuote() {
           style={{
             fontFamily: 'var(--font-display)',
             fontSize: 'clamp(1.1rem, 2.5vw, 1.4rem)',
-            color: 'rgba(254,252,247,0.80)',
+            color: 'var(--color-text-primary)',
           }}
         >
           &ldquo;{current.quote}&rdquo;
         </blockquote>
         <cite
           className="mt-4 block text-xs not-italic uppercase tracking-widest"
-          style={{ color: 'rgba(254,252,247,0.35)' }}
+          style={{ color: 'var(--color-text-faint)' }}
         >
           — {current.attribution}
         </cite>
       </div>
-    </div>
+    </section>
   )
 }

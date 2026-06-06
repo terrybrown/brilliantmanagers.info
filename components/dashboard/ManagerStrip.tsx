@@ -11,26 +11,26 @@ interface Props {
   summaries: EnrichedDRSummary[]
 }
 
-const STATE_COLORS: Record<ManagerScoringStatus, { border: string; bar: string; text: string }> = {
+const STATUS_STYLES: Record<ManagerScoringStatus, { borderColor: string; barBg: string; textColor: string }> = {
   not_started: {
-    border: 'border-amber-600/50',
-    bar: 'bg-amber-500',
-    text: 'text-amber-400',
+    borderColor: 'var(--color-alert-border)',
+    barBg: 'var(--color-alert-fg)',
+    textColor: 'var(--color-alert-fg)',
   },
   in_progress: {
-    border: 'border-blue-600/50',
-    bar: 'bg-blue-500',
-    text: 'text-blue-400',
+    borderColor: 'var(--color-accent-border)',
+    barBg: 'var(--color-accent)',
+    textColor: 'var(--color-accent)',
   },
   complete: {
-    border: 'border-green-800/40',
-    bar: 'bg-green-600',
-    text: 'text-green-500',
+    borderColor: 'var(--color-positive-border)',
+    barBg: 'var(--color-positive)',
+    textColor: 'var(--color-positive)',
   },
 }
 
 function DrCard({ s }: { s: EnrichedDRSummary }) {
-  const { border, bar, text } = STATE_COLORS[s.managerScoringStatus]
+  const { borderColor, barBg, textColor } = STATUS_STYLES[s.managerScoringStatus]
   const pct = s.managerScoringStatus === 'complete' ? 100 : (s.pillarsScored / 5) * 100
   const href =
     s.managerScoringStatus === 'complete'
@@ -48,21 +48,53 @@ function DrCard({ s }: { s: EnrichedDRSummary }) {
     s.managerScoringStatus === 'in_progress' ? 'Continue →' : 'Start →'
 
   return (
-    <Link href={href} className="block hover:opacity-90 transition-opacity">
+    <Link href={href} style={{ display: 'block', textDecoration: 'none' }} className="hover:opacity-90 transition-opacity">
       <div
-        className={`rounded-lg border bg-slate-900/60 p-3 flex flex-col gap-2 ${border}`}
+        style={{
+          background: 'var(--color-surface)',
+          border: `1px solid ${borderColor}`,
+          borderRadius: 8,
+          padding: 12,
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 8,
+        }}
       >
-        <p className="text-sm font-medium text-white truncate">{s.name}</p>
-        <div className="h-1.5 w-full overflow-hidden rounded-full bg-slate-800">
+        <p
+          style={{
+            fontSize: 14,
+            fontWeight: 500,
+            color: 'var(--color-text-primary)',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+          }}
+        >
+          {s.name}
+        </p>
+        <div
+          style={{
+            height: 6,
+            width: '100%',
+            overflow: 'hidden',
+            borderRadius: 99,
+            background: 'var(--color-track)',
+          }}
+        >
           <div
-            className={`h-full rounded-full transition-all ${bar}`}
-            style={{ width: `${pct}%` }}
+            style={{
+              height: '100%',
+              borderRadius: 99,
+              background: barBg,
+              width: `${pct}%`,
+              transition: 'width 0.3s',
+            }}
           />
         </div>
-        <p className={`text-xs ${text}`}>
+        <p style={{ fontSize: 12, color: textColor }}>
           {statusText}
           {s.managerScoringStatus !== 'complete' && (
-            <span className="ml-1.5 opacity-70">{actionText}</span>
+            <span style={{ marginLeft: 6, opacity: 0.7 }}>{actionText}</span>
           )}
         </p>
       </div>
@@ -77,12 +109,30 @@ export function ManagerStrip({ summaries }: Props) {
   const assessedCount = scoreable.filter(s => s.managerScoringStatus === 'complete').length
 
   return (
-    <section id="manager-strip" className="mb-6 rounded-xl border border-amber-800/35 bg-amber-950/10 p-4">
-      <div className="mb-3 flex items-center justify-between gap-4">
-        <p className="text-xs font-bold uppercase tracking-widest text-amber-400/80">
+    <section
+      id="manager-strip"
+      style={{
+        marginBottom: 24,
+        borderRadius: 10,
+        border: '1px solid var(--color-border)',
+        background: 'var(--color-surface)',
+        boxShadow: 'var(--shadow-card)',
+        padding: 16,
+      }}
+    >
+      <div style={{ marginBottom: 12, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
+        <p
+          style={{
+            fontSize: 11,
+            fontWeight: 700,
+            textTransform: 'uppercase',
+            letterSpacing: '0.1em',
+            color: 'var(--color-accent)',
+          }}
+        >
           Team scoring
         </p>
-        <p className="text-xs text-slate-500">
+        <p style={{ fontSize: 12, color: 'var(--color-text-faint)' }}>
           {assessedCount} of {scoreable.length} assessed
         </p>
       </div>

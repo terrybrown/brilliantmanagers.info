@@ -102,18 +102,18 @@ export default async function DashboardPage() {
             style={{
               marginTop: 32,
               padding: '20px 24px',
-              background: 'rgba(255,255,255,0.02)',
-              border: '1px solid rgba(255,255,255,0.06)',
+              background: 'var(--color-surface)',
+              border: '1px solid var(--color-border)',
               borderRadius: 12,
             }}
           >
-            <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)', marginBottom: 12 }}>
+            <p style={{ fontSize: 13, color: 'var(--color-text-muted)', marginBottom: 12 }}>
               When you&apos;re ready, run your own self-assessment too.
             </p>
             <Link
               id="dashboard-cta-btn"
               href="/scorecard"
-              style={{ fontSize: 13, color: '#f59e0b', textDecoration: 'none', fontWeight: 600 }}
+              style={{ fontSize: 13, color: 'var(--color-accent)', textDecoration: 'none', fontWeight: 600 }}
             >
               Start your scorecard →
             </Link>
@@ -137,7 +137,7 @@ export default async function DashboardPage() {
                 fontWeight: 700,
                 letterSpacing: '0.14em',
                 textTransform: 'uppercase',
-                color: 'rgba(255,255,255,0.3)',
+                color: 'var(--color-text-faint)',
                 marginBottom: 12,
               }}
             >
@@ -149,18 +149,18 @@ export default async function DashboardPage() {
                 fontWeight: 800,
                 lineHeight: 1.2,
                 letterSpacing: '-0.02em',
-                color: '#fff',
+                color: 'var(--color-text-primary)',
                 marginBottom: 12,
                 fontFamily: 'var(--font-display)',
               }}
             >
               You&apos;re one short reflection away from{' '}
-              <em style={{ color: '#f59e0b', fontStyle: 'normal' }}>real clarity.</em>
+              <em style={{ color: 'var(--color-accent)', fontStyle: 'normal' }}>real clarity.</em>
             </h1>
             <p
               style={{
                 fontSize: 14,
-                color: 'rgba(255,255,255,0.5)',
+                color: 'var(--color-text-muted)',
                 lineHeight: 1.7,
                 maxWidth: 480,
                 marginBottom: 24,
@@ -179,8 +179,8 @@ export default async function DashboardPage() {
                   display: 'inline-flex',
                   alignItems: 'center',
                   gap: 8,
-                  background: '#f59e0b',
-                  color: '#1a2a3a',
+                  background: 'var(--color-accent)',
+                  color: 'var(--color-accent-fg)',
                   fontWeight: 700,
                   fontSize: 13,
                   padding: '12px 22px',
@@ -190,7 +190,7 @@ export default async function DashboardPage() {
               >
                 Start your scorecard →
               </Link>
-              <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.25)' }}>
+              <span style={{ fontSize: 12, color: 'var(--color-text-faint)' }}>
                 ~10 minutes · no right answers
               </span>
             </div>
@@ -205,7 +205,7 @@ export default async function DashboardPage() {
               fontWeight: 700,
               letterSpacing: '0.12em',
               textTransform: 'uppercase',
-              color: 'rgba(255,255,255,0.2)',
+              color: 'var(--color-text-faint)',
               marginBottom: 14,
             }}
           >
@@ -222,17 +222,18 @@ export default async function DashboardPage() {
               <div
                 key={strip.title}
                 style={{
-                  background: 'rgba(255,255,255,0.03)',
-                  border: '1px solid rgba(255,255,255,0.07)',
+                  background: 'var(--color-surface)',
+                  border: '1px solid var(--color-border)',
                   borderRadius: 10,
                   padding: 16,
+                  boxShadow: 'var(--shadow-card)',
                 }}
               >
                 <div
                   style={{
                     width: 32,
                     height: 32,
-                    background: 'rgba(245,158,11,0.1)',
+                    background: 'var(--color-accent-wash2)',
                     borderRadius: 8,
                     display: 'flex',
                     alignItems: 'center',
@@ -240,20 +241,20 @@ export default async function DashboardPage() {
                     marginBottom: 12,
                   }}
                 >
-                  <strip.Icon size={16} color="#f59e0b" strokeWidth={1.5} />
+                  <strip.Icon size={16} color="var(--color-accent)" strokeWidth={1.5} />
                 </div>
                 <p
                   style={{
                     fontSize: 12,
                     fontWeight: 700,
-                    color: 'rgba(255,255,255,0.85)',
+                    color: 'var(--color-text-primary)',
                     marginBottom: 5,
                     lineHeight: 1.3,
                   }}
                 >
                   {strip.title}
                 </p>
-                <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.38)', lineHeight: 1.55 }}>
+                <p style={{ fontSize: 11, color: 'var(--color-text-muted)', lineHeight: 1.55 }}>
                   {strip.desc}
                 </p>
               </div>
@@ -422,8 +423,15 @@ export default async function DashboardPage() {
   const scoredPillarCount = new Set(inProgressScores.map(s => s.pillar)).size
   const currentNextRoundTitle = computeNextRoundTitle()
 
+  const prevOverallAvg = prevRoundData && prevRoundData.scores.length > 0
+    ? prevRoundData.scores.reduce((sum, s) => sum + LEVEL_VALUES[s.level as Level], 0) / prevRoundData.scores.length
+    : undefined
+  const overallDelta = prevOverallAvg !== undefined && Number.isFinite(overallAvg - prevOverallAvg)
+    ? parseFloat((overallAvg - prevOverallAvg).toFixed(1))
+    : undefined
+
   return (
-    <div className="p-6">
+    <div style={{ padding: '22px 28px' }}>
       <ManagerStrip summaries={enrichedDRs} />
       {isManager && <DashboardManagerTour hasManagerStrip={enrichedDRs.length > 0} />}
       <DashboardResults
@@ -433,6 +441,7 @@ export default async function DashboardPage() {
         historyData={historyData}
         overallAvg={overallAvg}
         overallManagerAvg={overallManagerAvg}
+        overallDelta={overallDelta}
         roundDate={roundDate}
         inProgressRound={inProgress}
         scoredPillarCount={scoredPillarCount}

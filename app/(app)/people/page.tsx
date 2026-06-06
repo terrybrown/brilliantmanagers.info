@@ -38,8 +38,13 @@ export default async function PeoplePage() {
   ])
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-8">
-      <h1 className="mb-8 text-2xl font-bold text-white">Team &amp; Org</h1>
+    <div style={{ maxWidth: 1180, margin: '0 auto', padding: '24px 28px 40px', display: 'flex', flexDirection: 'column', gap: 24 }}>
+      <div>
+        <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 24, fontWeight: 750, color: 'var(--color-text-primary)', letterSpacing: '-0.02em', margin: '0 0 4px' }}>
+          Team &amp; Org
+        </h1>
+        <p style={{ fontSize: 13.5, color: 'var(--color-text-muted)', margin: '0 0 8px' }}>Your direct reports, your manager, and where you sit in the org.</p>
+      </div>
 
       <YourConnections
         connections={connections as { asManager: EnrichedConnection[]; asDirectReport: EnrichedConnection[] }}
@@ -48,7 +53,7 @@ export default async function PeoplePage() {
         pendingInvitations={pendingInvitations}
       />
 
-      <div style={{ margin: '32px 0', borderTop: '1px solid rgba(255,255,255,0.07)' }} />
+      <div style={{ margin: '32px 0', borderTop: '1px solid var(--color-border)' }} />
 
       <OrgSection
         orgs={orgs}

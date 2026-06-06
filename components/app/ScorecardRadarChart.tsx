@@ -41,13 +41,13 @@ function SkillRow({ skill }: { skill: SkillScore }) {
         display: 'flex',
         justifyContent: 'space-between',
         padding: '2px 0',
-        color: '#94a3b8',
-        borderBottom: '1px solid #0f172a',
+        color: 'var(--color-text-muted)',
+        borderBottom: '1px solid var(--color-border)',
         fontSize: 11,
       }}
     >
       <span>{skill.label}</span>
-      <span style={{ color: '#e2e8f0' }}>{skill.level}</span>
+      <span style={{ color: 'var(--color-text-primary)' }}>{skill.level}</span>
     </div>
   )
 }
@@ -68,8 +68,8 @@ export function PillarTooltip({ pillarScore, hidden }: PillarTooltipProps) {
   const mSkills = hasManager ? managerSkills : undefined
 
   const accentColor = showSelf && showManager
-    ? 'linear-gradient(to bottom, #f59e0b, #a78bfa)'
-    : showManager ? '#a78bfa' : '#f59e0b'
+    ? 'linear-gradient(to bottom, #0E7C6B, #CC7A1A)'
+    : showManager ? '#CC7A1A' : '#0E7C6B'
 
   return (
     <div
@@ -77,13 +77,13 @@ export function PillarTooltip({ pillarScore, hidden }: PillarTooltipProps) {
         background: accentColor,
         borderRadius: 8,
         padding: '0 0 0 3px',
-        boxShadow: '0 12px 40px rgba(0,0,0,0.7), 0 2px 8px rgba(0,0,0,0.5)',
+        boxShadow: '0 12px 40px rgba(40,60,45,0.14), 0 2px 8px rgba(40,60,45,0.08)',
         display: 'inline-block',
       }}
     >
       <div
         style={{
-          background: '#0d1117',
+          background: '#FFFFFF',
           borderRadius: '0 8px 8px 0',
           padding: '10px 14px',
           fontSize: 12,
@@ -91,21 +91,21 @@ export function PillarTooltip({ pillarScore, hidden }: PillarTooltipProps) {
           maxWidth: 300,
         }}
       >
-        <div style={{ fontWeight: 600, color: '#f1f5f9', marginBottom: 8, fontSize: 13 }}>
+        <div style={{ fontWeight: 600, color: '#1A231F', marginBottom: 8, fontSize: 13 }}>
           {PILLAR_LABELS[pillar]}
         </div>
 
         {showSelf && (
           <div style={{ marginBottom: showManager ? 10 : 0 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
-              <div style={{ width: 10, height: 2, background: '#f59e0b', borderRadius: 1 }} />
-              <span style={{ color: '#fbbf24', fontWeight: 600 }}>Self</span>
+              <div style={{ width: 10, height: 2, background: '#0E7C6B', borderRadius: 1 }} />
+              <span style={{ color: '#0E7C6B', fontWeight: 600 }}>Self</span>
               {selfScored ? (
                 <>
                   <span
                     style={{
-                      background: 'rgba(245,158,11,.15)',
-                      color: '#fbbf24',
+                      background: 'rgba(14,124,107,.15)',
+                      color: '#0E7C6B',
                       padding: '1px 5px',
                       borderRadius: 3,
                       fontSize: 10,
@@ -115,8 +115,8 @@ export function PillarTooltip({ pillarScore, hidden }: PillarTooltipProps) {
                   </span>
                   <span
                     style={{
-                      background: '#0f172a',
-                      color: '#64748b',
+                      background: 'var(--color-chip-bg)',
+                      color: 'var(--color-text-faint)',
                       padding: '1px 4px',
                       borderRadius: 3,
                       fontSize: 10,
@@ -126,7 +126,7 @@ export function PillarTooltip({ pillarScore, hidden }: PillarTooltipProps) {
                   </span>
                 </>
               ) : (
-                <span style={{ color: '#475569', fontSize: 10 }}>Not scored</span>
+                <span style={{ color: 'var(--color-text-faint)', fontSize: 10 }}>Not scored</span>
               )}
             </div>
             {selfSkills.map(skill => (
@@ -143,14 +143,14 @@ export function PillarTooltip({ pillarScore, hidden }: PillarTooltipProps) {
                   width: 10,
                   height: 2,
                   background:
-                    'repeating-linear-gradient(90deg, #a78bfa 0, #a78bfa 4px, transparent 4px, transparent 7px)',
+                    'repeating-linear-gradient(90deg, #CC7A1A 0, #CC7A1A 4px, transparent 4px, transparent 7px)',
                 }}
               />
-              <span style={{ color: '#c4b5fd', fontWeight: 600 }}>Manager</span>
+              <span style={{ color: '#CC7A1A', fontWeight: 600 }}>Manager</span>
               <span
                 style={{
-                  background: 'rgba(167,139,250,.15)',
-                  color: '#c4b5fd',
+                  background: 'var(--color-manager-wash)',
+                  color: '#CC7A1A',
                   padding: '1px 5px',
                   borderRadius: 3,
                   fontSize: 10,
@@ -160,8 +160,8 @@ export function PillarTooltip({ pillarScore, hidden }: PillarTooltipProps) {
               </span>
               <span
                 style={{
-                  background: '#0f172a',
-                  color: '#64748b',
+                  background: 'var(--color-chip-bg)',
+                  color: 'var(--color-text-faint)',
                   padding: '1px 4px',
                   borderRadius: 3,
                   fontSize: 10,
@@ -207,7 +207,7 @@ export function ScorecardPillarTick({
   const isTwoLine = words.length === 2
   const rectX = textAnchor === 'end' ? xNum - 64 : textAnchor === 'start' ? xNum : xNum - 32
   const rectHeight = isTwoLine ? 28 : 20
-  const fill = hovered ? '#f59e0b' : '#94a3b8'
+  const fill = hovered ? '#0E7C6B' : '#95A097'
 
   return (
     <g
@@ -277,7 +277,7 @@ export function ScorecardRadarChart({ pillarScores, onPillarClick }: Props) {
           x={Number(x) + dx}
           y={Number(y) + dy}
           textAnchor="middle"
-          fill="#f59e0b"
+          fill="#0E7C6B"
           fontSize={10}
           fontWeight={700}
           fontFamily="monospace"
@@ -302,7 +302,7 @@ export function ScorecardRadarChart({ pillarScores, onPillarClick }: Props) {
           x={Number(x) + dx * 0.55}
           y={Number(y) + dy * 0.55}
           textAnchor="middle"
-          fill="#a78bfa"
+          fill="#CC7A1A"
           fontSize={9}
           fontFamily="monospace"
         >
@@ -325,7 +325,7 @@ export function ScorecardRadarChart({ pillarScores, onPillarClick }: Props) {
             onMouseEnter={() => ps && setHoveredPillar(ps.pillar)}
             onMouseLeave={() => setHoveredPillar(null)}
           />
-          <circle cx={cx} cy={cy} r={4} fill="#f59e0b" style={{ pointerEvents: 'none' }} />
+          <circle cx={cx} cy={cy} r={4} fill="#0E7C6B" style={{ pointerEvents: 'none' }} />
         </g>
       )
     },
@@ -344,7 +344,7 @@ export function ScorecardRadarChart({ pillarScores, onPillarClick }: Props) {
             onMouseEnter={() => ps && setHoveredPillar(ps.pillar)}
             onMouseLeave={() => setHoveredPillar(null)}
           />
-          <circle cx={cx} cy={cy} r={3.5} fill="#a78bfa" style={{ pointerEvents: 'none' }} />
+          <circle cx={cx} cy={cy} r={3.5} fill="#CC7A1A" style={{ pointerEvents: 'none' }} />
         </g>
       )
     },
@@ -355,13 +355,13 @@ export function ScorecardRadarChart({ pillarScores, onPillarClick }: Props) {
     <div style={{ cursor: 'default', position: 'relative' }}>
       <ResponsiveContainer width="100%" height={280}>
         <RadarChart data={data} margin={{ top: 10, right: 30, bottom: 10, left: 30 }}>
-          <PolarGrid stroke="#1e293b" />
+          <PolarGrid stroke="#E2E7DF" />
           <PolarAngleAxis dataKey="pillar" tick={tickRenderer} />
           <Radar
             name="Self"
             dataKey="Self"
-            stroke={hidden.has('Self') ? 'transparent' : '#f59e0b'}
-            fill={hidden.has('Self') ? 'transparent' : '#f59e0b'}
+            stroke={hidden.has('Self') ? 'transparent' : '#0E7C6B'}
+            fill={hidden.has('Self') ? 'transparent' : '#0E7C6B'}
             fillOpacity={hidden.has('Self') ? 0 : 0.18}
             strokeWidth={2}
             label={renderSelfLabel as never}
@@ -371,8 +371,8 @@ export function ScorecardRadarChart({ pillarScores, onPillarClick }: Props) {
             <Radar
               name="Manager"
               dataKey="Manager"
-              stroke={hidden.has('Manager') ? 'transparent' : '#a78bfa'}
-              fill={hidden.has('Manager') ? 'transparent' : '#a78bfa'}
+              stroke={hidden.has('Manager') ? 'transparent' : '#CC7A1A'}
+              fill={hidden.has('Manager') ? 'transparent' : '#CC7A1A'}
               fillOpacity={hidden.has('Manager') ? 0 : 0.12}
               strokeWidth={1.5}
               strokeDasharray="4 2"
@@ -387,7 +387,7 @@ export function ScorecardRadarChart({ pillarScores, onPillarClick }: Props) {
               formatter={(value) => (
                 <span
                   style={{
-                    color: hidden.has(value as 'Self' | 'Manager') ? '#475569' : '#94a3b8',
+                    color: hidden.has(value as 'Self' | 'Manager') ? '#95A097' : '#566159',
                     fontSize: 11,
                     textDecoration: hidden.has(value as 'Self' | 'Manager')
                       ? 'line-through'

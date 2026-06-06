@@ -1,7 +1,9 @@
 'use client'
 
 import { useState } from 'react'
-import { LEVEL_COLORS, type Level, type Pillar } from '@/lib/skills'
+import { Target } from 'lucide-react'
+import type { Level, Pillar } from '@/lib/skills'
+import { scoreColor, scoreBg } from '@/lib/utils/score-tokens'
 
 export interface SkillRow {
   key: string
@@ -18,6 +20,8 @@ type SortKey = 'rating' | 'pillar' | 'skill'
 interface SkillsTableProps {
   rows: SkillRow[]
 }
+
+const GRID_COLUMNS = '1.4fr 1.6fr 1fr 70px 120px'
 
 export function SkillsTable({ rows }: SkillsTableProps) {
   const [sort, setSort] = useState<SortKey>('rating')
@@ -36,18 +40,38 @@ export function SkillsTable({ rows }: SkillsTableProps) {
 
   return (
     <div>
-      <div className="mb-3 flex items-center justify-between">
-        <h2 className="text-sm font-semibold text-white">All Skills</h2>
-        <div className="flex gap-1">
+      {/* Header row */}
+      <div style={{ marginBottom: 10, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 700, color: 'var(--color-text-primary)', margin: 0 }}>
+          All skills
+        </h2>
+        <div style={{ display: 'flex', gap: 6 }}>
           {SORT_BUTTONS.map(btn => (
             <button
               key={btn.key}
               onClick={() => setSort(btn.key)}
-              className="rounded-full px-3 py-1 text-xs font-medium transition-colors"
               style={
                 sort === btn.key
-                  ? { background: '#f59e0b', color: '#0f172a' }
-                  : { border: '1px solid #334155', color: '#94a3b8' }
+                  ? {
+                      background: 'var(--color-accent-wash2)',
+                      border: '1px solid var(--color-accent-border)',
+                      color: 'var(--color-accent)',
+                      borderRadius: 8,
+                      padding: '5px 12px',
+                      fontSize: 11.5,
+                      fontWeight: 500,
+                      cursor: 'pointer',
+                    }
+                  : {
+                      background: 'transparent',
+                      border: '1px solid var(--color-border)',
+                      color: 'var(--color-text-faint)',
+                      borderRadius: 8,
+                      padding: '5px 12px',
+                      fontSize: 11.5,
+                      fontWeight: 500,
+                      cursor: 'pointer',
+                    }
               }
             >
               {btn.label}
@@ -56,54 +80,118 @@ export function SkillsTable({ rows }: SkillsTableProps) {
         </div>
       </div>
 
-      <div className="overflow-hidden rounded-xl border border-slate-700">
-        <table className="w-full text-sm">
-          <thead className="bg-slate-800">
-            <tr>
-              {['Pillar', 'Skill', 'Level', 'Score', 'Status'].map(h => (
-                <th
-                  key={h}
-                  className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-400"
-                >
-                  {h}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-700/50">
-            {sorted.map(row => (
-              <tr key={row.key} className="bg-slate-800/50 hover:bg-slate-800">
-                <td className="px-4 py-3 text-xs text-slate-400">{row.pillarLabel}</td>
-                <td className="px-4 py-3 font-medium text-white">{row.label}</td>
-                <td className="px-4 py-3 text-xs text-slate-400">{row.level}</td>
-                <td className="px-4 py-3">
-                  <span
-                    className="rounded-full px-2 py-0.5 text-xs font-semibold"
-                    style={{
-                      color: LEVEL_COLORS[row.level],
-                      background: `${LEVEL_COLORS[row.level]}20`,
-                    }}
-                  >
-                    {row.score}
-                  </span>
-                </td>
-                <td className="px-4 py-3">
-                  {row.status === 'opportunity' && (
-                    <span className="rounded-full bg-indigo-500/20 px-2 py-0.5 text-xs font-medium text-indigo-300">
-                      💡 Opportunity
-                    </span>
-                  )}
-                  {row.status === 'goal' && (
-                    <span className="rounded-full bg-amber-500/20 px-2 py-0.5 text-xs font-medium text-amber-300">
-                      🎯 Active goal
-                    </span>
-                  )}
-                  {!row.status && <span className="text-slate-600">—</span>}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      {/* Table card */}
+      <div style={{
+        background: 'var(--color-surface)',
+        border: '1px solid var(--color-border)',
+        borderRadius: 'var(--radius-lg)',
+        overflowX: 'auto',
+        boxShadow: 'var(--shadow-card)',
+      }}>
+        {/* Column header */}
+        <div role="row" style={{
+          display: 'grid',
+          gridTemplateColumns: GRID_COLUMNS,
+          background: 'var(--color-bg-base)',
+          borderBottom: '1px solid var(--color-border)',
+          padding: '11px 18px',
+        }}>
+          {['Pillar', 'Skill', 'Level', 'Score', 'Status'].map((h, i) => (
+            <div
+              key={h}
+              style={{
+                fontSize: 10.5,
+                fontWeight: 700,
+                textTransform: 'uppercase',
+                letterSpacing: '0.05em',
+                color: 'var(--color-text-faint)',
+                textAlign: i === 3 ? 'center' : 'left',
+              }}
+            >
+              {h}
+            </div>
+          ))}
+        </div>
+
+        {/* Data rows */}
+        {sorted.map((row, i) => (
+          <SkillRow key={row.key} row={row} isFirst={i === 0} />
+        ))}
+      </div>
+    </div>
+  )
+}
+
+function SkillRow({ row, isFirst }: { row: SkillRow; isFirst: boolean }) {
+  return (
+    <div
+      role="row"
+      className="hover:bg-[var(--color-chip-bg)]"
+      style={{
+        display: 'grid',
+        gridTemplateColumns: GRID_COLUMNS,
+        padding: '12px 18px',
+        borderTop: isFirst ? undefined : '1px solid var(--color-border)',
+        background: 'var(--color-surface)',
+        transition: 'background 0.1s',
+        alignItems: 'center',
+      }}
+    >
+      <div style={{ fontSize: 12.5, color: 'var(--color-text-muted)' }}>{row.pillarLabel}</div>
+      <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--color-text-primary)' }}>{row.label}</div>
+      <div style={{ fontSize: 12.5, color: 'var(--color-text-muted)' }}>{row.level}</div>
+      <div style={{ display: 'flex', justifyContent: 'center' }}>
+        <div style={{
+          width: 22,
+          height: 22,
+          borderRadius: 6,
+          background: scoreBg(row.score),
+          color: scoreColor(row.score),
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontSize: 12,
+          fontWeight: 700,
+        }}>
+          {row.score}
+        </div>
+      </div>
+      <div>
+        {row.status === 'goal' && (
+          <span style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 4,
+            background: 'var(--color-accent-wash2)',
+            border: '1px solid var(--color-accent-border)',
+            color: 'var(--color-accent)',
+            borderRadius: 9999,
+            padding: '3px 8px',
+            fontSize: 11,
+            fontWeight: 500,
+          }}>
+            <Target size={10} />
+            Goal set
+          </span>
+        )}
+        {row.status === 'opportunity' && (
+          <span style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            background: 'var(--color-alert-bg)',
+            border: '1px solid var(--color-alert-border)',
+            color: 'var(--color-alert-fg)',
+            borderRadius: 9999,
+            padding: '3px 8px',
+            fontSize: 11,
+            fontWeight: 500,
+          }}>
+            Opportunity
+          </span>
+        )}
+        {!row.status && (
+          <span style={{ color: 'var(--color-text-faint)', fontSize: 13 }}>—</span>
+        )}
       </div>
     </div>
   )

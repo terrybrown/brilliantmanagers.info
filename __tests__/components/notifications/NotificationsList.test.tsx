@@ -75,15 +75,15 @@ describe('NotificationsList', () => {
     expect(screen.getByText(/2026-07-01/i)).toBeInTheDocument()
   })
 
-  it('unread rows have amber left border', () => {
+  it('unread rows are marked as unread', () => {
     const { container } = render(<NotificationsList notifications={[MANAGER_SCORING]} />)
     const row = container.querySelector('[data-testid="notification-row"]')
-    expect(row?.className).toMatch(/border-l-amber/)
+    expect(row?.getAttribute('data-unread')).toBe('true')
   })
 
-  it('read rows do not have amber left border', () => {
+  it('read rows are not marked as unread', () => {
     const { container } = render(<NotificationsList notifications={[CONNECTION_ACCEPTED]} />)
     const row = container.querySelector('[data-testid="notification-row"]')
-    expect(row?.className).not.toMatch(/border-l-amber/)
+    expect(row?.getAttribute('data-unread')).toBeNull()
   })
 })

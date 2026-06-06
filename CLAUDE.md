@@ -148,3 +148,49 @@ curl -s -X POST -H "apikey: $ANON_KEY" -H "Authorization: Bearer $ANON_KEY" \
   -H "Content-Type: application/json" \
   -d '{...}' "$SUPABASE_URL/rest/v1/<table>"
 ```
+
+---
+
+## Design system — Sage
+
+Light, calm, modern coaching tool. Full spec: `design_handoff_sage_redesign/README.md`.
+
+### Colour — never hardcode; always use tokens
+
+All colour comes from the `@theme` tokens in `app/globals.css` (see `design_handoff_sage_redesign/sage-tokens.css`). Do not introduce raw hex or `rgba(255,255,255,…)` values in components.
+
+- **Brand accent**: `--color-accent` (teal `#0E7C6B`); text on it `--color-accent-fg`.
+  Tints: `--color-accent-wash` (subtle bg), `--color-accent-wash2` (chips/active), `--color-accent-border`.
+- **Manager / secondary data series**: `--color-manager` (amber `#CC7A1A`).
+- **Text**: `--color-text-primary` / `--color-text-muted` / `--color-text-faint`.
+- **Surfaces**: `--color-bg-base` (canvas), `--color-surface` (cards), `--color-nav-bg` (sidebar/panels).
+  Borders `--color-border`, tracks `--color-track`, chips `--color-chip-bg`.
+- **Semantic**: `--color-positive` / `--color-negative`; alerts `--color-alert-fg|bg|border`.
+
+### Data-viz mapping (apply everywhere, consistently)
+
+- **Self** = solid line / filled bar, `--color-accent` (teal).
+- **Manager** = dashed line / 2px tick / point, `--color-manager` (amber).
+- Score grading: ≤2 (or ≤2.4 for pillar avgs) → negative/alert; ≥4 → positive; else neutral/muted.
+- Delta pills: positive → green up, negative → red down.
+
+### Typography
+
+- `--font-display` (Bricolage Grotesque) for headings, titles, big numbers.
+- `--font-body` (Hanken Grotesk) for everything else.
+- Page title 24/700; card title 13.5–14/700; stat number 26–32/700; body 12.5–14; caption 11.
+
+### Layout & components
+
+- **Cards**: `--color-surface`, 1px `--color-border`, radius `--radius`/`--radius-lg`, shadow `0 1px 2px rgba(40,60,45,.04), 0 2px 5px rgba(40,60,45,.03)`.
+- **App chrome**: ONE left sidebar (232px) + top bar (breadcrumb + title, search, optional period, primary action). No second/marketing nav inside the app.
+- **Content**: fill the width — 2-column grids (main + 296px action rail) over narrow centered columns.
+- **Buttons**: primary = teal fill, hover `--btn-primary-bg-hover`; secondary = bordered ghost. Min 44px touch targets on mobile.
+- **Icons**: lucide-react only.
+
+### Don't
+
+- Don't reintroduce dark backgrounds or the old amber-as-brand accent.
+- Don't hardcode colours / `rgba(255,255,255,…)`.
+- Don't add filler sections, dummy stats, or decorative gradients.
+- Don't split nav into two bars again.

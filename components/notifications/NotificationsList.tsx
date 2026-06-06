@@ -52,11 +52,27 @@ function getNotificationDescription(n: Notification): string {
   }
 }
 
-const ICONS: Record<NotificationType, React.ReactNode> = {
-  manager_scoring_needed: <ClipboardCheck className="h-4 w-4 text-amber-400 flex-shrink-0" />,
-  connection_request_received: <UserPlus className="h-4 w-4 text-blue-400 flex-shrink-0" />,
-  connection_accepted: <UserCheck className="h-4 w-4 text-green-400 flex-shrink-0" />,
-  round_scheduled: <Calendar className="h-4 w-4 text-purple-400 flex-shrink-0" />,
+const ICON_CONFIG: Record<NotificationType, { icon: React.ReactNode; tint: string; bg: string }> = {
+  manager_scoring_needed: {
+    icon: <ClipboardCheck size={17} strokeWidth={1.75} style={{ color: 'var(--color-manager)' }} />,
+    tint: 'var(--color-manager)',
+    bg: 'var(--color-manager-wash)',
+  },
+  connection_request_received: {
+    icon: <UserPlus size={17} strokeWidth={1.75} style={{ color: 'var(--color-accent)' }} />,
+    tint: 'var(--color-accent)',
+    bg: 'var(--color-accent-wash2)',
+  },
+  connection_accepted: {
+    icon: <UserCheck size={17} strokeWidth={1.75} style={{ color: 'var(--color-positive)' }} />,
+    tint: 'var(--color-positive)',
+    bg: 'var(--color-positive-bg)',
+  },
+  round_scheduled: {
+    icon: <Calendar size={17} strokeWidth={1.75} style={{ color: 'var(--color-accent)' }} />,
+    tint: 'var(--color-accent)',
+    bg: 'var(--color-accent-wash2)',
+  },
 }
 
 export function NotificationsList({ notifications }: { notifications: Notification[] }) {
@@ -70,41 +86,85 @@ export function NotificationsList({ notifications }: { notifications: Notificati
 
   if (notifications.length === 0) {
     return (
-      <div className="flex items-center gap-2 py-8 text-neutral-500">
-        <Bell className="h-4 w-4" />
-        <p className="text-sm">You&apos;re all caught up.</p>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '32px 0', color: 'var(--color-text-faint)' }}>
+        <Bell size={16} strokeWidth={1.75} />
+        <p style={{ fontSize: 14, margin: 0 }}>You&apos;re all caught up.</p>
       </div>
     )
   }
 
   return (
-    <ul className="space-y-2">
-      {notifications.map(n => {
+    <div style={{
+      background: 'var(--color-surface)',
+      border: '1px solid var(--color-border)',
+      borderRadius: 'var(--radius)',
+      boxShadow: 'var(--shadow-card)',
+      overflow: 'hidden',
+    }}>
+      {notifications.map((n, i) => {
         const isUnread = !n.readAt
+        const cfg = ICON_CONFIG[n.type] ?? { icon: <Bell size={17} />, tint: 'var(--color-text-faint)', bg: 'var(--color-chip-bg)' }
         return (
-          <li key={n.id}>
-            <a
-              href={getNotificationHref(n)}
-              data-testid="notification-row"
-              className={[
-                'flex items-start gap-3 rounded-lg border p-4 transition-colors',
-                isUnread
-                  ? 'border-l-4 border-l-amber-500 border-neutral-800 bg-neutral-800/60 hover:border-neutral-600'
-                  : 'border-neutral-800 hover:border-neutral-600',
-              ].join(' ')}
-            >
-              <div className="mt-0.5">{ICONS[n.type] ?? <Bell className="h-4 w-4 flex-shrink-0" />}</div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm text-neutral-100">{getNotificationDescription(n)}</p>
-                <p className="text-xs text-neutral-500 mt-0.5">{formatRelativeTime(n.createdAt)}</p>
-              </div>
-              {isUnread && (
-                <span className="mt-1.5 h-2 w-2 rounded-full bg-amber-500 flex-shrink-0" />
-              )}
-            </a>
-          </li>
+          <a
+            key={n.id}
+            href={getNotificationHref(n)}
+            data-testid="notification-row"
+            data-unread={isUnread ? 'true' : undefined}
+            style={{
+              display: 'flex',
+              gap: 14,
+              padding: '15px 18px',
+              alignItems: 'flex-start',
+              textDecoration: 'none',
+              background: isUnread ? 'var(--color-accent-wash)' : 'transparent',
+              borderTop: i === 0 ? 'none' : '1px solid var(--color-border)',
+              borderLeft: isUnread ? '3px solid var(--color-accent)' : '3px solid transparent',
+            }}
+          >
+            {/* Icon square */}
+            <div style={{
+              width: 36,
+              height: 36,
+              borderRadius: 9,
+              flexShrink: 0,
+              background: cfg.bg,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}>
+              {cfg.icon}
+            </div>
+            {/* Content */}
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <p style={{
+                fontSize: 13.5,
+                fontWeight: 600,
+                color: 'var(--color-text-primary)',
+                lineHeight: 1.4,
+                margin: 0,
+              }}>
+                {getNotificationDescription(n)}
+                {isUnread && (
+                  <span style={{
+                    display: 'inline-block',
+                    width: 7,
+                    height: 7,
+                    borderRadius: '50%',
+                    background: 'var(--color-accent)',
+                    marginLeft: 7,
+                    verticalAlign: 'middle',
+                    flexShrink: 0,
+                  }} />
+                )}
+              </p>
+            </div>
+            {/* Timestamp */}
+            <span style={{ fontSize: 11, color: 'var(--color-text-faint)', whiteSpace: 'nowrap', flexShrink: 0 }}>
+              {formatRelativeTime(n.createdAt)}
+            </span>
+          </a>
         )
       })}
-    </ul>
+    </div>
   )
 }

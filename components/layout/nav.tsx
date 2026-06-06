@@ -48,7 +48,6 @@ function NavLink({
   const Icon = NAV_ICONS[item.href]
   const href = item.href === '/the-tool' && isAuthenticated ? '/dashboard' : item.href
   const isCta = 'cta' in item && item.cta
-  // CTA items always render in amber regardless of active state
   return (
     <Link
       href={href}
@@ -57,11 +56,11 @@ function NavLink({
       style={
         isCta
           ? {
-              background: 'rgba(245,158,11,0.12)',
-              border: '1px solid rgba(245,158,11,0.25)',
-              color: '#f59e0b',
+              background: 'var(--color-accent)',
+              border: '1px solid var(--color-accent)',
+              color: 'var(--color-accent-fg)',
               padding: '4px 10px',
-              fontWeight: 600,
+              fontWeight: 700,
               ...extraStyle,
             }
           : { color: isActive ? 'var(--color-text-primary)' : 'var(--color-text-muted)', ...extraStyle }

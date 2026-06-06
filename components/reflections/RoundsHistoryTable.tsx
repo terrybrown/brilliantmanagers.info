@@ -25,11 +25,19 @@ const PILLAR_COLS: { key: Pillar; label: string }[] = [
 
 export function RoundsHistoryTable({ rows }: RoundsHistoryTableProps) {
   return (
-    <div className="rounded-xl bg-slate-800 overflow-x-auto">
+    <div
+      style={{
+        background: 'var(--color-surface)',
+        border: '1px solid var(--color-border)',
+        borderRadius: 'var(--radius-lg)',
+        boxShadow: 'var(--shadow-card)',
+        overflowX: 'auto',
+      }}
+    >
       <table aria-label="Rounds history" style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
         <thead>
           <tr>
-            {['Round', 'Your score', 'Manager score', ...PILLAR_COLS.map(c => c.label), 'Trend', 'View'].map(
+            {['Round', 'Overall', 'Mgr', ...PILLAR_COLS.map(c => c.label), 'Trend', 'View'].map(
               (header, i) => (
                 <th
                   key={i}
@@ -37,10 +45,11 @@ export function RoundsHistoryTable({ rows }: RoundsHistoryTableProps) {
                   style={{
                     padding: '10px 14px',
                     textAlign: 'left',
-                    color: '#64748b',
+                    color: 'var(--color-text-faint)',
                     fontWeight: 600,
-                    borderBottom: '1px solid #1e293b',
+                    borderBottom: '1px solid var(--color-border)',
                     whiteSpace: 'nowrap',
+                    background: 'var(--color-bg-base)',
                   }}
                 >
                   {header}
@@ -50,42 +59,64 @@ export function RoundsHistoryTable({ rows }: RoundsHistoryTableProps) {
           </tr>
         </thead>
         <tbody>
-          {rows.map(row => (
+          {rows.map((row, index) => (
             <tr
               key={row.id}
-              style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}
+              style={{
+                borderBottom: '1px solid var(--color-border)',
+                background: index === 0 ? 'var(--color-accent-wash)' : 'transparent',
+              }}
             >
               <td style={{ padding: '10px 14px', whiteSpace: 'nowrap' }}>
-                <p style={{ fontWeight: 600, color: '#fff' }}>{row.title}</p>
-                <p style={{ color: '#475569', fontSize: 11 }}>{row.dateRange}</p>
+                <p style={{ fontWeight: 650, fontSize: 13, color: 'var(--color-text-primary)', margin: 0 }}>{row.title}</p>
+                <p style={{ color: 'var(--color-text-faint)', fontSize: 11, margin: 0 }}>{row.dateRange}</p>
               </td>
-              <td style={{ padding: '10px 14px', color: '#f59e0b', fontWeight: 700 }}>
+              <td
+                style={{
+                  padding: '10px 14px',
+                  color: 'var(--color-text-primary)',
+                  fontFamily: 'var(--font-display)',
+                  fontSize: 16,
+                  fontWeight: 750,
+                }}
+              >
                 {row.overallScore.toFixed(1)}
               </td>
-              <td style={{ padding: '10px 14px', color: '#a78bfa', fontWeight: 600 }}>
+              <td style={{ padding: '10px 14px', color: 'var(--color-manager)', fontWeight: 600 }}>
                 {row.managerOverall !== null ? row.managerOverall.toFixed(1) : '—'}
               </td>
-              {PILLAR_COLS.map(col => (
-                <td key={col.key} style={{ padding: '10px 14px', color: '#94a3b8' }}>
-                  {row.pillarScores[col.key] != null ? row.pillarScores[col.key]!.toFixed(1) : '—'}
-                </td>
-              ))}
+              {PILLAR_COLS.map(col => {
+                const score = row.pillarScores[col.key]
+                const scoreColorValue =
+                  score == null
+                    ? 'var(--color-text-muted)'
+                    : score <= 2.4
+                      ? 'var(--color-alert-fg)'
+                      : score >= 4
+                        ? 'var(--color-positive)'
+                        : 'var(--color-text-muted)'
+                return (
+                  <td key={col.key} style={{ padding: '10px 14px', color: scoreColorValue }}>
+                    {score != null ? score.toFixed(1) : '—'}
+                  </td>
+                )
+              })}
               <td style={{ padding: '10px 14px' }}>
                 {row.trend === null ? (
-                  <span style={{ color: '#475569' }}>—</span>
+                  <span style={{ color: 'var(--color-text-faint)' }}>—</span>
                 ) : row.trend > 0 ? (
-                  <span style={{ fontWeight: 700, color: '#4ade80' }}>+{row.trend.toFixed(1)}</span>
+                  <span style={{ fontWeight: 700, color: 'var(--color-positive)' }}>+{row.trend.toFixed(1)}</span>
                 ) : row.trend < 0 ? (
-                  <span style={{ fontWeight: 700, color: '#f87171' }}>{row.trend.toFixed(1)}</span>
+                  <span style={{ fontWeight: 700, color: 'var(--color-negative)' }}>{row.trend.toFixed(1)}</span>
                 ) : (
-                  <span style={{ fontWeight: 700, color: '#94a3b8' }}>{row.trend.toFixed(1)}</span>
+                  <span style={{ fontWeight: 700, color: 'var(--color-text-muted)' }}>{row.trend.toFixed(1)}</span>
                 )}
               </td>
               <td style={{ padding: '10px 14px' }}>
                 <Link
                   href={`/reflections/${row.id}`}
                   style={{
-                    color: '#64748b',
+                    color: 'var(--color-accent)',
                     fontWeight: 600,
                     textDecoration: 'none',
                     fontSize: 11,

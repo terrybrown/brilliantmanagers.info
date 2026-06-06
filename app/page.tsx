@@ -9,16 +9,18 @@ export const metadata = {
 
 export default function HomePage() {
   return (
-    <div style={{ background: '#1a3a5c' }}>
+    <>
       <Hero
         eyebrow="A field guide to management"
         headline={
           <>
             Most of us became managers{' '}
-            <em style={{ color: '#f59e0b' }}>by accident.</em>
+            <em style={{ color: 'var(--color-accent)', fontStyle: 'italic' }}>by accident.</em>
           </>
         }
         body="A framework — not a manual. It won't tell you what to do. It'll help you see where you are."
+        primaryCta={{ label: 'Open the scorecard', href: '/scorecard' }}
+        secondaryCta={{ label: 'Read the guide', href: '/the-guide' }}
       />
       {/* Card titles use short descriptive names; nav uses action-oriented CTAs */}
       <FeatureGrid
@@ -41,6 +43,6 @@ export default function HomePage() {
         ]}
       />
       <RotatingQuote />
-    </div>
+    </>
   )
 }

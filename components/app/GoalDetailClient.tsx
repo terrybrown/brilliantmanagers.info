@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { CheckCircle } from 'lucide-react'
 import { GoalCompleteOverlay } from './GoalCompleteOverlay'
 import { ResourceRow } from './ResourceRow'
 import { addGoalResourceAction, removeGoalResourceAction } from '@/app/(app)/growth/actions'
@@ -66,22 +67,35 @@ export function GoalDetailClient({
       <div className="flex flex-col gap-2">
         <button
           onClick={() => setShowCelebration(true)}
-          className="rounded-lg border border-green-500/40 px-4 py-2 text-sm font-semibold text-green-400 hover:border-green-400 hover:bg-green-500/10"
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 6,
+            padding: '8px 16px',
+            borderRadius: 8,
+            border: '1px solid var(--color-positive-border)',
+            background: 'transparent',
+            color: 'var(--color-positive)',
+            fontSize: 14,
+            fontWeight: 600,
+            cursor: 'pointer',
+          }}
         >
-          Mark complete ✓
+          <CheckCircle size={15} strokeWidth={1.75} />
+          Mark complete
         </button>
 
         <button
           onClick={() => setShowBrowse(v => !v)}
-          className="text-xs text-slate-500 hover:text-slate-300"
+          style={{ fontSize: 12, color: 'var(--color-text-muted)', background: 'none', border: 'none', cursor: 'pointer', padding: 0, textAlign: 'left' }}
         >
           {showBrowse ? 'Hide resources' : 'Browse all resources'}
         </button>
       </div>
 
       {showBrowse && skillResources.length > 0 && (
-        <div className="mt-4 rounded-xl border border-slate-700 bg-slate-800/50 p-4">
-          <h4 className="mb-3 text-xs font-semibold uppercase tracking-wider text-slate-400">
+        <div style={{ marginTop: 16, background: 'var(--color-surface)', border: '1px solid var(--color-border)', borderRadius: 10, padding: 16 }}>
+          <h4 style={{ marginBottom: 12, marginTop: 0, fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--color-text-faint)' }}>
             Browse all resources
           </h4>
           <div className="flex flex-col gap-1">

@@ -7,7 +7,8 @@ import { getScoresForRound } from '@/lib/db/scores'
 import { getManagerScoresForDirectReport } from '@/lib/db/manager-scores'
 import { roundLabel, computePillarScores, type RadarPillarScore } from '@/lib/reflections'
 import { ScorecardRadarChart } from '@/components/app/ScorecardRadarChart'
-import { PILLAR_LABELS, LEVELS, LEVEL_COLORS, type Level } from '@/lib/skills'
+import { PILLAR_LABELS, LEVELS, type Level } from '@/lib/skills'
+import { scoreColor } from '@/lib/utils/score-tokens'
 import { ReflectionViewTracker } from '@/components/reflections/ReflectionViewTracker'
 
 export default async function ReflectionDetailPage({
@@ -51,12 +52,12 @@ export default async function ReflectionDetailPage({
     : null
 
   return (
-    <div style={{ padding: '32px 36px', display: 'flex', flexDirection: 'column', gap: 24 }}>
+    <div style={{ padding: '24px 28px 40px', display: 'flex', flexDirection: 'column', gap: 24 }}>
       <ReflectionViewTracker roundId={round.id} status={round.status} />
       {/* Breadcrumb */}
       <Link
         href="/reflections"
-        style={{ fontSize: 13, color: '#64748b', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 4 }}
+        style={{ fontSize: 13, color: 'var(--color-text-muted)', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 4 }}
       >
         ← Reflections
       </Link>
@@ -67,7 +68,7 @@ export default async function ReflectionDetailPage({
           style={{
             fontSize: 22,
             fontWeight: 800,
-            color: '#fff',
+            color: 'var(--color-text-primary)',
             letterSpacing: '-0.02em',
             fontFamily: 'var(--font-display)',
           }}
@@ -82,15 +83,15 @@ export default async function ReflectionDetailPage({
             textTransform: 'uppercase',
             borderRadius: 6,
             padding: '3px 8px',
-            background: round.status === 'complete' ? 'rgba(74,222,128,0.1)' : 'rgba(245,158,11,0.1)',
-            color: round.status === 'complete' ? '#4ade80' : '#f59e0b',
+            background: round.status === 'complete' ? 'var(--color-positive-bg)' : 'var(--color-accent-wash2)',
+            color: round.status === 'complete' ? 'var(--color-positive)' : 'var(--color-accent)',
           }}
         >
           {round.status === 'complete' ? 'Completed' : 'In progress'}
         </span>
       </div>
 
-      <p style={{ fontSize: 12, color: '#475569', marginTop: -16 }}>
+      <p style={{ fontSize: 12, color: 'var(--color-text-faint)', marginTop: -16 }}>
         {startDate}
         {endDate && ` – ${endDate}`}
       </p>
@@ -98,35 +99,37 @@ export default async function ReflectionDetailPage({
       {round.notes && (
         <div
           style={{
-            background: 'rgba(255,255,255,0.03)',
-            border: '1px solid rgba(255,255,255,0.07)',
+            background: 'var(--color-surface)',
+            border: '1px solid var(--color-border)',
             borderRadius: 10,
             padding: '12px 16px',
+            boxShadow: 'var(--shadow-card)',
           }}
         >
-          <p style={{ fontSize: 11, fontWeight: 700, color: '#475569', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+          <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--color-text-faint)', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
             Intention
           </p>
-          <p style={{ fontSize: 13, color: '#94a3b8', lineHeight: 1.6 }}>{round.notes}</p>
+          <p style={{ fontSize: 13, color: 'var(--color-text-muted)', lineHeight: 1.6 }}>{round.notes}</p>
         </div>
       )}
 
       {/* Two-column: radar + pillar table */}
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: '220px 1fr',
-          gap: 24,
-          alignItems: 'start',
-        }}
-      >
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[220px_1fr] items-start">
         <div>
           <ScorecardRadarChart
             pillarScores={pillarScoresForRadar}
           />
         </div>
 
-        <div className="rounded-xl bg-slate-800 overflow-hidden">
+        <div
+          style={{
+            borderRadius: 'var(--radius-lg)',
+            background: 'var(--color-surface)',
+            border: '1px solid var(--color-border)',
+            boxShadow: 'var(--shadow-card)',
+            overflowX: 'auto',
+          }}
+        >
           <table aria-label="Pillar scores" style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
             <thead>
               <tr>
@@ -137,9 +140,9 @@ export default async function ReflectionDetailPage({
                     style={{
                       padding: '10px 14px',
                       textAlign: 'left',
-                      color: '#64748b',
+                      color: 'var(--color-text-faint)',
                       fontWeight: 600,
-                      borderBottom: '1px solid #1e293b',
+                      borderBottom: '1px solid var(--color-border)',
                     }}
                   >
                     {h}
@@ -151,15 +154,15 @@ export default async function ReflectionDetailPage({
               {pillarScoresForRadar.map((row: RadarPillarScore) => (
                   <tr
                     key={row.pillar}
-                    style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}
+                    style={{ borderBottom: '1px solid var(--color-border)' }}
                   >
-                    <td style={{ padding: '10px 14px', fontWeight: 600, color: '#fff' }}>
+                    <td style={{ padding: '10px 14px', fontWeight: 600, color: 'var(--color-text-primary)' }}>
                       {PILLAR_LABELS[row.pillar]}
                     </td>
-                    <td style={{ padding: '10px 14px', color: '#f59e0b', fontWeight: 700 }}>
+                    <td style={{ padding: '10px 14px', color: 'var(--color-accent)', fontWeight: 700 }}>
                       {row.selfScored ? row.selfScore.toFixed(1) : '—'}
                     </td>
-                    <td style={{ padding: '10px 14px', color: '#a78bfa' }}>
+                    <td style={{ padding: '10px 14px', color: 'var(--color-manager)' }}>
                       {row.managerScore !== undefined ? row.managerScore.toFixed(1) : '—'}
                     </td>
                     <td style={{ padding: '10px 14px' }}>
@@ -167,22 +170,22 @@ export default async function ReflectionDetailPage({
                         (() => {
                           const gap = Number((row.managerScore - row.selfScore).toFixed(1))
                           return (
-                            <span style={{ fontWeight: 700, color: gap > 0 ? '#4ade80' : gap < 0 ? '#f87171' : '#94a3b8' }}>
+                            <span style={{ fontWeight: 700, color: gap > 0 ? 'var(--color-positive)' : gap < 0 ? 'var(--color-negative)' : 'var(--color-text-muted)' }}>
                               {gap > 0 ? '+' : ''}{gap.toFixed(1)}
                             </span>
                           )
                         })()
                       ) : (
-                        <span style={{ color: '#475569' }}>—</span>
+                        <span style={{ color: 'var(--color-text-faint)' }}>—</span>
                       )}
                     </td>
                     <td style={{ padding: '10px 14px' }}>
                       {row.selfScored ? (
-                        <span style={{ fontWeight: 700, fontSize: 11, color: LEVEL_COLORS[scoreToLevel(row.selfScore)] }}>
+                        <span style={{ fontWeight: 700, fontSize: 11, color: scoreColor(row.selfScore) }}>
                           {scoreToLevel(row.selfScore)}
                         </span>
                       ) : (
-                        <span style={{ color: '#475569' }}>—</span>
+                        <span style={{ color: 'var(--color-text-faint)' }}>—</span>
                       )}
                     </td>
                   </tr>

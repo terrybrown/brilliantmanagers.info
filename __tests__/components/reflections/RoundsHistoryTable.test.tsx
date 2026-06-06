@@ -70,8 +70,8 @@ describe('RoundsHistoryTable', () => {
 
   it('renders column headers correctly', () => {
     render(<RoundsHistoryTable rows={rows} />)
-    expect(screen.getByText('Manager score')).toBeInTheDocument()
-    expect(screen.getByText('Your score')).toBeInTheDocument()
+    expect(screen.getByText('Mgr')).toBeInTheDocument()
+    expect(screen.getByText('Overall')).toBeInTheDocument()
     expect(screen.getByText('Trend')).toBeInTheDocument()
     expect(screen.getByText('View')).toBeInTheDocument()
   })
