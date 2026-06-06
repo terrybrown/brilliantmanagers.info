@@ -30,14 +30,14 @@ export interface PillarData {
 function SkillScoreBadges({ level, managerLevel }: { level: Level; managerLevel?: Level }) {
   return (
     <div className="flex flex-shrink-0 flex-col items-end gap-0.5">
-      <span className="flex items-center gap-1" style={{ fontSize: 10, color: '#94a3b8' }}>
+      <span className="flex items-center gap-1" style={{ fontSize: 10, color: 'var(--color-text-faint)' }}>
         <span>You</span>
         <span
           style={{
             fontSize: 10,
             padding: '1px 5px',
             borderRadius: 4,
-            background: 'rgba(0,0,0,0.35)',
+            background: 'var(--color-chip-bg)',
             color: LEVEL_COLORS[level],
           }}
         >
@@ -45,14 +45,14 @@ function SkillScoreBadges({ level, managerLevel }: { level: Level; managerLevel?
         </span>
       </span>
       {managerLevel !== undefined && (
-        <span className="flex items-center gap-1" style={{ fontSize: 10, color: '#94a3b8' }}>
+        <span className="flex items-center gap-1" style={{ fontSize: 10, color: 'var(--color-text-faint)' }}>
           <span>Mgr</span>
           <span
             style={{
               fontSize: 10,
               padding: '1px 5px',
               borderRadius: 4,
-              background: 'rgba(0,0,0,0.35)',
+              background: 'var(--color-chip-bg)',
               color: LEVEL_COLORS[managerLevel],
             }}
           >
@@ -89,8 +89,16 @@ export function PillarAccordion({ pillars, openPillar, onOpenChange }: PillarAcc
             className="rounded-xl px-4 py-3"
             style={
               pillar.isLowest
-                ? { background: '#0f2040', border: '1px solid rgba(245,158,11,0.45)' }
-                : { background: '#1e293b', border: '1px solid transparent' }
+                ? {
+                    background: 'var(--color-accent-wash)',
+                    border: '1px solid var(--color-accent-border)',
+                    boxShadow: 'var(--shadow-card)',
+                  }
+                : {
+                    background: 'var(--color-surface)',
+                    border: '1px solid var(--color-border)',
+                    boxShadow: 'var(--shadow-card)',
+                  }
             }
           >
             {/* Header row */}
@@ -99,21 +107,38 @@ export function PillarAccordion({ pillars, openPillar, onOpenChange }: PillarAcc
               aria-label={pillar.label}
               className="flex w-full items-center gap-3 text-left"
             >
-              <span className="w-28 flex-shrink-0 text-sm font-medium text-white">
+              <span className="w-28 flex-shrink-0 text-sm font-medium" style={{ color: 'var(--color-text-primary)' }}>
                 {pillar.label}
               </span>
               {pillar.isLowest && (
-                <span className="mr-1 text-xs font-semibold text-amber-400">↓ lowest</span>
+                <span
+                  className="mr-1 text-xs font-semibold"
+                  style={{
+                    color: 'var(--color-accent)',
+                    background: 'var(--color-accent-wash2)',
+                    border: '1px solid var(--color-accent-border)',
+                    padding: '1px 6px',
+                    borderRadius: 4,
+                  }}
+                >
+                  Focus here
+                </span>
               )}
               <div className="flex-1">
-                <div className="h-1.5 overflow-hidden rounded-full bg-slate-700">
+                <div
+                  className="h-1.5 overflow-hidden rounded-full"
+                  style={{ background: 'var(--color-track)' }}
+                >
                   <div
-                    className="h-1.5 rounded-full bg-amber-500 transition-all"
-                    style={{ width: scoreWidth }}
+                    className="h-1.5 rounded-full transition-all"
+                    style={{ width: scoreWidth, background: 'var(--color-accent)' }}
                   />
                 </div>
               </div>
-              <span className="w-8 text-right text-xs font-semibold text-amber-400">
+              <span
+                className="w-8 text-right text-xs font-semibold"
+                style={{ color: 'var(--color-accent)' }}
+              >
                 {pillar.score.toFixed(1)}
               </span>
               {pillar.managerScore !== undefined && (
@@ -122,8 +147,8 @@ export function PillarAccordion({ pillars, openPillar, onOpenChange }: PillarAcc
                   style={{
                     fontSize: 10,
                     fontWeight: 700,
-                    color: '#a78bfa',
-                    background: 'rgba(167,139,250,0.15)',
+                    color: 'var(--color-manager)',
+                    background: 'var(--color-manager-wash)',
                     padding: '2px 7px',
                     borderRadius: 99,
                   }}
@@ -135,8 +160,8 @@ export function PillarAccordion({ pillars, openPillar, onOpenChange }: PillarAcc
                 <span
                   className="flex-shrink-0 rounded font-bold"
                   style={{
-                    background: delta > 0 ? 'rgba(74,222,128,0.15)' : 'rgba(239,68,68,0.15)',
-                    color: delta > 0 ? '#4ade80' : '#f87171',
+                    background: delta > 0 ? 'var(--color-positive-bg)' : 'var(--color-negative-bg)',
+                    color: delta > 0 ? 'var(--color-positive)' : 'var(--color-negative)',
                     fontSize: 9,
                     padding: '1px 5px',
                     borderRadius: 4,
@@ -147,7 +172,8 @@ export function PillarAccordion({ pillars, openPillar, onOpenChange }: PillarAcc
               )}
               <ChevronDown
                 size={14}
-                className={`text-slate-500 transition-transform ${isOpen ? 'rotate-180' : ''}`}
+                style={{ color: 'var(--color-text-faint)' }}
+                className={`transition-transform ${isOpen ? 'rotate-180' : ''}`}
               />
             </button>
 
@@ -166,16 +192,29 @@ export function PillarAccordion({ pillars, openPillar, onOpenChange }: PillarAcc
                 {goals.length > 0 && (
                   <section>
                     <div className="mb-2 flex items-center gap-1.5">
-                      <Target size={13} strokeWidth={1.75} style={{ color: '#f59e0b' }} />
-                      <span className="text-xs font-semibold text-amber-400">Active Goals</span>
+                      <Target size={13} strokeWidth={1.75} style={{ color: 'var(--color-accent)' }} />
+                      <span
+                        className="text-xs font-semibold"
+                        style={{ color: 'var(--color-accent)' }}
+                      >
+                        Active Goals
+                      </span>
                     </div>
                     <div className="flex flex-col gap-2">
                       {goals.map(skill => (
                         <div key={skill.key} className="flex items-center gap-3 py-1">
                           <div className="flex-1 min-w-0">
-                            <p className="text-xs font-medium text-white">{skill.name}</p>
+                            <p
+                              className="text-xs font-medium"
+                              style={{ color: 'var(--color-text-primary)' }}
+                            >
+                              {skill.name}
+                            </p>
                             {skill.goalText && (
-                              <p className="mt-0.5 truncate text-xs text-slate-400">
+                              <p
+                                className="mt-0.5 truncate text-xs"
+                                style={{ color: 'var(--color-text-muted)' }}
+                              >
                                 {skill.goalText}
                               </p>
                             )}
@@ -183,7 +222,8 @@ export function PillarAccordion({ pillars, openPillar, onOpenChange }: PillarAcc
                           <SkillScoreBadges level={skill.level} managerLevel={skill.managerLevel} />
                           <Link
                             href="/growth"
-                            className="flex-shrink-0 text-xs font-semibold text-amber-400 hover:text-amber-300"
+                            className="flex-shrink-0 text-xs font-semibold"
+                            style={{ color: 'var(--color-accent)' }}
                           >
                             In Growth →
                           </Link>
@@ -196,8 +236,11 @@ export function PillarAccordion({ pillars, openPillar, onOpenChange }: PillarAcc
                 {opportunities.length > 0 && (
                   <section>
                     <div className="mb-2 flex items-center gap-1.5">
-                      <Lightbulb size={13} strokeWidth={1.75} style={{ color: '#a5b4fc' }} />
-                      <span className="text-xs font-semibold" style={{ color: '#a5b4fc' }}>
+                      <Lightbulb size={13} strokeWidth={1.75} style={{ color: 'var(--color-text-muted)' }} />
+                      <span
+                        className="text-xs font-semibold"
+                        style={{ color: 'var(--color-text-muted)' }}
+                      >
                         Opportunities
                       </span>
                     </div>
@@ -205,8 +248,16 @@ export function PillarAccordion({ pillars, openPillar, onOpenChange }: PillarAcc
                       {opportunities.map(skill => (
                         <div key={skill.key} className="flex items-start gap-3">
                           <div className="flex-1 min-w-0">
-                            <p className="text-xs font-medium text-white">{skill.name}</p>
-                            <p className="mt-0.5 text-xs text-slate-400 leading-relaxed">
+                            <p
+                              className="text-xs font-medium"
+                              style={{ color: 'var(--color-text-primary)' }}
+                            >
+                              {skill.name}
+                            </p>
+                            <p
+                              className="mt-0.5 text-xs leading-relaxed"
+                              style={{ color: 'var(--color-text-muted)' }}
+                            >
                               {skill.description}
                             </p>
                           </div>
@@ -215,8 +266,8 @@ export function PillarAccordion({ pillars, openPillar, onOpenChange }: PillarAcc
                             href={`/growth?skill=${skill.key}`}
                             className="flex-shrink-0 rounded px-2 py-0.5 text-xs font-semibold"
                             style={{
-                              background: 'rgba(99,102,241,0.15)',
-                              color: '#a5b4fc',
+                              background: 'var(--color-accent-wash2)',
+                              color: 'var(--color-accent)',
                             }}
                           >
                             Make goal →
@@ -231,14 +282,29 @@ export function PillarAccordion({ pillars, openPillar, onOpenChange }: PillarAcc
                   <section>
                     <div className="mb-2 flex items-center gap-1.5">
                       <span style={{ fontSize: 13 }}>📋</span>
-                      <span className="text-xs font-semibold" style={{ color: '#64748b' }}>All skills</span>
+                      <span
+                        className="text-xs font-semibold"
+                        style={{ color: 'var(--color-text-faint)' }}
+                      >
+                        All skills
+                      </span>
                     </div>
                     <div className="flex flex-col gap-2">
                       {remaining.map(skill => (
                         <div key={skill.key} className="flex items-start gap-3">
                           <div className="flex-1 min-w-0">
-                            <p className="text-xs font-medium text-white">{skill.name}</p>
-                            <p className="mt-0.5 text-xs text-slate-400 leading-relaxed">{skill.description}</p>
+                            <p
+                              className="text-xs font-medium"
+                              style={{ color: 'var(--color-text-primary)' }}
+                            >
+                              {skill.name}
+                            </p>
+                            <p
+                              className="mt-0.5 text-xs leading-relaxed"
+                              style={{ color: 'var(--color-text-muted)' }}
+                            >
+                              {skill.description}
+                            </p>
                           </div>
                           <SkillScoreBadges level={skill.level} managerLevel={skill.managerLevel} />
                         </div>

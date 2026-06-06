@@ -44,7 +44,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       >
         {children}
       </AppShell>
-      <Toaster position="bottom-right" theme="dark" />
+      <Toaster position="bottom-right" theme="light" />
     </>
   )
 }

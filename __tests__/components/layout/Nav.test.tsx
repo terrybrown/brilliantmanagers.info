@@ -75,15 +75,15 @@ describe('Nav', () => {
     expect(screen.queryByRole('navigation', { name: /mobile menu/i })).toBeNull()
   })
 
-  it('renders the CTA nav item with amber background style', () => {
+  it('renders the CTA nav item with accent background style', () => {
     render(<Nav isAuthenticated={false} />)
     const ctaLink = screen.getAllByRole('link', { name: /try the scorecard/i })[0]
-    expect(ctaLink).toHaveStyle({ background: 'rgba(245,158,11,0.12)' })
+    expect(ctaLink).toHaveStyle({ background: 'var(--color-accent)' })
   })
 
-  it('does not render a non-CTA nav item with amber background style', () => {
+  it('does not render a non-CTA nav item with accent background style', () => {
     render(<Nav isAuthenticated={false} />)
     const guideLink = screen.getAllByRole('link', { name: /read the guide/i })[0]
-    expect(guideLink).not.toHaveStyle({ background: 'rgba(245,158,11,0.12)' })
+    expect(guideLink).not.toHaveStyle({ background: 'var(--color-accent)' })
   })
 })

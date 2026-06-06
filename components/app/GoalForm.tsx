@@ -23,6 +23,27 @@ const CHECKIN_OPTIONS = [
   { label: 'Custom', value: 'custom' },
 ]
 
+const inputStyle: React.CSSProperties = {
+  width: '100%',
+  borderRadius: 'var(--radius)',
+  border: '1px solid var(--color-border)',
+  background: 'var(--color-surface)',
+  color: 'var(--color-text-primary)',
+  fontSize: 14,
+  padding: '8px 12px',
+  boxSizing: 'border-box',
+  outline: 'none',
+  // focus-visible ring added via className on each element
+}
+
+const labelStyle: React.CSSProperties = {
+  display: 'block',
+  marginBottom: 4,
+  fontSize: 12,
+  fontWeight: 600,
+  color: 'var(--color-text-muted)',
+}
+
 export function GoalForm({ initialSkillKey, resources, allSkillsForSelector }: GoalFormProps) {
   const [selectedSkillKey, setSelectedSkillKey] = useState(initialSkillKey ?? '')
   const [pinnedIds, setPinnedIds] = useState<string[]>([])
@@ -51,12 +72,14 @@ export function GoalForm({ initialSkillKey, resources, allSkillsForSelector }: G
           {/* Skill selector (shown only when no initial skill) */}
           {!initialSkillKey && (
             <div>
-              <label className="mb-1 block text-xs font-semibold text-slate-400">Skill</label>
+              <label htmlFor="goal-skill" style={labelStyle}>Skill</label>
               <select
+                id="goal-skill"
                 value={selectedSkillKey}
                 onChange={e => setSelectedSkillKey(e.target.value)}
                 required
-                className="w-full rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-white focus:border-amber-400 focus:outline-none"
+                style={inputStyle}
+                className="focus-visible:outline-2 focus-visible:outline-[var(--color-accent)]"
               >
                 <option value="">Select a skill…</option>
                 {allSkillsForSelector.map(s => (
@@ -71,51 +94,68 @@ export function GoalForm({ initialSkillKey, resources, allSkillsForSelector }: G
           {/* Skill header (shown when skill is selected) */}
           {selectedSkill && (
             <div>
-              <div className="flex items-center gap-2">
-                <h2 className="text-xl font-bold text-white">{selectedSkill.label}</h2>
-                <span className="rounded-full bg-amber-500/20 px-2 py-0.5 text-xs font-semibold text-amber-400">
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <h2 style={{ fontSize: 20, fontWeight: 700, color: 'var(--color-text-primary)', margin: 0 }}>
+                  {selectedSkill.label}
+                </h2>
+                <span style={{
+                  borderRadius: 9999,
+                  background: 'var(--color-accent-wash2)',
+                  color: 'var(--color-accent)',
+                  padding: '2px 8px',
+                  fontSize: 11.5,
+                  fontWeight: 600,
+                }}>
                   {PILLAR_LABELS[selectedSkill.pillar as Pillar]}
                 </span>
               </div>
-              <p className="mt-1 text-sm text-slate-400">{selectedSkill.description}</p>
+              <p style={{ marginTop: 4, fontSize: 14, color: 'var(--color-text-muted)' }}>
+                {selectedSkill.description}
+              </p>
             </div>
           )}
 
           {/* Goal textarea */}
           <div>
-            <label className="mb-1 block text-xs font-semibold text-slate-400">
+            <label htmlFor="goal-text" style={labelStyle}>
               What do you want to achieve?
             </label>
             <textarea
+              id="goal-text"
               name="goal"
               required
               rows={3}
               placeholder="Describe the specific outcome you're aiming for…"
-              className="w-full resize-none rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-white placeholder-slate-500 focus:border-amber-400 focus:outline-none"
+              style={{ ...inputStyle, resize: 'none' }}
+              className="focus-visible:outline-2 focus-visible:outline-[var(--color-accent)]"
             />
           </div>
 
           {/* Target date */}
           <div>
-            <label className="mb-1 block text-xs font-semibold text-slate-400">
+            <label htmlFor="goal-date" style={labelStyle}>
               Target date (optional)
             </label>
             <input
+              id="goal-date"
               type="date"
               name="target_date"
-              className="w-full rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-white focus:border-amber-400 focus:outline-none"
+              style={inputStyle}
+              className="focus-visible:outline-2 focus-visible:outline-[var(--color-accent)]"
             />
           </div>
 
           {/* Check-in frequency */}
           <div>
-            <label className="mb-1 block text-xs font-semibold text-slate-400">
+            <label htmlFor="goal-checkin" style={labelStyle}>
               Check-in every
             </label>
             <select
+              id="goal-checkin"
               value={checkin}
               onChange={e => setCheckin(e.target.value)}
-              className="w-full rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-white focus:border-amber-400 focus:outline-none"
+              style={inputStyle}
+              className="focus-visible:outline-2 focus-visible:outline-[var(--color-accent)]"
             >
               <option value="">No check-in reminder</option>
               {CHECKIN_OPTIONS.map(o => (
@@ -129,7 +169,7 @@ export function GoalForm({ initialSkillKey, resources, allSkillsForSelector }: G
                 placeholder="Weeks"
                 value={customWeeks}
                 onChange={e => setCustomWeeks(e.target.value)}
-                className="mt-2 w-full rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-white focus:border-amber-400 focus:outline-none"
+                style={{ ...inputStyle, marginTop: 8 }}
               />
             )}
           </div>

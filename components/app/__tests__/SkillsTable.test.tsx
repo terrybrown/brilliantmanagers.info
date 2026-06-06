@@ -19,12 +19,12 @@ describe('SkillsTable', () => {
 
   it('shows opportunity chip for skills with status=opportunity', () => {
     render(<SkillsTable rows={ROWS} />)
-    expect(screen.getByText('💡 Opportunity')).toBeInTheDocument()
+    expect(screen.getByText('Opportunity')).toBeInTheDocument()
   })
 
   it('shows goal chip for skills with status=goal', () => {
     render(<SkillsTable rows={ROWS} />)
-    expect(screen.getByText('🎯 Active goal')).toBeInTheDocument()
+    expect(screen.getByText('Goal set')).toBeInTheDocument()
   })
 
   it('sorts by rating ascending by default (lowest first)', () => {

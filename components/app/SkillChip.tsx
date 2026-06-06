@@ -2,17 +2,17 @@
 import { Lightbulb, Target } from 'lucide-react'
 
 // rgb() values are used directly so jsdom-based tests can read chip.style.color
-// These are the computed equivalents of #a5b4fc (indigo-300) and #f59e0b (amber-500)
+// These are the computed equivalents of --color-text-muted and --color-accent
 const STYLES = {
   opportunity: {
-    background: 'rgba(99,102,241,0.12)',
-    border: '1px solid rgba(99,102,241,0.35)',
-    color: 'rgb(165, 180, 252)',
+    background: 'rgba(86,97,89,0.10)',
+    border: '1px solid rgba(86,97,89,0.25)',
+    color: 'rgb(86, 97, 89)',   // --color-text-muted
   },
   goal: {
-    background: 'rgba(245,158,11,0.12)',
-    border: '1px solid rgba(245,158,11,0.35)',
-    color: 'rgb(245, 158, 11)',
+    background: 'rgba(14,124,107,0.10)',
+    border: '1px solid rgba(14,124,107,0.28)',
+    color: 'rgb(14, 124, 107)',  // --color-accent
   },
 }
 

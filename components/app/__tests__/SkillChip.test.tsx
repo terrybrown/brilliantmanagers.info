@@ -13,15 +13,15 @@ describe('SkillChip', () => {
     expect(screen.getByText('Emotional Intelligence')).toBeInTheDocument()
   })
 
-  it('applies indigo colour for opportunity', () => {
+  it('applies muted colour for opportunity', () => {
     const { container } = render(<SkillChip type="opportunity" label="Test" />)
     const chip = container.firstChild as HTMLElement
-    expect(chip.style.color).toBe('rgb(165, 180, 252)')
+    expect(chip.style.color).toBe('rgb(86, 97, 89)')
   })
 
-  it('applies amber colour for goal', () => {
+  it('applies teal colour for goal', () => {
     const { container } = render(<SkillChip type="goal" label="Test" />)
     const chip = container.firstChild as HTMLElement
-    expect(chip.style.color).toBe('rgb(245, 158, 11)')
+    expect(chip.style.color).toBe('rgb(14, 124, 107)')
   })
 })

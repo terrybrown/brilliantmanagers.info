@@ -2,37 +2,72 @@
 
 @theme {
   /* ── Fonts ── */
-  --font-display: var(--font-jakarta), sans-serif;
-  --font-body: var(--font-inter), sans-serif;
+  --font-display: var(--font-bricolage), system-ui, sans-serif;
+  --font-body:    var(--font-hanken), system-ui, sans-serif;
 
-  /* ── Colour tokens ── */
-  --color-bg-base: #1a3a5c;
-  --color-bg-reading: #16202d;
-  --color-text-primary: #fefcf7;
-  --color-text-muted: rgba(254, 252, 247, 0.60);
-  --color-accent: #f59e0b;
-  --color-border: rgba(254, 252, 247, 0.12);
-  --color-nav-bg: #16304a;
+  /* ── Surfaces & text (LIGHT) ── */
+  --color-bg-base:      #F1F3EF;
+  --color-bg-reading:   #FFFFFF;
+  --color-surface:      #FFFFFF;
+  --color-nav-bg:       #FAFBF8;
 
-  /* ── Layout tokens ── */
-  --radius: 8px;
-  --radius-lg: 16px;
+  --color-text-primary: #1A231F;
+  --color-text-muted:   #566159;
+  --color-text-faint:   #95A097;
+
+  --color-border:       #E2E7DF;
+  --color-track:        #E7EBE4;
+  --color-chip-bg:      #F0F3EE;
+
+  /* ── Brand accent (teal) ── */
+  --color-accent:        #0E7C6B;
+  --color-accent-fg:     #FFFFFF;
+  --color-accent-wash:   rgba(14,124,107,0.05);
+  --color-accent-wash2:  rgba(14,124,107,0.10);
+  --color-accent-border: rgba(14,124,107,0.26);
+
+  /* ── Manager / secondary series ── */
+  --color-manager: #CC7A1A;
+
+  /* ── Semantic ── */
+  --color-positive:    #047857;
+  --color-positive-bg: rgba(4,120,87,0.10);
+  --color-negative:    #B4341F;
+  --color-negative-bg: rgba(180,52,31,0.10);
+
+  --color-alert-fg:     #B5660F;
+  --color-alert-bg:     #FBF3EC;
+  --color-alert-border: #EDCFB4;
+
+  /* ── Radius ── */
+  --radius:    10px;
+  --radius-lg: 14px;
+
+  /* ── Layout ── */
   --container-width: 1080px;
   --prose-width: 680px;
   --section-gap: 96px;
 }
 
-/* ── Button colour tokens — edit these to retheme all buttons ── */
+/* ── Button colour tokens + card shadow ── */
 :root {
-  --btn-primary-bg: var(--color-accent);
-  --btn-primary-bg-hover: #fbbf24;
-  --btn-primary-fg: #1a2a3a;
-  --btn-secondary-bg: transparent;
-  --btn-secondary-border: #334155;
-  --btn-secondary-fg: #94a3b8;
-  --btn-danger-bg: rgba(239, 68, 68, 0.15);
-  --btn-danger-border: rgba(239, 68, 68, 0.3);
-  --btn-danger-fg: #f87171;
+  --shadow-card: 0 1px 2px rgba(40,60,45,0.04), 0 2px 5px rgba(40,60,45,0.03);
+  --shadow-modal: 0 20px 60px rgba(40,60,45,0.15);
+  --shadow-hero-card: 0 24px 60px rgba(40,60,45,0.10), 0 2px 6px rgba(40,60,45,0.05);
+  --shadow-badge: 0 8px 20px rgba(14,124,107,0.25);
+  --color-manager-wash: rgba(204,122,26,0.12);
+  --color-positive-border: rgba(4,120,87,0.30);
+  --btn-primary-bg:        var(--color-accent);
+  --btn-primary-bg-hover:  #0C6B5C;
+  --btn-primary-fg:        #FFFFFF;
+
+  --btn-secondary-bg:      transparent;
+  --btn-secondary-border:  var(--color-border);
+  --btn-secondary-fg:      var(--color-text-muted);
+
+  --btn-danger-bg:     rgba(180,52,31,0.10);
+  --btn-danger-border: rgba(180,52,31,0.28);
+  --btn-danger-fg:     #B4341F;
 }
 
 /* ── Button loading dots animation ── */
@@ -362,6 +397,20 @@ body {
   animation: tall-bounce 0.7s infinite;
 }
 
+/* ── Snapshot card left panel: responsive border direction + radius ── */
+.snapshot-left-panel {
+  border-right: 1px solid var(--color-border);
+  border-bottom: none;
+  border-radius: var(--radius-lg) 0 0 var(--radius-lg);
+}
+@media (max-width: 1023px) {
+  .snapshot-left-panel {
+    border-right: none;
+    border-bottom: 1px solid var(--color-border);
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  }
+}
+
 /* Recharts radar: allow axis labels to extend beyond the SVG viewport,
    and remove the browser focus ring that appears on click */
 svg.recharts-surface {
@@ -388,7 +437,7 @@ svg.recharts-surface:focus {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: #f59e0b;
+  background: var(--color-accent);
   display: inline-block;
   animation: dot-bounce 1.2s infinite ease-in-out;
 }

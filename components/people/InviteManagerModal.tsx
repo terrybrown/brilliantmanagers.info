@@ -21,7 +21,7 @@ export function InviteManagerModal({ trigger }: Props) {
         {trigger ?? (
           <button
             type="button"
-            className="text-xs font-semibold text-amber-400 hover:text-amber-300"
+            style={{ fontSize: 12, fontWeight: 600, color: 'var(--color-accent)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
           >
             Connect →
           </button>
@@ -40,12 +40,13 @@ export function InviteManagerModal({ trigger }: Props) {
         >
           <div
             style={{
-              background: '#111827', border: '1px solid #1f2937',
+              background: 'var(--color-surface)', border: '1px solid var(--color-border)',
+              boxShadow: 'var(--shadow-modal)',
               borderRadius: 12, padding: 28, width: '100%', maxWidth: 460,
             }}
           >
-            <h2 className="mb-1 text-lg font-bold text-white">Invite your manager</h2>
-            <p className="mb-5 text-sm text-slate-400">
+            <h2 className="mb-1 text-lg font-bold" style={{ color: 'var(--color-text-primary)' }}>Invite your manager</h2>
+            <p className="mb-5 text-sm" style={{ color: 'var(--color-text-muted)' }}>
               We&apos;ll send them an email so they can connect and score your reflections.
             </p>
             <form
@@ -58,7 +59,7 @@ export function InviteManagerModal({ trigger }: Props) {
             >
               <input type="hidden" name="role" value="direct_report" />
               <div>
-                <label className="mb-1 block text-xs font-medium text-slate-400">
+                <label className="mb-1 block text-xs font-medium" style={{ color: 'var(--color-text-muted)' }}>
                   Their email address
                 </label>
                 <input
@@ -66,20 +67,20 @@ export function InviteManagerModal({ trigger }: Props) {
                   type="email"
                   required
                   placeholder="manager@company.com"
-                  style={{ background: '#0d1117', border: '1px solid #1f2937', borderRadius: 6,
-                           padding: '8px 12px', color: '#f1f5f9', fontSize: 14, width: '100%' }}
+                  style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)', borderRadius: 6,
+                           padding: '8px 12px', color: 'var(--color-text-primary)', fontSize: 14, width: '100%' }}
                 />
               </div>
               <div>
-                <label className="mb-1 block text-xs font-medium text-slate-400">
-                  Personal message <span className="text-slate-600">(optional)</span>
+                <label className="mb-1 block text-xs font-medium" style={{ color: 'var(--color-text-muted)' }}>
+                  Personal message <span style={{ color: 'var(--color-text-faint)' }}>(optional)</span>
                 </label>
                 <textarea
                   name="message"
                   rows={3}
                   placeholder="Hi — I've been using Brilliant Managers to track my development. I'd love your perspective on my reflections."
-                  style={{ background: '#0d1117', border: '1px solid #1f2937', borderRadius: 6,
-                           padding: '8px 12px', color: '#f1f5f9', fontSize: 14, width: '100%',
+                  style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)', borderRadius: 6,
+                           padding: '8px 12px', color: 'var(--color-text-primary)', fontSize: 14, width: '100%',
                            resize: 'vertical' }}
                 />
               </div>

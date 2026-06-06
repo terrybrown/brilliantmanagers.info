@@ -93,9 +93,9 @@ describe('PillarAccordion', () => {
     expect(screen.queryByText('Opportunities')).not.toBeInTheDocument()
   })
 
-  it('shows "↓ lowest" badge on the lowest-scoring pillar', () => {
+  it('shows "Focus here" badge on the lowest-scoring pillar', () => {
     render(<PillarAccordion pillars={PILLARS} openPillar={null} onOpenChange={() => {}} />)
-    expect(screen.getByText('↓ lowest')).toBeInTheDocument()
+    expect(screen.getByText('Focus here')).toBeInTheDocument()
   })
 
   it('shows a delta badge when prevScore differs', () => {

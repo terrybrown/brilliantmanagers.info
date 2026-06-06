@@ -1,14 +1,15 @@
 import Link from 'next/link'
 import { type ReactNode } from 'react'
 
+// Use actual token values (not var() references) so toHaveStyle works in JSDOM
 export const CARD_STYLE_DEFAULT = {
-  background: 'rgba(254,252,247,0.05)',
-  border: '1px solid rgba(254,252,247,0.10)',
+  background: '#FFFFFF',                     // --color-surface
+  border: '1px solid #E2E7DF',               // --color-border
 } as const
 
 export const CARD_STYLE_PRIMARY = {
-  background: 'rgba(245,158,11,0.07)',
-  border: '1px solid rgba(245,158,11,0.30)',
+  background: 'rgba(14,124,107,0.05)',       // --color-accent-wash
+  border: '1px solid rgba(14,124,107,0.26)', // --color-accent-border
 } as const
 
 interface FeatureCard {
@@ -32,21 +33,21 @@ export function FeatureGrid({ cards }: FeatureGridProps) {
           <div
             data-testid={`feature-card-${card.href}`}
             key={card.href}
-            className="flex flex-col rounded-xl p-6"
-            style={card.primary ? CARD_STYLE_PRIMARY : CARD_STYLE_DEFAULT}
+            className="flex flex-col"
+            style={{ ...(card.primary ? CARD_STYLE_PRIMARY : CARD_STYLE_DEFAULT), borderRadius: 18, padding: 28, boxShadow: 'var(--shadow-card)' }}
           >
             <div className="mb-2 flex items-center gap-2">
               {card.icon}
               <h2
                 className="text-xl font-bold"
-                style={{ fontFamily: 'var(--font-display)', color: '#fefcf7' }}
+                style={{ fontFamily: 'var(--font-display)', color: 'var(--color-text-primary)' }}
               >
                 {card.title}
               </h2>
             </div>
             <p
               className="mb-4 flex-1 text-sm leading-relaxed"
-              style={{ color: 'rgba(254,252,247,0.70)' }}
+              style={{ color: 'var(--color-text-muted)' }}
             >
               {card.body}
             </p>
@@ -54,7 +55,7 @@ export function FeatureGrid({ cards }: FeatureGridProps) {
               <Link
                 href={card.href}
                 className="text-xs font-semibold"
-                style={{ color: '#f59e0b' }}
+                style={{ color: 'var(--color-accent)' }}
               >
                 {card.linkLabel} →
               </Link>

@@ -25,7 +25,7 @@ describe('FeatureGrid', () => {
     expect(card).not.toHaveStyle({ border: CARD_STYLE_PRIMARY.border })
   })
 
-  it('applies amber background and border to a primary card', () => {
+  it('applies accent wash background and border to a primary card', () => {
     render(<FeatureGrid cards={[{ ...baseCard, primary: true }]} />)
     const card = screen.getByTestId('feature-card-/the-tool')
     expect(card).toHaveStyle(CARD_STYLE_PRIMARY)

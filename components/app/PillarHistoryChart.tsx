@@ -21,7 +21,7 @@ export interface HistoryPoint {
 }
 
 const TOGGLES = [
-  { key: 'overall',          label: 'Overall',   color: '#f59e0b' },
+  { key: 'overall',          label: 'Overall',   color: '#0E7C6B' },
   { key: 'self',             label: 'Self',       color: '#3b82f6' },
   { key: 'team',             label: 'Team',       color: '#a855f7' },
   { key: 'strategy',         label: 'Strategy',   color: '#22c55e' },
@@ -30,11 +30,11 @@ const TOGGLES = [
 ] as const
 
 const MANAGER_LINES: { key: keyof HistoryPoint; color: string; pillarKey: string }[] = [
-  { key: 'mgr_self',               color: '#3b82f6', pillarKey: 'self' },
-  { key: 'mgr_team',               color: '#a855f7', pillarKey: 'team' },
-  { key: 'mgr_strategy',           color: '#22c55e', pillarKey: 'strategy' },
-  { key: 'mgr_communications',     color: '#f97316', pillarKey: 'communications' },
-  { key: 'mgr_domain-expertise',   color: '#06b6d4', pillarKey: 'domain-expertise' },
+  { key: 'mgr_self',               color: '#CC7A1A', pillarKey: 'self' },
+  { key: 'mgr_team',               color: '#CC7A1A', pillarKey: 'team' },
+  { key: 'mgr_strategy',           color: '#CC7A1A', pillarKey: 'strategy' },
+  { key: 'mgr_communications',     color: '#CC7A1A', pillarKey: 'communications' },
+  { key: 'mgr_domain-expertise',   color: '#CC7A1A', pillarKey: 'domain-expertise' },
 ]
 
 interface Props { data: HistoryPoint[] }
@@ -54,8 +54,23 @@ export function PillarHistoryChart({ data }: Props) {
     })
 
   return (
-    <div className="rounded-xl bg-slate-800 px-4 py-4">
-      <p className="mb-3 text-xs text-slate-500" style={{ textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+    <div
+      style={{
+        background: 'var(--color-surface)',
+        border: '1px solid var(--color-border)',
+        borderRadius: 10,
+        boxShadow: 'var(--shadow-card)',
+        padding: '18px 20px',
+      }}
+    >
+      <p
+        className="mb-3 text-xs"
+        style={{
+          color: 'var(--color-text-faint)',
+          textTransform: 'uppercase',
+          letterSpacing: '0.08em',
+        }}
+      >
         Score history — all rounds
       </p>
 
@@ -82,7 +97,7 @@ export function PillarHistoryChart({ data }: Props) {
           )
         })}
 
-        <div style={{ width: 1, height: 18, background: '#334155', flexShrink: 0 }} />
+        <div style={{ width: 1, height: 18, background: 'var(--color-border)', flexShrink: 0 }} />
 
         <button
           aria-pressed={showManager}
@@ -90,37 +105,37 @@ export function PillarHistoryChart({ data }: Props) {
           style={{
             fontSize: 11, fontWeight: 600,
             padding: '3px 10px', borderRadius: 99,
-            border: '1px solid #a78bfa', color: '#a78bfa',
-            background: showManager ? 'rgba(167,139,250,0.15)' : 'transparent',
+            border: '1px solid #CC7A1A', color: '#CC7A1A',
+            background: showManager ? 'rgba(204,122,26,0.12)' : 'transparent',
             opacity: showManager ? 1 : 0.4,
             display: 'flex', alignItems: 'center', gap: 5,
             cursor: 'pointer',
           }}
         >
-          <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#a78bfa', flexShrink: 0 }} />
+          <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#CC7A1A', flexShrink: 0 }} />
           Show Manager Score
         </button>
       </div>
 
       <ResponsiveContainer width="100%" height={200}>
         <LineChart data={data} margin={{ top: 5, right: 10, bottom: 5, left: -20 }}>
-          <CartesianGrid stroke="#1e293b" />
-          <XAxis dataKey="date" tick={{ fill: '#475569', fontSize: 10 }} />
-          <YAxis domain={[1, 5]} tick={{ fill: '#475569', fontSize: 10 }} />
+          <CartesianGrid stroke="#E2E7DF" />
+          <XAxis dataKey="date" tick={{ fill: '#95A097', fontSize: 10 }} />
+          <YAxis domain={[1, 5]} tick={{ fill: '#95A097', fontSize: 10 }} />
           <Tooltip
-            contentStyle={{ background: '#0f172a', border: '1px solid #1e293b', borderRadius: 8 }}
-            labelStyle={{ color: '#94a3b8', fontSize: 11 }}
+            contentStyle={{ background: '#FFFFFF', border: '1px solid #E2E7DF', borderRadius: 8 }}
+            labelStyle={{ color: '#566159', fontSize: 11 }}
             itemStyle={{ fontSize: 11 }}
           />
-          <Legend wrapperStyle={{ fontSize: '11px', color: '#94a3b8' }} />
+          <Legend wrapperStyle={{ fontSize: '11px', color: '#95A097' }} />
 
           {activePillars.has('overall') && (
             <Line type="monotone" dataKey="overall" name="Overall"
-              stroke="#f59e0b" strokeWidth={2.5} dot={{ fill: '#f59e0b', r: 3 }} />
+              stroke="#0E7C6B" strokeWidth={2.5} dot={{ fill: '#0E7C6B', r: 3 }} />
           )}
           {activePillars.has('overall') && showManager && (
             <Line type="monotone" dataKey="mgr_overall" name="Overall (Mgr)"
-              stroke="#a78bfa" strokeWidth={1.5} strokeDasharray="4 2" dot={false} />
+              stroke="#CC7A1A" strokeWidth={1.5} strokeDasharray="4 2" dot={false} />
           )}
 
           {TOGGLES.slice(1).map(({ key, label, color }) =>

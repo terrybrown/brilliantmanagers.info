@@ -112,7 +112,7 @@ export default async function ReflectionsPage() {
   const hasRounds = completeRoundsWithScores.length > 0
 
   return (
-    <div style={{ padding: '32px 36px', display: 'flex', flexDirection: 'column', gap: 24 }}>
+    <div style={{ padding: '24px 28px 40px', maxWidth: 1180, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 22 }}>
       {/* Header + active round card */}
       <ReflectionsHeader
         inProgressRound={inProgressRound}
@@ -122,42 +122,45 @@ export default async function ReflectionsPage() {
 
       {/* Stats bar */}
       {hasRounds && (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
           {[
-            { label: 'Rounds completed', value: String(stats.totalRounds) },
+            { label: 'Rounds completed', value: String(stats.totalRounds), color: 'var(--color-text-primary)' },
             {
               label: 'Overall improvement',
-              value: `${stats.improvement >= 0 ? '+' : ''}${stats.improvement.toFixed(1)}`,
-              color: stats.improvement >= 0 ? '#4ade80' : '#f87171',
+              value: `${stats.improvement > 0 ? '+' : ''}${stats.improvement.toFixed(1)}`,
+              color: stats.improvement > 0 ? 'var(--color-positive)' : stats.improvement < 0 ? 'var(--color-negative)' : 'var(--color-text-muted)',
             },
-            { label: 'Best pillar', value: stats.bestPillar ? PILLAR_LABELS[stats.bestPillar] : '—' },
+            { label: 'Best pillar', value: stats.bestPillar ? PILLAR_LABELS[stats.bestPillar] : '—', color: 'var(--color-text-primary)' },
             {
               label: 'Manager avg',
               value: stats.managerAvg !== null ? stats.managerAvg.toFixed(1) : '—',
-              color: '#a78bfa',
+              color: stats.managerAvg !== null ? 'var(--color-manager)' : 'var(--color-text-faint)',
             },
           ].map(card => (
             <div
               key={card.label}
               style={{
-                background: 'rgba(255,255,255,0.03)',
-                border: '1px solid rgba(255,255,255,0.07)',
+                background: 'var(--color-surface)',
+                border: '1px solid var(--color-border)',
                 borderRadius: 10,
+                boxShadow: 'var(--shadow-card)',
                 padding: '14px 16px',
               }}
             >
               <p
                 style={{
-                  fontSize: 20,
-                  fontWeight: 800,
-                  color: card.color ?? '#f59e0b',
-                  marginBottom: 4,
+                  fontSize: 26,
+                  fontWeight: 750,
+                  fontFamily: 'var(--font-display)',
                   letterSpacing: '-0.02em',
+                  lineHeight: 1,
+                  color: card.color,
+                  marginBottom: 0,
                 }}
               >
                 {card.value}
               </p>
-              <p style={{ fontSize: 11, color: '#475569' }}>{card.label}</p>
+              <p style={{ fontSize: 11.5, color: 'var(--color-text-faint)', marginTop: 6, marginBottom: 0 }}>{card.label}</p>
             </div>
           ))}
         </div>

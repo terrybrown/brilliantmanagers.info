@@ -57,22 +57,24 @@ export default async function GrowthPage() {
   })
 
   return (
-    <div className="mx-auto max-w-5xl space-y-8 px-4 py-8">
-      <div>
-        <h1 className="text-2xl font-bold text-white">Growth</h1>
-        <p className="mt-1 text-sm text-slate-400">
+    <div style={{ maxWidth: 1180, margin: '0 auto', padding: '24px 28px 40px' }}>
+      <div style={{ marginBottom: 24 }}>
+        <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 24, fontWeight: 750, color: 'var(--color-text-primary)', margin: 0 }}>Growth</h1>
+        <p style={{ marginTop: 4, fontSize: 13.5, color: 'var(--color-text-muted)', margin: '4px 0 0' }}>
           Set focused goals for the skills you want to develop.
         </p>
       </div>
 
       {/* Top two-column section */}
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2" style={{ alignItems: 'start' }}>
         <ActiveGoalsPanel plans={plans} />
         <OpportunitiesPanel opportunities={opportunities} />
       </div>
 
       {/* All-skills table */}
-      <SkillsTable rows={tableRows} />
+      <div style={{ marginTop: 30 }}>
+        <SkillsTable rows={tableRows} />
+      </div>
     </div>
   )
 }

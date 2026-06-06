@@ -36,7 +36,7 @@ function AvatarImage({ avatarUrl, displayName, initials }: {
   )
 }
 
-export function AvatarDropdown({ user }: { user: UserInfo }) {
+export function AvatarDropdown({ user, direction = 'up' }: { user: UserInfo; direction?: 'up' | 'down' }) {
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
   const router = useRouter()
@@ -68,14 +68,14 @@ export function AvatarDropdown({ user }: { user: UserInfo }) {
           width: 32,
           height: 32,
           borderRadius: '50%',
-          border: `2px solid ${open ? '#f59e0b' : '#334155'}`,
-          background: '#1f2937',
+          border: `2px solid ${open ? 'var(--color-accent)' : 'var(--color-border)'}`,
+          background: 'var(--color-chip-bg)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           fontSize: 12,
           fontWeight: 700,
-          color: '#f59e0b',
+          color: 'var(--color-accent)',
           cursor: 'pointer',
           transition: 'border-color 0.15s',
           overflow: 'hidden',
@@ -100,28 +100,28 @@ export function AvatarDropdown({ user }: { user: UserInfo }) {
         <div
           style={{
             position: 'absolute',
-            top: 40,
+            ...(direction === 'up' ? { bottom: 40 } : { top: 40 }),
             right: 0,
             width: 220,
-            background: '#1e293b',
-            border: '1px solid #334155',
+            background: 'var(--color-surface)',
+            border: '1px solid var(--color-border)',
             borderRadius: 10,
-            boxShadow: '0 16px 40px rgba(0,0,0,0.5)',
+            boxShadow: '0 4px 24px rgba(40,60,45,0.14)',
             zIndex: 200,
             overflow: 'hidden',
           }}
         >
-          <div style={{ padding: '14px 16px', borderBottom: '1px solid #334155' }}>
-            <div style={{ fontSize: 13, fontWeight: 600, color: '#f8fafc' }}>
+          <div style={{ padding: '14px 16px', borderBottom: '1px solid var(--color-border)' }}>
+            <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--color-text-primary)' }}>
               {user.displayName}
             </div>
-            <div style={{ fontSize: 11, color: '#64748b', marginTop: 2 }}>{user.email}</div>
+            <div style={{ fontSize: 11, color: 'var(--color-text-muted)', marginTop: 2 }}>{user.email}</div>
           </div>
 
           <DropdownItem href="/profile" icon={User} label="Profile & settings" onClick={() => setOpen(false)} />
           <DropdownItem href="/notifications" icon={Bell} label="Notifications" onClick={() => setOpen(false)} />
 
-          <div style={{ height: 1, background: '#334155' }} />
+          <div style={{ height: 1, background: 'var(--color-border)' }} />
 
           <button
             onClick={handleSignOut}
@@ -132,13 +132,13 @@ export function AvatarDropdown({ user }: { user: UserInfo }) {
               padding: '10px 16px',
               width: '100%',
               fontSize: 13,
-              color: '#f87171',
+              color: 'var(--color-negative)',
               background: 'transparent',
               border: 'none',
               cursor: 'pointer',
               textAlign: 'left',
             }}
-            onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = 'rgba(248,113,113,0.1)')}
+            onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = 'var(--color-negative-bg)')}
             onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = 'transparent')}
           >
             <LogOut size={15} strokeWidth={1.75} />
@@ -171,16 +171,16 @@ function DropdownItem({
         gap: 10,
         padding: '10px 16px',
         fontSize: 13,
-        color: '#94a3b8',
+        color: 'var(--color-text-muted)',
         textDecoration: 'none',
       }}
       onMouseEnter={e => {
-        ;(e.currentTarget as HTMLElement).style.background = '#334155'
-        ;(e.currentTarget as HTMLElement).style.color = '#f8fafc'
+        ;(e.currentTarget as HTMLElement).style.background = 'var(--color-chip-bg)'
+        ;(e.currentTarget as HTMLElement).style.color = 'var(--color-text-primary)'
       }}
       onMouseLeave={e => {
         ;(e.currentTarget as HTMLElement).style.background = 'transparent'
-        ;(e.currentTarget as HTMLElement).style.color = '#94a3b8'
+        ;(e.currentTarget as HTMLElement).style.color = 'var(--color-text-muted)'
       }}
     >
       <Icon size={15} strokeWidth={1.75} />
