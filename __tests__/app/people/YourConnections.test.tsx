@@ -63,7 +63,9 @@ describe('YourConnections', () => {
         roundSummaries={{}} userId="u1" pendingInvitations={[]}
       />
     )
-    expect(screen.getByText(/pending/i)).toBeInTheDocument()
+    // Multiple elements may contain "Pending" — check at least one badge exists
+    const pendingElements = screen.getAllByText(/pending/i)
+    expect(pendingElements.length).toBeGreaterThan(0)
   })
 
   it('shows direct report name', () => {

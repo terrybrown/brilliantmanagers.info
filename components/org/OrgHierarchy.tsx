@@ -91,14 +91,15 @@ export function OrgHierarchy({ nodes, orgId, orgRole }: Props) {
   return (
     <div
       style={{
-        background: 'rgba(255,255,255,0.02)',
-        border: '1px solid rgba(255,255,255,0.06)',
+        background: 'var(--color-surface)',
+        border: '1px solid var(--color-border)',
         borderRadius: 8,
         overflow: 'hidden',
+        boxShadow: 'var(--shadow-card)',
       }}
     >
       {tree.length === 0 && !isAdmin ? (
-        <p style={{ padding: '16px 14px', fontSize: 13, color: '#4b5563' }}>
+        <p style={{ padding: '16px 14px', fontSize: 13, color: 'var(--color-text-muted)' }}>
           No structure defined yet.
         </p>
       ) : (
@@ -106,7 +107,7 @@ export function OrgHierarchy({ nodes, orgId, orgRole }: Props) {
       )}
 
       {isAdmin && (
-        <div style={{ padding: '10px 14px', borderTop: '1px solid rgba(255,255,255,0.04)' }}>
+        <div style={{ padding: '10px 14px', borderTop: '1px solid var(--color-border)' }}>
           <form
             action={makeAddNodeFormAction(null)}
             style={{ display: 'flex', gap: 6 }}
@@ -116,15 +117,15 @@ export function OrgHierarchy({ nodes, orgId, orgRole }: Props) {
               name="name"
               placeholder="New top-level group"
               style={{
-                flex: 1, background: '#0d1117', border: '1px solid #1f2937', borderRadius: 5,
-                padding: '6px 10px', color: '#f1f5f9', fontSize: 12, outline: 'none',
+                flex: 1, background: 'var(--color-surface)', border: '1px solid var(--color-border)', borderRadius: 5,
+                padding: '6px 10px', color: 'var(--color-text-primary)', fontSize: 12, outline: 'none',
               }}
             />
             <button
               type="submit"
               style={{
-                padding: '6px 12px', background: 'rgba(99,102,241,0.15)',
-                color: '#a78bfa', border: '1px solid rgba(99,102,241,0.3)',
+                padding: '6px 12px', background: 'var(--color-accent-wash2)',
+                color: 'var(--color-accent)', border: '1px solid var(--color-accent-border)',
                 borderRadius: 5, fontSize: 12, cursor: 'pointer',
               }}
             >
