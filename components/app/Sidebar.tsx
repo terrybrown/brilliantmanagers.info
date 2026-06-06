@@ -50,6 +50,7 @@ export function Sidebar({ isExpanded, onToggle, isSuperAdmin = false, unreadCoun
     <div
       style={{
         width: isExpanded ? 232 : 68,
+        height: '100%',
         background: 'var(--color-nav-bg)',
         borderRight: '1px solid var(--color-border)',
         display: 'flex',

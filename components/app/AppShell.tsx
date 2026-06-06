@@ -54,7 +54,7 @@ export function AppShell({
         </Script>
       )}
       <div className="flex overflow-hidden" style={{ height: '100dvh', background: 'var(--color-bg-base)' }}>
-        <div className="hidden lg:block flex-shrink-0">
+        <div className="hidden lg:block flex-shrink-0 h-full">
           <Sidebar
             isExpanded={isExpanded}
             onToggle={handleToggle}
