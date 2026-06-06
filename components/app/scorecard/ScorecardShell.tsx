@@ -72,7 +72,7 @@ export function ScorecardShell({ roundId, allScores, allGuideContent }: Scorecar
     <div
       style={{
         display: 'flex',
-        gap: 0,
+        gap: 20,
         height: 'calc(100vh - 160px)',
         minHeight: 0,
       }}

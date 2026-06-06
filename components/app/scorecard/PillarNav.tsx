@@ -20,7 +20,7 @@ export function PillarNav({ activePillar, pillarProgress, onPillarChange }: Pill
   return (
     <div
       style={{
-        width: 248,
+        width: 180,
         flexShrink: 0,
         display: 'flex',
         flexDirection: 'column',

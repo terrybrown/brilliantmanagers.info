@@ -37,20 +37,27 @@ export function GuidePanel({ activeSkillKey, allGuideContent }: GuidePanelProps)
   const activeSkill = SKILLS.find(s => s.key === activeSkillKey)
   const content = activeSkillKey ? (allGuideContent[activeSkillKey] ?? null) : null
 
+  const cardStyle: React.CSSProperties = {
+    width: 340,
+    flexShrink: 0,
+    border: '1px solid var(--color-border)',
+    borderRadius: 12,
+    background: 'var(--color-surface)',
+    padding: 20,
+    boxShadow: '0 1px 2px rgba(40,60,45,.04), 0 2px 5px rgba(40,60,45,.03)',
+  }
+
   if (!activeSkillKey) {
     return (
       <div
         style={{
-          width: 340,
-          flexShrink: 0,
+          ...cardStyle,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           color: 'var(--color-text-muted)',
           fontSize: 14,
           textAlign: 'center',
-          padding: 24,
-          borderLeft: '1px solid var(--color-border)',
         }}
       >
         Select a skill to read the guide
@@ -61,15 +68,12 @@ export function GuidePanel({ activeSkillKey, allGuideContent }: GuidePanelProps)
   return (
     <div
       style={{
-        width: 340,
-        flexShrink: 0,
+        ...cardStyle,
         overflowY: 'auto',
-        paddingLeft: 24,
-        borderLeft: '1px solid var(--color-border)',
       }}
     >
       {/* Skill title with dot */}
-      <div style={{ marginBottom: 20, marginTop: 4 }}>
+      <div style={{ marginBottom: 20 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
           <span
             style={{
