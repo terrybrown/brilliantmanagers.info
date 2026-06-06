@@ -36,8 +36,11 @@ export function FeatureGrid({ cards }: FeatureGridProps) {
             className="flex flex-col"
             style={{ ...(card.primary ? CARD_STYLE_PRIMARY : CARD_STYLE_DEFAULT), borderRadius: 18, padding: 28, boxShadow: 'var(--shadow-card)' }}
           >
-            <div className="mb-2 flex items-center gap-2">
-              {card.icon}
+            <div style={{ width: 44, height: 44, borderRadius: 12, background: 'var(--color-accent)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
+            {card.icon}
+          </div>
+          <div className="mb-2 flex items-center gap-2">
               <h2
                 className="text-xl font-bold"
                 style={{ fontFamily: 'var(--font-display)', color: 'var(--color-text-primary)' }}

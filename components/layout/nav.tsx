@@ -35,6 +35,7 @@ function NavLink({
   className,
   extraStyle,
   onClick,
+  showIcon = false,
 }: {
   item: (typeof siteConfig.nav)[number]
   isAuthenticated: boolean
@@ -43,6 +44,7 @@ function NavLink({
   className: string
   extraStyle?: React.CSSProperties
   onClick?: () => void
+  showIcon?: boolean
 }) {
   const isActive = pathname === item.href || pathname.startsWith(item.href + '/')
   const Icon = NAV_ICONS[item.href]
@@ -66,7 +68,7 @@ function NavLink({
           : { color: isActive ? 'var(--color-text-primary)' : 'var(--color-text-muted)', ...extraStyle }
       }
     >
-      {Icon && (
+      {showIcon && Icon && (
         <Icon size={iconSize} strokeWidth={1.75} style={{ color: 'var(--color-accent)', flexShrink: 0 }} />
       )}
       {item.label}
@@ -129,7 +131,7 @@ export function Nav({ isAuthenticated }: { isAuthenticated: boolean }) {
 
         {/* Centre zone — desktop only */}
         <nav className="hidden flex-none items-center gap-6 lg:flex">
-          {siteConfig.nav.map((item) => (
+          {siteConfig.nav.filter(item => !('cta' in item && item.cta)).map((item) => (
             <NavLink
               key={item.href}
               item={item}
@@ -143,6 +145,32 @@ export function Nav({ isAuthenticated }: { isAuthenticated: boolean }) {
 
         {/* Right zone — desktop only */}
         <div className="hidden flex-1 items-center justify-end gap-3 lg:flex">
+          {(() => {
+            const ctaItem = siteConfig.nav.find(i => 'cta' in i && i.cta)
+            if (!ctaItem) return null
+            const ctaHref = ctaItem.href === '/the-tool' && isAuthenticated ? '/dashboard' : ctaItem.href
+            return (
+              <Link
+                href={ctaHref}
+                style={{
+                  background: 'var(--color-accent)',
+                  color: 'var(--color-accent-fg)',
+                  border: 'none',
+                  borderRadius: 9,
+                  padding: '8px 18px',
+                  fontWeight: 700,
+                  fontSize: 13.5,
+                  textDecoration: 'none',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 6,
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                {ctaItem.label} →
+              </Link>
+            )
+          })()}
           {!isAuthenticated && !isAppRoute && (
             <Link
               href="/login"
@@ -198,6 +226,7 @@ export function Nav({ isAuthenticated }: { isAuthenticated: boolean }) {
               className="flex items-center gap-3 border-b px-6 py-3.5 text-sm font-medium"
               extraStyle={{ borderColor: 'var(--color-border)' }}
               onClick={() => setIsOpen(false)}
+              showIcon={true}
             />
           ))}
           <div className="flex items-center justify-between px-6 py-4">

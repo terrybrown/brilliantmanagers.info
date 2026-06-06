@@ -31,7 +31,7 @@ function RemoveMemberButton({ nodeId, orgId, userId }: { nodeId: string; orgId: 
         mutate(() => removeMemberFromNodeAction(fd))
       }}
       disabled={isPending}
-      style={{ background: 'none', border: 'none', color: isPending ? '#4b5563' : '#6b7280', cursor: isPending ? 'default' : 'pointer', fontSize: 12, padding: '0 0 0 4px', lineHeight: 1 }}
+      style={{ background: 'none', border: 'none', color: isPending ? 'var(--color-text-faint)' : 'var(--color-text-muted)', cursor: isPending ? 'default' : 'pointer', fontSize: 12, padding: '0 0 0 4px', lineHeight: 1 }}
     >
       ✕
     </button>
@@ -50,7 +50,7 @@ function CancelInviteButton({ invitationId, orgId }: { invitationId: string; org
         mutate(() => cancelPendingOrgNodeInvitationAction(fd))
       }}
       disabled={isPending}
-      style={{ background: 'none', border: 'none', color: isPending ? '#4b5563' : '#6b7280', cursor: isPending ? 'default' : 'pointer', fontSize: 12, padding: '0 0 0 4px', lineHeight: 1 }}
+      style={{ background: 'none', border: 'none', color: isPending ? 'var(--color-text-faint)' : 'var(--color-text-muted)', cursor: isPending ? 'default' : 'pointer', fontSize: 12, padding: '0 0 0 4px', lineHeight: 1 }}
     >
       ✕
     </button>
@@ -83,8 +83,8 @@ function AddMemberForm({ nodeId, orgId }: { nodeId: string; orgId: string }) {
         placeholder="Add member by email…"
         disabled={isPending}
         style={{
-          flex: 1, background: '#0d1117', border: '1px solid #1f2937',
-          color: '#f1f5f9', padding: '5px 8px', borderRadius: 4, fontSize: 12,
+          flex: 1, background: 'var(--color-surface)', border: '1px solid var(--color-border)',
+          color: 'var(--color-text-primary)', padding: '5px 8px', borderRadius: 4, fontSize: 12,
           outline: 'none', maxWidth: 280,
         }}
       />
@@ -92,8 +92,8 @@ function AddMemberForm({ nodeId, orgId }: { nodeId: string; orgId: string }) {
         type="submit"
         disabled={isPending}
         style={{
-          background: 'rgba(99,102,241,0.2)', border: '1px solid rgba(99,102,241,0.3)',
-          color: '#a78bfa', padding: '5px 10px', borderRadius: 4, fontSize: 12,
+          background: 'var(--color-accent-wash2)', border: '1px solid var(--color-accent-border)',
+          color: 'var(--color-accent)', padding: '5px 10px', borderRadius: 4, fontSize: 12,
           cursor: isPending ? 'default' : 'pointer', opacity: isPending ? 0.6 : 1,
         }}
       >
@@ -168,7 +168,7 @@ export function NodeRow({
           alignItems: 'center',
           gap: 8,
           padding: `8px 14px 8px ${paddingLeft}px`,
-          borderBottom: '1px solid rgba(255,255,255,0.04)',
+          borderBottom: '1px solid var(--color-border)',
           opacity: isProvisional ? 0.55 : 1,
         }}
       >
@@ -180,7 +180,7 @@ export function NodeRow({
             aria-label={isCollapsed ? '▸' : '▾'}
             style={{
               background: 'none', border: 'none', cursor: 'pointer',
-              color: '#6b7280', padding: 0, fontSize: 12, flexShrink: 0,
+              color: 'var(--color-text-faint)', padding: 0, fontSize: 12, flexShrink: 0,
             }}
           >
             {isCollapsed ? '▸' : '▾'}
@@ -194,20 +194,20 @@ export function NodeRow({
           style={{
             flex: 1,
             fontSize: 14,
-            color: isProvisional ? '#a78bfa' : '#f1f5f9',
+            color: isProvisional ? 'var(--color-accent)' : 'var(--color-text-primary)',
             fontWeight: depth === 0 ? 600 : 400,
             fontStyle: isProvisional ? 'italic' : 'normal',
           }}
         >
           {node.name}
           {node.node_type && (
-            <span style={{ marginLeft: 6, fontSize: 11, color: '#4b5563' }}>{node.node_type}</span>
+            <span style={{ marginLeft: 6, fontSize: 11, color: 'var(--color-text-faint)' }}>{node.node_type}</span>
           )}
         </span>
 
         {/* Saving indicator for provisional nodes */}
         {isProvisional && (
-          <span style={{ fontSize: 11, color: '#f59e0b' }}>saving…</span>
+          <span style={{ fontSize: 11, color: 'var(--color-accent)' }}>saving…</span>
         )}
 
         {/* Avatar stack (passive display) */}
@@ -222,12 +222,12 @@ export function NodeRow({
             onClick={() => setOpenMemberPanelId(isMemberPanelOpen ? null : node.id)}
             style={{
               fontSize: 13,
-              color: isMemberPanelOpen ? '#6ee7b7' : '#34d399',
+              color: 'var(--color-positive)',
               cursor: 'pointer',
-              border: `1px solid ${isMemberPanelOpen ? 'rgba(16,185,129,0.5)' : 'rgba(16,185,129,0.3)'}`,
+              border: `1px solid ${isMemberPanelOpen ? 'rgba(4,120,87,0.3)' : 'rgba(4,120,87,0.2)'}`,
               padding: '4px 10px',
               borderRadius: 5,
-              background: isMemberPanelOpen ? 'rgba(16,185,129,0.2)' : 'rgba(16,185,129,0.1)',
+              background: isMemberPanelOpen ? 'rgba(4,120,87,0.1)' : 'rgba(4,120,87,0.05)',
               flexShrink: 0,
               whiteSpace: 'nowrap',
             }}
@@ -244,12 +244,12 @@ export function NodeRow({
             onClick={() => setOpenChildFormId(isChildFormOpen ? null : node.id)}
             style={{
               fontSize: 13,
-              color: isChildFormOpen ? '#a78bfa' : '#818cf8',
+              color: 'var(--color-accent)',
               cursor: isProvisional ? 'default' : 'pointer',
-              border: `1px solid ${isChildFormOpen ? 'rgba(99,102,241,0.5)' : 'rgba(99,102,241,0.3)'}`,
+              border: `1px solid ${isChildFormOpen ? 'var(--color-accent-border)' : 'var(--color-accent-border)'}`,
               padding: '4px 10px',
               borderRadius: 5,
-              background: isChildFormOpen ? 'rgba(99,102,241,0.25)' : 'rgba(99,102,241,0.1)',
+              background: isChildFormOpen ? 'var(--color-accent-wash)' : 'var(--color-accent-wash2)',
               opacity: isProvisional ? 0.4 : 1,
               flexShrink: 0,
               whiteSpace: 'nowrap',
@@ -268,12 +268,12 @@ export function NodeRow({
             paddingBottom: 12,
             paddingLeft: paddingLeft + 24,
             paddingRight: 14,
-            background: 'rgba(16,185,129,0.03)',
-            borderTop: '1px solid rgba(255,255,255,0.04)',
-            borderLeft: '2px solid rgba(16,185,129,0.2)',
+            background: 'var(--color-positive-bg)',
+            borderTop: '1px solid var(--color-border)',
+            borderLeft: '2px solid var(--color-positive-border)',
           }}
         >
-          <div style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: '.08em', color: '#6b7280', marginBottom: 8 }}>
+          <div style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: '.08em', color: 'var(--color-text-faint)', marginBottom: 8 }}>
             Members
           </div>
 
@@ -283,8 +283,8 @@ export function NodeRow({
                 key={m.user_id}
                 style={{
                   display: 'flex', alignItems: 'center', gap: 5,
-                  background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)',
-                  borderRadius: 20, padding: '3px 10px 3px 5px', fontSize: 12, color: '#cbd5e1',
+                  background: 'var(--color-chip-bg)', border: '1px solid var(--color-border)',
+                  borderRadius: 20, padding: '3px 10px 3px 5px', fontSize: 12, color: 'var(--color-text-primary)',
                 }}
               >
                 <div
@@ -292,7 +292,7 @@ export function NodeRow({
                     width: 20, height: 20, borderRadius: '50%',
                     background: avatarColor(m.user_id),
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: 8, color: '#fff', flexShrink: 0,
+                    fontSize: 8, color: 'var(--color-accent-fg)', flexShrink: 0,
                   }}
                 >
                   {initials(m.display_name, m.email)}
@@ -307,12 +307,12 @@ export function NodeRow({
                 key={invite.id}
                 style={{
                   display: 'flex', alignItems: 'center', gap: 5,
-                  background: 'rgba(99,102,241,0.08)', border: '1px dashed rgba(99,102,241,0.3)',
-                  borderRadius: 20, padding: '3px 10px 3px 8px', fontSize: 12, color: '#a78bfa',
+                  background: 'var(--color-accent-wash)', border: '1px dashed var(--color-accent-border)',
+                  borderRadius: 20, padding: '3px 10px 3px 8px', fontSize: 12, color: 'var(--color-accent)',
                 }}
               >
                 {invite.invited_email}
-                <span style={{ fontSize: 10, color: '#6366f1', marginLeft: 2 }}>awaiting registration</span>
+                <span style={{ fontSize: 10, color: 'var(--color-text-muted)', marginLeft: 2 }}>awaiting registration</span>
                 <CancelInviteButton invitationId={invite.id} orgId={orgId} />
               </div>
             ))}

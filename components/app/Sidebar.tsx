@@ -112,6 +112,9 @@ export function Sidebar({ isExpanded, onToggle, isSuperAdmin = false, unreadCoun
         badge={unreadCount}
       />
 
+      {/* Spacer pushes bottom content down */}
+      <div style={{ flex: 1 }} />
+
       {/* Admin section */}
       {isSuperAdmin && (
         <>
@@ -150,9 +153,6 @@ export function Sidebar({ isExpanded, onToggle, isSuperAdmin = false, unreadCoun
           ))}
         </>
       )}
-
-      {/* Spacer pushes bottom content down */}
-      <div style={{ flex: 1 }} />
 
       {/* Read the Guide link — expanded only */}
       {isExpanded && (
