@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { getNotifications } from '@/lib/notifications'
 import { NotificationsList } from '@/components/notifications/NotificationsList'
+import { markAllReadAction } from './actions'
 
 export default async function NotificationsPage() {
   const supabase = await createClient()
@@ -37,7 +38,7 @@ export default async function NotificationsPage() {
           </span>
         )}
         <div style={{ flex: 1 }} />
-        <div style={{ display: 'flex', gap: 6 }}>
+        <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
           {(['All', 'Unread', 'Mentions'] as const).map((f, i) => (
             <span key={f} style={{
               fontSize: 12,
@@ -50,6 +51,18 @@ export default async function NotificationsPage() {
               border: `1px solid ${i === 0 ? 'var(--color-accent-border)' : 'var(--color-border)'}`,
             }}>{f}</span>
           ))}
+          <form action={async () => { await markAllReadAction() }} style={{ display: 'inline' }}>
+            <button
+              type="submit"
+              style={{
+                fontSize: 12, fontWeight: 600, padding: '5px 12px', borderRadius: 8,
+                cursor: 'pointer', background: 'transparent',
+                color: 'var(--color-text-muted)', border: '1px solid var(--color-border)',
+              }}
+            >
+              ✓ Mark all read
+            </button>
+          </form>
         </div>
       </div>
       <NotificationsList notifications={notifications} />

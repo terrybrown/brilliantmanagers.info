@@ -1,7 +1,8 @@
 import { Hero } from '@/components/sections/hero'
 import { FeatureGrid } from '@/components/sections/feature-grid'
+import { FivePillars } from '@/components/sections/five-pillars'
 import { RotatingQuote } from '@/components/sections/rotating-quote'
-import { GuideBookIcon, GaugeIcon } from '@/components/icons/guide-icons'
+import { Target, BookOpen } from 'lucide-react'
 
 export const metadata = {
   title: 'Brilliant Managers — A field guide to management',
@@ -26,7 +27,7 @@ export default function HomePage() {
       <FeatureGrid
         cards={[
           {
-            icon: <GaugeIcon size={22} />,
+            icon: <Target size={22} strokeWidth={2} style={{ color: 'var(--color-accent-fg)' }} />,
             title: 'The Tool',
             body: 'Know where you actually are — not where you hope you are. Then do something about it.',
             href: '/the-tool',
@@ -34,7 +35,7 @@ export default function HomePage() {
             primary: true,
           },
           {
-            icon: <GuideBookIcon size={22} />,
+            icon: <BookOpen size={22} strokeWidth={2} style={{ color: 'var(--color-accent-fg)' }} />,
             title: 'The Guide',
             body: 'Five pillars. Dozens of dimensions. All the things nobody told you when you got the job.',
             href: '/the-guide',
@@ -42,6 +43,7 @@ export default function HomePage() {
           },
         ]}
       />
+      <FivePillars />
       <RotatingQuote />
     </>
   )

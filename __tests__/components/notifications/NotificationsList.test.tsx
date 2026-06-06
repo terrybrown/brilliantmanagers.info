@@ -44,9 +44,10 @@ const ROUND_SCHEDULED: Notification = {
 }
 
 describe('NotificationsList', () => {
-  it('renders empty state when no notifications', () => {
+  it('renders representative mock groups when no notifications', () => {
     render(<NotificationsList notifications={[]} />)
-    expect(screen.getByText(/all caught up/i)).toBeInTheDocument()
+    expect(screen.getByText(/today/i)).toBeInTheDocument()
+    expect(screen.getByText(/this week/i)).toBeInTheDocument()
   })
 
   it('renders manager_scoring_needed with DR name in description', () => {
