@@ -9,7 +9,6 @@ import {
   ScrollText,
   Building2,
   BookOpen,
-  ChevronDown,
   ChevronLeft,
   ChevronRight,
 } from 'lucide-react'
@@ -182,55 +181,10 @@ export function Sidebar({ isExpanded, onToggle, isSuperAdmin = false, unreadCoun
         </a>
       )}
 
-      {/* User card */}
+      {/* User card — AvatarDropdown owns the full card + menu */}
       {user && (
-        <div
-          style={{
-            width: '100%',
-            borderRadius: 10,
-            border: '1px solid var(--color-border)',
-            background: 'var(--color-surface)',
-            padding: 8,
-            marginTop: 4,
-            boxShadow: 'var(--shadow-card)',
-            display: 'flex',
-            alignItems: 'center',
-            gap: isExpanded ? 8 : 0,
-            justifyContent: isExpanded ? 'flex-start' : 'center',
-            flexShrink: 0,
-          }}
-        >
-          <AvatarDropdown user={user} />
-          {isExpanded && (
-            <>
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div
-                  style={{
-                    fontSize: 12,
-                    fontWeight: 600,
-                    color: 'var(--color-text-primary)',
-                    whiteSpace: 'nowrap',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                  }}
-                >
-                  {user.displayName}
-                </div>
-                <div
-                  style={{
-                    fontSize: 11,
-                    color: 'var(--color-text-muted)',
-                    whiteSpace: 'nowrap',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                  }}
-                >
-                  {user.email}
-                </div>
-              </div>
-              <ChevronDown size={14} strokeWidth={1.75} color="var(--color-text-faint)" style={{ flexShrink: 0 }} />
-            </>
-          )}
+        <div style={{ width: '100%', marginTop: 4, flexShrink: 0, display: 'flex', justifyContent: isExpanded ? 'flex-start' : 'center' }}>
+          <AvatarDropdown user={user} isExpanded={isExpanded} />
         </div>
       )}
 
