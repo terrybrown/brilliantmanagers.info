@@ -28,11 +28,11 @@ export const LEVEL_VALUES: Record<Level, number> = {
 }
 
 export const LEVEL_COLORS: Record<Level, string> = {
-  Developing: '#f87171',
-  Basic: '#fb923c',
-  Proficient: '#fbbf24',
-  Advanced: '#4ade80',
-  Expert: '#a78bfa',
+  Developing: '#dc2626',
+  Basic: '#d97706',
+  Proficient: '#16a34a',
+  Advanced: '#15803d',
+  Expert: '#14532d',
 }
 
 export const SKILLS: Skill[] = [
