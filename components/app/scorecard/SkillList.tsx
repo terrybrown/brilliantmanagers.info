@@ -64,10 +64,10 @@ export function SkillList({
           <div
             key={skill.key}
             style={{
-              background: '#1e293b',
+              background: 'var(--color-surface)',
               borderRadius: 10,
               padding: '10px 12px',
-              border: `1px solid ${isActive ? '#f59e0b' : 'transparent'}`,
+              border: `1px solid ${isActive ? 'var(--color-accent)' : 'var(--color-border)'}`,
               display: 'flex',
               flexDirection: 'row',
               alignItems: 'center',
@@ -82,7 +82,7 @@ export function SkillList({
                 cursor: 'pointer',
                 textAlign: 'left',
                 padding: 0,
-                color: '#f1f5f9',
+                color: 'var(--color-text-primary)',
                 fontWeight: 500,
                 fontSize: 13,
                 lineHeight: 1.4,
@@ -106,12 +106,12 @@ export function SkillList({
                       padding: '0 8px',
                       whiteSpace: 'nowrap',
                       borderRadius: 4,
-                      border: `2px solid ${isSelected ? LEVEL_COLORS[level] : '#334155'}`,
+                      border: `2px solid ${isSelected ? LEVEL_COLORS[level] : 'var(--color-border)'}`,
                       background: isSelected ? `${LEVEL_COLORS[level]}22` : 'transparent',
                       cursor: 'pointer',
                       fontSize: 10,
                       fontWeight: isSelected ? 700 : 500,
-                      color: isSelected ? LEVEL_COLORS[level] : '#64748b',
+                      color: isSelected ? LEVEL_COLORS[level] : 'var(--color-text-faint)',
                     }}
                   >
                     {level}

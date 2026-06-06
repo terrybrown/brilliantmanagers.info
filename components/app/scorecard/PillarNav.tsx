@@ -35,8 +35,8 @@ export function PillarNav({ activePillar, pillarProgress, onPillarChange }: Pill
             key={pillar}
             onClick={() => onPillarChange(pillar)}
             style={{
-              background: isActive ? '#1e293b' : 'transparent',
-              border: `1px solid ${isActive ? '#334155' : 'transparent'}`,
+              background: isActive ? 'var(--color-accent-wash2)' : 'transparent',
+              border: `1px solid ${isActive ? 'var(--color-accent-border)' : 'transparent'}`,
               borderRadius: 8,
               padding: '10px 12px',
               cursor: 'pointer',
@@ -51,7 +51,7 @@ export function PillarNav({ activePillar, pillarProgress, onPillarChange }: Pill
                 style={{
                   fontSize: 13,
                   fontWeight: 600,
-                  color: isActive ? '#f1f5f9' : '#94a3b8',
+                  color: isActive ? 'var(--color-text-primary)' : 'var(--color-text-muted)',
                   display: 'flex',
                   alignItems: 'center',
                   gap: 5,
@@ -61,9 +61,9 @@ export function PillarNav({ activePillar, pillarProgress, onPillarChange }: Pill
                 {PILLAR_LABELS[pillar]}
               </span>
               {isComplete ? (
-                <span style={{ color: '#4ade80', fontSize: 13 }}>✓</span>
+                <span style={{ color: 'var(--color-positive)', fontSize: 13 }}>✓</span>
               ) : (
-                <span style={{ fontSize: 11, color: '#94a3b8', fontWeight: 600 }}>
+                <span style={{ fontSize: 11, color: 'var(--color-text-faint)', fontWeight: 600 }}>
                   {scored}/{total}
                 </span>
               )}
@@ -71,7 +71,7 @@ export function PillarNav({ activePillar, pillarProgress, onPillarChange }: Pill
             <div
               style={{
                 height: 3,
-                background: '#0f172a',
+                background: 'var(--color-track)',
                 borderRadius: 2,
                 overflow: 'hidden',
               }}
@@ -80,7 +80,7 @@ export function PillarNav({ activePillar, pillarProgress, onPillarChange }: Pill
                 style={{
                   height: '100%',
                   width: `${total > 0 ? (scored / total) * 100 : 0}%`,
-                  background: isComplete ? '#4ade80' : '#f59e0b',
+                  background: isComplete ? 'var(--color-positive)' : 'var(--color-accent)',
                   borderRadius: 2,
                   transition: 'width 0.3s ease',
                 }}
