@@ -139,16 +139,16 @@ export function SkillList({
                       title={level}
                       onClick={() => handleRate(skill, level)}
                       style={{
-                        height: 32,
-                        padding: '0 10px',
+                        height: 36,
+                        padding: '0 14px',
                         whiteSpace: 'nowrap',
                         borderRadius: 6,
                         border: `1.5px solid ${isSelected ? LEVEL_COLORS[level] : 'var(--color-border)'}`,
-                        background: isSelected ? `${LEVEL_COLORS[level]}22` : 'transparent',
+                        background: isSelected ? LEVEL_COLORS[level] : 'transparent',
                         cursor: 'pointer',
-                        fontSize: 11,
+                        fontSize: 13,
                         fontWeight: isSelected ? 700 : 500,
-                        color: isSelected ? LEVEL_COLORS[level] : 'var(--color-text-faint)',
+                        color: isSelected ? '#ffffff' : 'var(--color-text-faint)',
                       }}
                     >
                       {level}
