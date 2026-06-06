@@ -1,7 +1,20 @@
+'use client'
+
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { siteConfig } from '@/config/site'
 
+const APP_ROUTE_PREFIXES = [
+  '/dashboard', '/growth', '/people', '/profile', '/scorecard',
+  '/results', '/reflections', '/manager', '/notifications',
+  '/admin', '/connections', '/organisation',
+]
+
 export function Footer() {
+  const pathname = usePathname()
+  const isAppRoute = APP_ROUTE_PREFIXES.some(r => pathname === r || pathname.startsWith(r + '/'))
+  if (isAppRoute) return null
+
   return (
     <footer
       className="border-t"
