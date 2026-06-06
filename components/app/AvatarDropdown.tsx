@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
-import { User, Bell, LogOut } from 'lucide-react'
+import { User, Bell, LogOut, ChevronDown } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 
@@ -12,20 +12,13 @@ interface UserInfo {
   avatarUrl?: string
 }
 
-/**
- * Renders the avatar image with its own isolated imgError state.
- * Keying this component on `avatarUrl` in the parent causes it to remount
- * (and reset imgError to false) whenever the URL changes — no effect needed.
- */
 function AvatarImage({ avatarUrl, displayName, initials }: {
   avatarUrl: string
   displayName: string
   initials: string
 }) {
   const [imgError, setImgError] = useState(false)
-  if (imgError) {
-    return <>{initials}</>
-  }
+  if (imgError) return <>{initials}</>
   return (
     <img
       src={avatarUrl}
@@ -36,14 +29,43 @@ function AvatarImage({ avatarUrl, displayName, initials }: {
   )
 }
 
-export function AvatarDropdown({ user, direction = 'up' }: { user: UserInfo; direction?: 'up' | 'down' }) {
+interface DropdownPos {
+  top?: number
+  bottom?: number
+  left?: number
+  right?: number
+  minWidth?: number
+}
+
+/**
+ * Avatar trigger + dropdown menu.
+ *
+ * When `isExpanded` is true the component renders the full sidebar user card
+ * (avatar + name + email + chevron) as a single clickable button.
+ * When false/undefined it renders only the avatar circle (topbar mobile use).
+ *
+ * The dropdown panel uses `position: fixed` to escape any overflow:hidden
+ * ancestor (the AppShell outer div), so it never clips.
+ */
+export function AvatarDropdown({
+  user,
+  direction = 'up',
+  isExpanded,
+}: {
+  user: UserInfo
+  direction?: 'up' | 'down'
+  isExpanded?: boolean
+}) {
   const [open, setOpen] = useState(false)
-  const ref = useRef<HTMLDivElement>(null)
+  const wrapperRef = useRef<HTMLDivElement>(null)
+  const triggerRef = useRef<HTMLButtonElement>(null)
+  const [dropdownPos, setDropdownPos] = useState<DropdownPos>({})
   const router = useRouter()
 
+  // Click-outside to close
   useEffect(() => {
     function handleOutsideClick(e: MouseEvent) {
-      if (ref.current && !ref.current.contains(e.target as Node)) {
+      if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) {
         setOpen(false)
       }
     }
@@ -51,64 +73,144 @@ export function AvatarDropdown({ user, direction = 'up' }: { user: UserInfo; dir
     return () => document.removeEventListener('mousedown', handleOutsideClick)
   }, [open])
 
+  // Calculate fixed position from trigger rect when opening
+  useEffect(() => {
+    if (!open || !triggerRef.current) return
+    const rect = triggerRef.current.getBoundingClientRect()
+    if (direction === 'up') {
+      setDropdownPos({
+        bottom: window.innerHeight - rect.top + 8,
+        left: rect.left,
+        minWidth: rect.width,
+      })
+    } else {
+      setDropdownPos({
+        top: rect.bottom + 8,
+        right: window.innerWidth - rect.right,
+        minWidth: 220,
+      })
+    }
+  }, [open, direction])
+
   async function handleSignOut() {
     const supabase = createClient()
     await supabase.auth.signOut()
     router.push('/login')
   }
 
+  const avatarCircle = (
+    <div
+      style={{
+        width: 32,
+        height: 32,
+        borderRadius: '50%',
+        border: `2px solid ${open ? 'var(--color-accent)' : 'var(--color-border)'}`,
+        background: 'var(--color-chip-bg)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontSize: 12,
+        fontWeight: 700,
+        color: 'var(--color-accent)',
+        overflow: 'hidden',
+        flexShrink: 0,
+      }}
+    >
+      {user.avatarUrl ? (
+        <AvatarImage
+          key={user.avatarUrl}
+          avatarUrl={user.avatarUrl}
+          displayName={user.displayName}
+          initials={user.initials}
+        />
+      ) : (
+        user.initials
+      )}
+    </div>
+  )
+
   return (
-    <div ref={ref} style={{ position: 'relative' }}>
+    <div ref={wrapperRef} style={{ position: 'relative', width: isExpanded ? '100%' : 'auto' }}>
       <button
+        ref={triggerRef}
         id="nav-avatar"
         onClick={() => setOpen(o => !o)}
         aria-label="Open user menu"
         aria-expanded={open}
-        style={{
-          width: 32,
-          height: 32,
-          borderRadius: '50%',
-          border: `2px solid ${open ? 'var(--color-accent)' : 'var(--color-border)'}`,
-          background: 'var(--color-chip-bg)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          fontSize: 12,
-          fontWeight: 700,
-          color: 'var(--color-accent)',
-          cursor: 'pointer',
-          transition: 'border-color 0.15s',
-          overflow: 'hidden',
-          padding: 0,
-        }}
+        style={
+          isExpanded
+            ? {
+                width: '100%',
+                borderRadius: 10,
+                border: `1px solid ${open ? 'var(--color-accent-border)' : 'var(--color-border)'}`,
+                background: 'var(--color-surface)',
+                padding: 8,
+                boxShadow: 'var(--shadow-card)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 8,
+                cursor: 'pointer',
+                textAlign: 'left',
+                transition: 'border-color 0.15s',
+              }
+            : {
+                width: 32,
+                height: 32,
+                borderRadius: '50%',
+                border: `2px solid ${open ? 'var(--color-accent)' : 'var(--color-border)'}`,
+                background: 'var(--color-chip-bg)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: 12,
+                fontWeight: 700,
+                color: 'var(--color-accent)',
+                cursor: 'pointer',
+                transition: 'border-color 0.15s',
+                overflow: 'hidden',
+                padding: 0,
+              }
+        }
       >
-        {user.avatarUrl ? (
-          // Key on avatarUrl causes AvatarImage to remount when the URL changes,
-          // resetting its imgError state naturally without an effect.
-          <AvatarImage
-            key={user.avatarUrl}
-            avatarUrl={user.avatarUrl}
-            displayName={user.displayName}
-            initials={user.initials}
-          />
+        {isExpanded ? (
+          <>
+            {avatarCircle}
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--color-text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                {user.displayName}
+              </div>
+              <div style={{ fontSize: 11, color: 'var(--color-text-muted)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                {user.email}
+              </div>
+            </div>
+            <ChevronDown size={14} strokeWidth={1.75} color="var(--color-text-faint)" style={{ flexShrink: 0 }} />
+          </>
         ) : (
-          user.initials
+          user.avatarUrl ? (
+            <AvatarImage
+              key={user.avatarUrl}
+              avatarUrl={user.avatarUrl}
+              displayName={user.displayName}
+              initials={user.initials}
+            />
+          ) : (
+            user.initials
+          )
         )}
       </button>
 
       {open && (
         <div
           style={{
-            position: 'absolute',
-            ...(direction === 'up' ? { bottom: 40 } : { top: 40 }),
-            right: 0,
-            width: 220,
+            position: 'fixed',
+            ...dropdownPos,
             background: 'var(--color-surface)',
             border: '1px solid var(--color-border)',
             borderRadius: 10,
             boxShadow: '0 4px 24px rgba(40,60,45,0.14)',
-            zIndex: 200,
+            zIndex: 9999,
             overflow: 'hidden',
+            width: 220,
           }}
         >
           <div style={{ padding: '14px 16px', borderBottom: '1px solid var(--color-border)' }}>
