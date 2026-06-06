@@ -112,14 +112,14 @@ export function ScorecardShell({ roundId, allScores, allGuideContent }: Scorecar
             <button
               onClick={() => handlePillarChange(prevPillar)}
               style={{
-                background: '#f59e0b22',
-                border: '1px solid #f59e0b',
+                background: 'var(--color-accent-wash)',
+                border: '1px solid var(--color-accent-border)',
                 borderRadius: 8,
                 padding: '8px 14px',
                 cursor: 'pointer',
                 fontSize: 13,
                 fontWeight: 600,
-                color: '#f59e0b',
+                color: 'var(--color-accent)',
                 display: 'flex',
                 alignItems: 'center',
                 gap: 6,
@@ -135,14 +135,14 @@ export function ScorecardShell({ roundId, allScores, allGuideContent }: Scorecar
             <Link
               href="/dashboard"
               style={{
-                background: '#f59e0b',
+                background: 'var(--btn-primary-bg)',
                 border: 'none',
                 borderRadius: 8,
                 padding: '8px 18px',
                 cursor: 'pointer',
                 fontSize: 13,
                 fontWeight: 600,
-                color: '#0f172a',
+                color: 'var(--btn-primary-fg)',
                 textDecoration: 'none',
                 display: 'flex',
                 alignItems: 'center',
@@ -155,14 +155,14 @@ export function ScorecardShell({ roundId, allScores, allGuideContent }: Scorecar
             <button
               onClick={() => handlePillarChange(nextPillar)}
               style={{
-                background: '#f59e0b22',
-                border: '1px solid #f59e0b',
+                background: 'var(--color-accent-wash)',
+                border: '1px solid var(--color-accent-border)',
                 borderRadius: 8,
                 padding: '8px 14px',
                 cursor: 'pointer',
                 fontSize: 13,
                 fontWeight: 600,
-                color: '#f59e0b',
+                color: 'var(--color-accent)',
                 display: 'flex',
                 alignItems: 'center',
                 gap: 6,

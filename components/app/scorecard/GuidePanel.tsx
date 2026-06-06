@@ -14,14 +14,14 @@ function renderBody(text: string) {
     return (
       <ul style={{ margin: 0, paddingLeft: 16, display: 'flex', flexDirection: 'column', gap: 4 }}>
         {bulletLines.map((l, i) => (
-          <li key={i} style={{ fontSize: 13, color: '#cbd5e1', lineHeight: 1.6 }}>
+          <li key={i} style={{ fontSize: 13, color: 'var(--color-text-muted)', lineHeight: 1.6 }}>
             {l.replace(/^[\s*-]+/, '').trim()}
           </li>
         ))}
       </ul>
     )
   }
-  return <p style={{ fontSize: 13, color: '#cbd5e1', lineHeight: 1.6, margin: 0 }}>{text}</p>
+  return <p style={{ fontSize: 13, color: 'var(--color-text-muted)', lineHeight: 1.6, margin: 0 }}>{text}</p>
 }
 
 const SECTIONS: { label: string; key: keyof SkillGuideContent }[] = [
@@ -45,11 +45,11 @@ export function GuidePanel({ activeSkillKey, allGuideContent }: GuidePanelProps)
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          color: '#475569',
+          color: 'var(--color-text-muted)',
           fontSize: 14,
           textAlign: 'center',
           padding: 24,
-          borderLeft: '1px solid #1e293b',
+          borderLeft: '1px solid var(--color-border)',
         }}
       >
         Select a skill to read the guide
@@ -64,14 +64,14 @@ export function GuidePanel({ activeSkillKey, allGuideContent }: GuidePanelProps)
         flexShrink: 0,
         overflowY: 'auto',
         paddingLeft: 20,
-        borderLeft: '1px solid #1e293b',
+        borderLeft: '1px solid var(--color-border)',
       }}
     >
       <h3
         style={{
           fontSize: 15,
           fontWeight: 700,
-          color: '#f59e0b',
+          color: 'var(--color-accent)',
           marginBottom: 20,
           marginTop: 4,
         }}
@@ -92,7 +92,7 @@ export function GuidePanel({ activeSkillKey, allGuideContent }: GuidePanelProps)
                     fontWeight: 700,
                     letterSpacing: '0.08em',
                     textTransform: 'uppercase',
-                    color: '#64748b',
+                    color: 'var(--color-text-faint)',
                     marginBottom: 8,
                     marginTop: 0,
                   }}
@@ -107,7 +107,7 @@ export function GuidePanel({ activeSkillKey, allGuideContent }: GuidePanelProps)
       )}
 
       {!content && activeSkill && (
-        <p style={{ fontSize: 13, color: '#94a3b8', lineHeight: 1.6 }}>
+        <p style={{ fontSize: 13, color: 'var(--color-text-muted)', lineHeight: 1.6 }}>
           {activeSkill.description}
         </p>
       )}
