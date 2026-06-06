@@ -1,11 +1,13 @@
 'use client'
 import { useTransition } from 'react'
 import { toast } from 'sonner'
-import { LEVELS, LEVEL_COLORS, type Skill, type Level } from '@/lib/skills'
+import { LEVELS, LEVEL_COLORS, PILLAR_LABELS, type Skill, type Level, type Pillar } from '@/lib/skills'
+import { GuideIcon } from '@/components/icons/guide-icons'
 import { saveScore } from '@/app/(app)/scorecard/actions'
 import { trackPillarScored, trackRoundCompleted, trackScorecardCompleted } from '@/lib/analytics'
 
 interface SkillListProps {
+  activePillar: Pillar
   skills: Skill[]
   scores: Record<string, Level>
   roundId: string
@@ -15,6 +17,7 @@ interface SkillListProps {
 }
 
 export function SkillList({
+  activePillar,
   skills,
   scores,
   roundId,
@@ -23,6 +26,8 @@ export function SkillList({
   onScore,
 }: SkillListProps) {
   const [, startTransition] = useTransition()
+
+  const scored = skills.filter(s => scores[s.key] !== undefined).length
 
   const handleRate = (skill: Skill, level: Level) => {
     if (scores[skill.key] === level) return
@@ -55,73 +60,106 @@ export function SkillList({
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-      {skills.map(skill => {
-        const currentScore = scores[skill.key]
-        const isActive = skill.key === activeSkillKey
+    <div style={{ display: 'flex', flexDirection: 'column' }}>
+      {/* Pillar header */}
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 8,
+          marginBottom: 12,
+        }}
+      >
+        <GuideIcon section={activePillar} size={16} />
+        <span style={{ fontSize: 15, fontWeight: 700, color: 'var(--color-text-primary)' }}>
+          {PILLAR_LABELS[activePillar]}
+        </span>
+        <span style={{ fontSize: 13, color: 'var(--color-text-faint)' }}>
+          · {scored} of {skills.length} scored
+        </span>
+      </div>
 
-        return (
-          <div
-            key={skill.key}
-            style={{
-              background: 'var(--color-surface)',
-              borderRadius: 10,
-              padding: '10px 12px',
-              border: `1px solid ${isActive ? 'var(--color-accent)' : 'var(--color-border)'}`,
-              display: 'flex',
-              flexDirection: 'row',
-              alignItems: 'center',
-              gap: 10,
-            }}
-          >
-            <button
-              onClick={() => onSkillActivate(skill.key)}
+      {/* Skill cards */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+        {skills.map(skill => {
+          const currentScore = scores[skill.key]
+          const isActive = skill.key === activeSkillKey
+          const dotColor = currentScore ? LEVEL_COLORS[currentScore] : 'var(--color-border)'
+
+          return (
+            <div
+              key={skill.key}
               style={{
-                background: 'transparent',
-                border: 'none',
-                cursor: 'pointer',
-                textAlign: 'left',
-                padding: 0,
-                color: 'var(--color-text-primary)',
-                fontWeight: 500,
-                fontSize: 13,
-                lineHeight: 1.4,
-                flex: 1,
-                minWidth: 0,
+                background: 'var(--color-surface)',
+                borderRadius: 10,
+                padding: '10px 12px',
+                border: `1px solid ${isActive ? 'var(--color-accent)' : 'var(--color-border)'}`,
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: 10,
               }}
             >
-              {skill.label}
-            </button>
+              {/* Dot indicator */}
+              <span
+                style={{
+                  width: 8,
+                  height: 8,
+                  borderRadius: '50%',
+                  background: dotColor,
+                  flexShrink: 0,
+                }}
+              />
 
-            <div style={{ display: 'flex', gap: 3, flexShrink: 0 }}>
-              {LEVELS.map(level => {
-                const isSelected = currentScore === level
-                return (
-                  <button
-                    key={level}
-                    title={level}
-                    onClick={() => handleRate(skill, level)}
-                    style={{
-                      height: 28,
-                      padding: '0 8px',
-                      whiteSpace: 'nowrap',
-                      borderRadius: 4,
-                      border: `2px solid ${isSelected ? LEVEL_COLORS[level] : 'var(--color-border)'}`,
-                      background: isSelected ? `${LEVEL_COLORS[level]}22` : 'transparent',
-                      cursor: 'pointer',
-                      fontSize: 10,
-                      fontWeight: isSelected ? 700 : 500,
-                      color: isSelected ? LEVEL_COLORS[level] : 'var(--color-text-faint)',
-                    }}
-                  >
-                    {level}
-                  </button>
-                )
-              })}
+              <button
+                onClick={() => onSkillActivate(skill.key)}
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                  padding: 0,
+                  color: 'var(--color-text-primary)',
+                  fontWeight: 500,
+                  fontSize: 13,
+                  lineHeight: 1.4,
+                  flex: 1,
+                  minWidth: 0,
+                }}
+              >
+                {skill.label}
+              </button>
+
+              <div style={{ display: 'flex', gap: 4, flexShrink: 0 }}>
+                {LEVELS.map(level => {
+                  const isSelected = currentScore === level
+                  return (
+                    <button
+                      key={level}
+                      title={level}
+                      onClick={() => handleRate(skill, level)}
+                      style={{
+                        height: 32,
+                        padding: '0 10px',
+                        whiteSpace: 'nowrap',
+                        borderRadius: 6,
+                        border: `1.5px solid ${isSelected ? LEVEL_COLORS[level] : 'var(--color-border)'}`,
+                        background: isSelected ? `${LEVEL_COLORS[level]}22` : 'transparent',
+                        cursor: 'pointer',
+                        fontSize: 11,
+                        fontWeight: isSelected ? 700 : 500,
+                        color: isSelected ? LEVEL_COLORS[level] : 'var(--color-text-faint)',
+                      }}
+                    >
+                      {level}
+                    </button>
+                  )
+                })}
+              </div>
             </div>
-          </div>
-        )
-      })}
+          )
+        })}
+      </div>
     </div>
   )
 }

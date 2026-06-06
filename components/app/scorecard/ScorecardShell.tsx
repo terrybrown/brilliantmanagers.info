@@ -91,6 +91,7 @@ export function ScorecardShell({ roundId, allScores, allGuideContent }: Scorecar
         }}
       >
         <SkillList
+          activePillar={activePillar}
           skills={skills}
           scores={scores}
           roundId={roundId}
