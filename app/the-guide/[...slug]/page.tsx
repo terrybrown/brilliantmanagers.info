@@ -12,6 +12,9 @@ import {
 import { guideComponents } from '@/components/guide/mdx-components'
 import { ChapterNav } from '@/components/guide/chapter-nav'
 import { ReadingProgressBar } from '@/components/guide/reading-progress'
+import { createClient } from '@/lib/supabase/server'
+import { fetchGuideUserData } from '@/lib/db/guide-data'
+import { GuideDataProvider } from '@/components/guide/guide-data-context'
 
 interface Props {
   params: Promise<{ slug: string[] }>
@@ -47,7 +50,15 @@ export default async function GuideChapterPage({ params }: Props) {
   const pillarLabel = GUIDE_SECTION_LABELS[activeSlug]
   const pillarOrdinal = GUIDE_SECTION_ORDINALS[activeSlug]
 
+  // Optional: fetch user score/goal data if authenticated
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  const guideUserData = user
+    ? await fetchGuideUserData(user.id, chapter.skills)
+    : null
+
   return (
+    <GuideDataProvider data={guideUserData}>
     <div style={{ background: 'var(--color-bg-base)', minHeight: '100vh' }}>
       <ReadingProgressBar />
 
@@ -157,7 +168,6 @@ export default async function GuideChapterPage({ params }: Props) {
               </span>
             )}
             <div style={{ flex: 1 }} />
-            {/* TODO: replace '—' with real pillar score once user data is wired */}
             <span
               style={{
                 display: 'inline-flex',
@@ -180,10 +190,14 @@ export default async function GuideChapterPage({ params }: Props) {
                   fontFamily: 'var(--font-display)',
                   fontSize: 16,
                   fontWeight: 700,
-                  color: 'var(--color-accent)',
+                  color: guideUserData?.pillarScore != null
+                    ? 'var(--color-accent)'
+                    : 'var(--color-text-faint)',
                 }}
               >
-                —
+                {guideUserData?.pillarScore != null
+                  ? guideUserData.pillarScore.toFixed(1)
+                  : '—'}
               </strong>
             </span>
           </div>
@@ -351,5 +365,6 @@ export default async function GuideChapterPage({ params }: Props) {
         </article>
       </div>
     </div>
+    </GuideDataProvider>
   )
 }
