@@ -1,3 +1,43 @@
+# Login Page Sage Restyle Implementation Plan
+
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+
+**Goal:** Restyle `app/login/page.tsx` to match the Sage design system — teal accent, display font, card wrapper, Sage tokens throughout. Zero logic changes.
+
+**Architecture:** Single-file replacement. All Tailwind amber/slate classes swapped for Sage CSS token inline styles. Form wrapped in a card div. Both the sign-in form and the "Check your email" confirmation share the same card treatment.
+
+**Tech Stack:** Next.js App Router, React, Sage CSS tokens (`--color-*`, `--font-display`, `--btn-primary-*`).
+
+---
+
+## File map
+
+| File | Action |
+|---|---|
+| `app/login/page.tsx` | Modify — replace all Tailwind colour classes with Sage inline styles, add card, add subtitle, update both render paths |
+
+---
+
+### Task 1: Restyle the login page
+
+**Files:**
+- Modify: `app/login/page.tsx`
+
+No unit tests needed — this is a pure visual change with no new logic. The test gate is a clean build.
+
+- [ ] **Read the current file**
+
+```bash
+cat app/login/page.tsx
+```
+
+Understand the two render paths: the `sent` early-return (check your email), and the main form.
+
+- [ ] **Replace the file with the restyled version**
+
+Replace `app/login/page.tsx` with the following. All logic (state, auth, Turnstile) is unchanged — only JSX and styles change:
+
+```tsx
 'use client'
 import { useState } from 'react'
 import Link from 'next/link'
@@ -10,7 +50,6 @@ export default function LoginPage() {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const [captchaToken, setCaptchaToken] = useState<string | null>(null)
-  const [inputFocused, setInputFocused] = useState(false)
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -44,7 +83,7 @@ export default function LoginPage() {
     background: 'var(--color-surface)',
     border: '1px solid var(--color-border)',
     boxShadow: '0 1px 2px rgba(40,60,45,.04), 0 2px 5px rgba(40,60,45,.03)',
-    borderRadius: 'var(--radius-lg)',
+    borderRadius: 12,
     padding: 32,
     width: '100%',
     maxWidth: 400,
@@ -83,18 +122,17 @@ export default function LoginPage() {
             required
             style={{
               background: 'var(--color-bg-base)',
-              border: `1px solid ${inputFocused ? 'var(--color-accent)' : 'var(--color-border)'}`,
-              borderRadius: 'var(--radius)',
+              border: '1px solid var(--color-border)',
+              borderRadius: 8,
               padding: '10px 14px',
               fontSize: 14,
               color: 'var(--color-text-primary)',
-              outline: inputFocused ? '2px solid var(--color-accent-wash2)' : 'none',
-              outlineOffset: 2,
+              outline: 'none',
               width: '100%',
               boxSizing: 'border-box',
             }}
-            onFocus={() => setInputFocused(true)}
-            onBlur={() => setInputFocused(false)}
+            onFocus={e => { e.currentTarget.style.borderColor = 'var(--color-accent)' }}
+            onBlur={e => { e.currentTarget.style.borderColor = 'var(--color-border)' }}
           />
           {error && (
             <p style={{ fontSize: 13, color: 'var(--color-negative)', margin: 0 }}>{error}</p>
@@ -113,7 +151,7 @@ export default function LoginPage() {
               background: 'var(--btn-primary-bg)',
               color: 'var(--btn-primary-fg)',
               border: 'none',
-              borderRadius: 'var(--radius)',
+              borderRadius: 8,
               padding: '11px 16px',
               fontSize: 14,
               fontWeight: 600,
@@ -138,3 +176,39 @@ export default function LoginPage() {
     </div>
   )
 }
+```
+
+- [ ] **Run the test suite — confirm no regressions**
+
+```bash
+npm test 2>&1 | tail -6
+```
+
+Expected: all tests pass (no login page tests exist — checking the suite doesn't break).
+
+- [ ] **Run a production build to confirm no TypeScript errors**
+
+```bash
+npm run build 2>&1 | grep -E "error TS|Type error|✓ Compiled|Failed" | head -10
+```
+
+Expected: `✓ Compiled successfully`.
+
+- [ ] **Commit**
+
+```bash
+git add app/login/page.tsx
+git commit -m "feat: restyle login page to Sage design system — card, teal accent, display font"
+```
+
+---
+
+### Final: push and open PR
+
+```bash
+git push -u origin design/login-sage-restyle
+gh pr create \
+  --title "feat: restyle login page to Sage design system" \
+  --body "Brings the login page into the Sage design system. Replaces all hardcoded amber Tailwind classes and slate-* colours with Sage CSS token inline styles. Adds a card wrapper, display font heading, subtitle, and Sending… loading label. Zero logic changes." \
+  --base master --assignee "@me"
+```

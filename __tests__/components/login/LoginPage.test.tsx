@@ -64,7 +64,7 @@ describe('LoginPage', () => {
       target: { value: 'test@example.com' },
     })
     fireEvent.click(screen.getByRole('button', { name: /send magic link/i }))
-    expect(screen.getByRole('button', { name: /send magic link/i })).toHaveProperty('disabled', true)
+    expect(screen.getByRole('button', { name: /sending/i })).toHaveProperty('disabled', true)
     resolve!({ error: null })
   })
 })
