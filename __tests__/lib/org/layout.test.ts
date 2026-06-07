@@ -57,4 +57,11 @@ describe('buildOrgLayout', () => {
     const second = buildOrgLayout(nodes)
     expect(first.rfNodes.map(n => n.position)).toEqual(second.rfNodes.map(n => n.position))
   })
+
+  it('silently ignores parent_id pointing to a non-existent node', () => {
+    const nodes = [makeNode('b', 'missing-id')]
+    const { rfNodes, rfEdges } = buildOrgLayout(nodes)
+    expect(rfNodes).toHaveLength(1)
+    expect(rfEdges).toHaveLength(0)
+  })
 })

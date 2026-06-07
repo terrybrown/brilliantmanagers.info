@@ -34,10 +34,13 @@ export function buildOrgLayout(orgNodes: OrgNode[]): {
   dagre.layout(g)
 
   const rfNodes: Node<DeptNodeData>[] = orgNodes.map(node => {
-    const { x, y } = g.node(node.id)
+    const pos = g.node(node.id)
+    if (!pos) throw new Error(`dagre did not lay out node ${node.id}`)
+    const { x, y } = pos
     return {
       id: node.id,
       type: 'deptNode',
+      // dagre gives centre coords; React Flow expects top-left corner
       position: { x: x - NODE_WIDTH / 2, y: y - NODE_HEIGHT / 2 },
       data: { label: node.name, memberCount: node.members.length },
     }
