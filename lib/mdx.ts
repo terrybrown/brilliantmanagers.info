@@ -11,12 +11,34 @@ export interface TocItem {
   level: 2 | 3
 }
 
+export interface SkillItem {
+  id: string
+  text: string
+}
+
 function toSlug(text: string): string {
   return text
     .toLowerCase()
     .replace(/[^\w\s-]/g, '')
     .trim()
     .replace(/[\s_]+/g, '-')
+}
+
+export function extractSkills(source: string): SkillItem[] {
+  const skills: SkillItem[] = []
+  for (const line of source.split('\n')) {
+    const m = line.match(/^\s*<summary>(.+?)<\/summary>\s*$/)
+    if (m) {
+      const text = m[1].trim()
+      skills.push({ id: toSlug(text), text })
+    }
+  }
+  return skills
+}
+
+export function computeReadingTime(source: string): number {
+  const words = source.trim().split(/\s+/).length
+  return Math.max(1, Math.round(words / 200))
 }
 
 export function extractHeadings(source: string): TocItem[] {
@@ -113,11 +135,19 @@ async function readMdx(filePath: string) {
 export async function getGuideChapter(
   slug: string[],
   components: MdxComponents = {}
-): Promise<{ content: React.ReactElement; frontmatter: GuideFrontmatter; headings: TocItem[] }> {
+): Promise<{
+  content: React.ReactElement
+  frontmatter: GuideFrontmatter
+  headings: TocItem[]
+  skills: SkillItem[]
+  readingTimeMinutes: number
+}> {
   const filePath = path.join(contentDir, 'guide', `${slug.join('/')}.mdx`)
   const source = await readMdx(filePath)
 
   const headings = extractHeadings(source)
+  const skills = extractSkills(source)
+  const readingTimeMinutes = computeReadingTime(source)
 
   const { content, frontmatter } = await compileMDX<GuideFrontmatter>({
     source,
@@ -131,7 +161,7 @@ export async function getGuideChapter(
     },
   })
 
-  return { content, frontmatter, headings }
+  return { content, frontmatter, headings, skills, readingTimeMinutes }
 }
 
 export async function getGuideIndex(
