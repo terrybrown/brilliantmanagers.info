@@ -131,7 +131,7 @@ export function OrgNodePanel({
                       Your manager
                     </span>
                   ) : isMyDR ? (
-                    <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 7px', borderRadius: 4, background: 'rgba(204,122,26,0.1)', color: 'var(--color-manager)', flexShrink: 0 }}>
+                    <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 7px', borderRadius: 4, background: 'var(--color-manager-wash)', color: 'var(--color-manager)', flexShrink: 0 }}>
                       Your DR
                     </span>
                   ) : isAdmin ? (
@@ -202,23 +202,25 @@ export function OrgNodePanel({
           )}
         </div>
 
-        {/* Add person */}
-        <form onSubmit={handleAddMember} style={{ display: 'flex', gap: 6 }}>
-          <input
-            name="email"
-            type="email"
-            required
-            placeholder={isAdmin ? 'Add by email…' : 'Email address…'}
-            style={{ flex: 1, border: '1px solid var(--color-border)', borderRadius: 6, padding: '5px 10px', fontSize: 12, background: 'var(--color-bg-base)', color: 'var(--color-text-primary)', minWidth: 0 }}
-          />
-          <button
-            type="submit"
-            disabled={addingMember}
-            style={{ background: 'var(--color-accent)', color: '#fff', border: 'none', borderRadius: 6, padding: '5px 12px', fontSize: 12, fontWeight: 700, cursor: 'pointer', flexShrink: 0 }}
-          >
-            {addingMember ? '…' : '+'}
-          </button>
-        </form>
+        {/* Add person — admin only */}
+        {isAdmin && (
+          <form onSubmit={handleAddMember} style={{ display: 'flex', gap: 6 }}>
+            <input
+              name="email"
+              type="email"
+              required
+              placeholder="Add by email…"
+              style={{ flex: 1, border: '1px solid var(--color-border)', borderRadius: 6, padding: '5px 10px', fontSize: 12, background: 'var(--color-bg-base)', color: 'var(--color-text-primary)', minWidth: 0 }}
+            />
+            <button
+              type="submit"
+              disabled={addingMember}
+              style={{ background: 'var(--color-accent)', color: '#fff', border: 'none', borderRadius: 6, padding: '5px 12px', fontSize: 12, fontWeight: 700, cursor: 'pointer', flexShrink: 0 }}
+            >
+              {addingMember ? '…' : '+'}
+            </button>
+          </form>
+        )}
 
         {/* Add subgroup (admin only) */}
         {isAdmin && (

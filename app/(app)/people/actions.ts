@@ -16,6 +16,7 @@ export async function createDirectConnection(
 
   const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
   if (!UUID_RE.test(targetUserId)) return err('Invalid user.')
+  if (!UUID_RE.test(orgId)) return err('Invalid organisation.')
 
   const { data: membership } = await supabase
     .from('org_members')

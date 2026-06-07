@@ -35,7 +35,10 @@ export function buildOrgLayout(orgNodes: OrgNode[]): {
 
   const rfNodes: Node<DeptNodeData>[] = orgNodes.map(node => {
     const pos = g.node(node.id)
-    if (!pos) throw new Error(`dagre did not lay out node ${node.id}`)
+    if (!pos) {
+      console.warn(`dagre did not lay out node ${node.id} — using origin`)
+      return { id: node.id, type: 'deptNode', position: { x: 0, y: 0 }, data: { label: node.name, memberCount: node.members.length } }
+    }
     const { x, y } = pos
     return {
       id: node.id,
