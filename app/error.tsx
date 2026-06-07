@@ -16,7 +16,7 @@ export default function RootError({
   return (
     <div className="flex flex-col items-center justify-center gap-4 py-20">
       <p className="text-slate-400">Something went wrong.</p>
-      <button onClick={reset} className="text-sm text-amber-500 underline">
+      <button onClick={reset} className="text-sm underline" style={{ color: 'var(--color-accent)' }}>
         Try again
       </button>
     </div>
