@@ -211,9 +211,12 @@ WHERE url = 'https://lattice.com/articles/how-to-have-meaningful-career-conversa
 UPDATE resources SET url = 'https://coachingforleaders.com/podcast/477/'
 WHERE url = 'https://coachingforleaders.com/podcast/build-stakeholder-trust-marie-mcintyre/';
 
--- Manager Tools Podcast Basics: typo in URL ("manage-tools" → "manager-tools")
-UPDATE resources SET url = 'https://www.manager-tools.com/manager-tools-basics'
-WHERE url = 'https://www.manager-tools.com/manage-tools-basics';
+-- Manager Tools Podcast Basics: typo in URL ("manage-tools" → "manager-tools").
+-- Canonical URL already exists as a separate row, so delete the duplicate.
+DELETE FROM skill_resources
+WHERE resource_id = (SELECT id FROM resources WHERE url = 'https://www.manager-tools.com/manage-tools-basics');
+
+DELETE FROM resources WHERE url = 'https://www.manager-tools.com/manage-tools-basics';
 
 -- The Looking Glass with Julie Diamond: /podcast/ path removed from diamondleadership.com
 UPDATE resources SET url = 'https://diamondleadership.com/about/'
