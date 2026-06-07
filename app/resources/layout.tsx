@@ -1,5 +1,4 @@
-import { TYPE_CONFIG } from './type-config'
-import { ResourceNavItem } from '@/components/resources/ResourceNavItem'
+import { ResourceTypePills } from '@/components/resources/ResourceTypePills'
 
 export default function ResourcesLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -8,12 +7,12 @@ export default function ResourcesLayout({ children }: { children: React.ReactNod
         className="mx-auto px-6 pb-20 pt-16"
         style={{ maxWidth: 'var(--container-width)' }}
       >
-        <header className="mb-10">
+        <header style={{ marginBottom: 24 }}>
           <h1
             style={{
               fontFamily: 'var(--font-display)',
-              fontSize: 'clamp(1.75rem, 4vw, 2.5rem)',
-              fontWeight: 600,
+              fontSize: 'clamp(2rem, 5vw, 3rem)',
+              fontWeight: 700,
               letterSpacing: '-0.02em',
               color: 'var(--color-text-primary)',
               marginBottom: 8,
@@ -21,44 +20,13 @@ export default function ResourcesLayout({ children }: { children: React.ReactNod
           >
             Resources
           </h1>
-          <p style={{ color: 'var(--color-text-muted)' }}>
+          <p style={{ color: 'var(--color-text-muted)', fontSize: 14, marginBottom: 20 }}>
             Things I keep coming back to. No affiliate links. No filler.
           </p>
+          <ResourceTypePills />
         </header>
 
-        {/* Mobile: horizontal scrollable tab strip */}
-        <nav
-          className="mb-8 flex gap-1 overflow-x-auto md:hidden"
-          aria-label="Resource types"
-        >
-          {TYPE_CONFIG.map(t => (
-            <ResourceNavItem
-              key={t.slug}
-              href={`/resources/${t.slug}`}
-              label={t.label}
-              tab
-            />
-          ))}
-        </nav>
-
-        {/* Desktop: side nav + main content */}
-        <div className="flex gap-10">
-          <nav
-            className="hidden w-44 flex-shrink-0 md:block"
-            aria-label="Resource types"
-          >
-            <div className="flex flex-col gap-0.5">
-              {TYPE_CONFIG.map(t => (
-                <ResourceNavItem
-                  key={t.slug}
-                  href={`/resources/${t.slug}`}
-                  label={t.label}
-                />
-              ))}
-            </div>
-          </nav>
-          <div className="min-w-0 flex-1">{children}</div>
-        </div>
+        <div style={{ marginTop: 28 }}>{children}</div>
       </div>
     </div>
   )
