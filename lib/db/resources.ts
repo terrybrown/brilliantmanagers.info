@@ -3,10 +3,12 @@ import { createClient } from '@/lib/supabase/server'
 export interface Resource {
   id: string
   title: string
+  subtitle: string | null
   url: string
   description: string
   resource_type: 'book' | 'article' | 'course' | 'video' | 'person' | 'podcast' | 'tool'
   author: string | null
+  topic: string | null
   created_at: string
   updated_at: string
 }
