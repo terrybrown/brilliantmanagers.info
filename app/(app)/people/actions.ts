@@ -14,6 +14,9 @@ export async function createDirectConnection(
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return err('Not authenticated')
 
+  const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+  if (!UUID_RE.test(targetUserId)) return err('Invalid user.')
+
   const { data: membership } = await supabase
     .from('org_members')
     .select('role')
@@ -24,6 +27,15 @@ export async function createDirectConnection(
   if (membership?.role !== 'org_admin') {
     return err('Only org admins can link people directly.')
   }
+
+  const { data: targetMembership } = await supabase
+    .from('org_members')
+    .select('user_id')
+    .eq('user_id', targetUserId)
+    .eq('org_id', orgId)
+    .maybeSingle()
+
+  if (!targetMembership) return err('Target user is not a member of this organisation.')
 
   const managerId = role === 'manager' ? targetUserId : user.id
   const directReportId = role === 'direct_report' ? targetUserId : user.id
