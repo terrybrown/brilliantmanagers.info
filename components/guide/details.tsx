@@ -2,7 +2,10 @@
 
 import React, { useState } from 'react'
 import { ChevronRight, ChevronDown, Sparkles } from 'lucide-react'
-import { toSlug } from '@/lib/mdx'
+import { toSlug } from '@/lib/slug'
+import { useGuideData } from '@/components/guide/guide-data-context'
+import { ScoringBadge } from '@/components/guide/scoring-badge'
+import type { ScoringLevel } from '@/config/scoring'
 
 function extractText(node: React.ReactNode): string {
   if (typeof node === 'string') return node
@@ -24,6 +27,8 @@ interface GuideDetailsProps {
 export function GuideDetails({ children, id: propsId }: GuideDetailsProps) {
   const [isOpen, setIsOpen] = useState(false)
 
+  const guideData = useGuideData()
+
   const childArray = React.Children.toArray(children)
   const summaryChild = childArray.find(
     (child) => React.isValidElement(child) && child.type === 'summary'
@@ -35,6 +40,7 @@ export function GuideDetails({ children, id: propsId }: GuideDetailsProps) {
       )
     : ''
   const id = propsId ?? toSlug(summaryText)
+  const skillData = guideData?.skillDataBySlug[id] ?? null
   const bodyChildren = childArray.filter(
     (child) => !(React.isValidElement(child) && child.type === 'summary')
   )
@@ -85,7 +91,9 @@ export function GuideDetails({ children, id: propsId }: GuideDetailsProps) {
         >
           {summaryText}
         </span>
-        {/* TODO: replace with <ScoringBadge level={userSkillLevel} you /> once score data is wired */}
+        {skillData?.level && (
+          <ScoringBadge level={skillData.level as ScoringLevel} you />
+        )}
       </button>
 
       {/* Accordion body */}
@@ -115,8 +123,11 @@ export function GuideDetails({ children, id: propsId }: GuideDetailsProps) {
                 fontFamily: 'var(--font-body)',
               }}
             >
-              {/* TODO: replace with "You scored this {level}" using real user data */}
-              Explore this skill in the scorecard
+              {skillData?.level ? (
+                <>You scored this <strong style={{ color: 'var(--color-text-primary)', fontWeight: 700 }}>{skillData.level}</strong></>
+              ) : (
+                'Explore this skill in the scorecard'
+              )}
             </span>
             <a
               href="/scorecard"
@@ -140,7 +151,7 @@ export function GuideDetails({ children, id: propsId }: GuideDetailsProps) {
               Re-score
             </a>
             <a
-              href="/growth"
+              href={skillData?.planId ? `/growth?plan=${skillData.planId}` : '/growth'}
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -158,8 +169,7 @@ export function GuideDetails({ children, id: propsId }: GuideDetailsProps) {
                 textDecoration: 'none',
               }}
             >
-              {/* TODO: show "View goal" if user has active goal for this skill */}
-              Set a goal
+              {skillData?.hasGoal ? 'View goal' : 'Set a goal'}
             </a>
           </div>
         </div>

@@ -1,7 +1,20 @@
 import React from 'react'
 import { render, screen, fireEvent } from '@testing-library/react'
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, afterEach, vi } from 'vitest'
 import { GuideDetails } from '@/components/guide/details'
+import { useGuideData } from '@/components/guide/guide-data-context'
+
+vi.mock('@/components/guide/guide-data-context', () => ({
+  useGuideData: vi.fn(() => null),
+}))
+
+vi.mock('@/components/guide/scoring-badge', () => ({
+  ScoringBadge: ({ level, you }: { level: string; you?: boolean }) => (
+    <span data-testid="scoring-badge">{you ? `You · ${level}` : level}</span>
+  ),
+}))
+
+const mockUseGuideData = vi.mocked(useGuideData)
 
 function renderSkill(summaryText = 'Test Skill', bodyText = 'Skill body content.') {
   return render(
@@ -52,5 +65,60 @@ describe('GuideDetails', () => {
   it('uses the summary text as the element id slug', () => {
     const { container } = renderSkill('Time and Task Management')
     expect(container.firstChild).toHaveAttribute('id', 'time-and-task-management')
+  })
+})
+
+describe('GuideDetails — with score/goal data', () => {
+  function renderWithSkillData(data: { level: string | null; hasGoal: boolean; planId?: string }) {
+    mockUseGuideData.mockReturnValue({
+      pillarScore: null,
+      skillDataBySlug: { 'test-skill': data as { level: import('@/lib/skills').Level | null; hasGoal: boolean; planId?: string } },
+    })
+    return render(
+      <GuideDetails>
+        <summary>Test Skill</summary>
+        <p>Body</p>
+      </GuideDetails>
+    )
+  }
+
+  afterEach(() => {
+    mockUseGuideData.mockReturnValue(null)
+  })
+
+  it('shows ScoringBadge in header when level is available (closed state)', () => {
+    renderWithSkillData({ level: 'Proficient', hasGoal: false })
+    expect(screen.getByTestId('scoring-badge')).toBeInTheDocument()
+    expect(screen.getByTestId('scoring-badge')).toHaveTextContent('You · Proficient')
+  })
+
+  it('does not show ScoringBadge when no score', () => {
+    renderWithSkillData({ level: null, hasGoal: false })
+    expect(screen.queryByTestId('scoring-badge')).not.toBeInTheDocument()
+  })
+
+  it('shows "Set a goal" in action strip when no active goal', () => {
+    renderWithSkillData({ level: 'Advanced', hasGoal: false })
+    fireEvent.click(screen.getByRole('button'))
+    expect(screen.getByText('Set a goal')).toBeInTheDocument()
+  })
+
+  it('shows "View goal" in action strip when active goal exists', () => {
+    renderWithSkillData({ level: 'Advanced', hasGoal: true, planId: 'plan-123' })
+    fireEvent.click(screen.getByRole('button'))
+    expect(screen.getByText('View goal')).toBeInTheDocument()
+  })
+
+  it('shows scored level text in action strip when open', () => {
+    renderWithSkillData({ level: 'Expert', hasGoal: false })
+    fireEvent.click(screen.getByRole('button'))
+    expect(screen.getByText(/You scored this/)).toBeInTheDocument()
+    expect(screen.getByText('Expert')).toBeInTheDocument()
+  })
+
+  it('shows generic copy when no score', () => {
+    renderWithSkillData({ level: null, hasGoal: false })
+    fireEvent.click(screen.getByRole('button'))
+    expect(screen.getByText('Explore this skill in the scorecard')).toBeInTheDocument()
   })
 })
