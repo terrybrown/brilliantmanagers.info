@@ -1,10 +1,12 @@
 'use client'
 
 import { Handle, Position } from '@xyflow/react'
-import type { NodeProps } from '@xyflow/react'
+import type { Node, NodeProps } from '@xyflow/react'
 import type { DeptNodeData } from '@/lib/org/layout'
 
-export function DeptNode({ data, selected }: NodeProps<DeptNodeData>) {
+type DeptNodeType = Node<DeptNodeData, 'deptNode'>
+
+export function DeptNode({ data, selected }: NodeProps<DeptNodeType>) {
   return (
     <>
       <Handle
