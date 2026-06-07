@@ -1,3 +1,4 @@
+import { describe, it, expect } from 'vitest'
 import { SCORING_LEVELS, SCORING_LEVEL_DESCRIPTIONS, SCORING_LEVEL_COLORS } from '@/config/scoring'
 import type { ScoringLevel } from '@/config/scoring'
 
