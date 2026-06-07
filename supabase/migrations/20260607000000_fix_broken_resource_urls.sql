@@ -25,8 +25,8 @@ WHERE url = 'https://www.danielgoleman.info/biography/';
 UPDATE resources SET url = 'https://www.penguinrandomhouse.com/books/208668/good-strategy-bad-strategy-by-richard-rumelt/'
 WHERE url = 'https://www.goodstrategybadstrategy.com/';
 
--- Humble Inquiry: berrett-koehler.com times out, bkconnection.com (same publisher) works
-UPDATE resources SET url = 'https://www.bkconnection.com/books/title/Humble-Inquiry-Second-Edition'
+-- Humble Inquiry: berrett-koehler.com times out; /books/title/ path also 404 — using /products/ path (3rd ed)
+UPDATE resources SET url = 'https://bkconnection.com/products/9798890570970_humble-inquiry-3rd-edition'
 WHERE url = 'https://www.berrett-koehler.com/book/humble-inquiry-second-edition/';
 
 -- Insight (Eurich): /insight-book/ path removed, dedicated site available
@@ -79,8 +79,8 @@ WHERE url = 'https://www.timetothink.com/about-us/our-books/';
 UPDATE resources SET url = 'https://www.timetothink.com/books/time-to-think/'
 WHERE url = 'https://www.timetothink.com/reading/books/time-to-think/';
 
--- Help Them Grow or Watch Them Go: bkconnection.com path changed; use 3rd edition
-UPDATE resources SET url = 'https://www.bkconnection.com/books/title/Help-Them-Grow-or-Watch-Them-Go-Third-Edition'
+-- Help Them Grow or Watch Them Go: bkconnection.com /books/title/ path is 404 — using Penguin Random House
+UPDATE resources SET url = 'https://www.penguinrandomhouse.com/books/768123/help-them-grow-or-watch-them-go-third-edition-by-beverly-kaye-and-julie-winkle-giulioni/'
 WHERE url = 'https://bkconnection.com/books/title/help-them-grow-or-watch-them-go';
 
 -- Permission to Feel: /about/book-permission-to-feel/ path removed
@@ -98,8 +98,8 @@ UPDATE resources SET url = 'https://www.youtube.com/watch?v=Nen4x6A0siI'
 WHERE url = 'https://www.ted.com/talks/amy_edmondson_building_a_psychologically_safe_workplace';
 
 -- Resource Allocation — Harvard Business School: video deleted from YouTube.
--- Replaced with HBS YouTube channel (search "resource allocation" there).
-UPDATE resources SET url = 'https://www.youtube.com/@HarvardBusinessSchool'
+-- Replaced with HBS official YouTube channel (channel ID URL; @handle returned 404).
+UPDATE resources SET url = 'https://www.youtube.com/channel/UCk8n46m74K5XWfdeBzOXDfA'
 WHERE url = 'https://www.youtube.com/watch?v=H5b3UnLgVuI';
 
 -- The Best Way to Hire People (Sam Altman / YC): video deleted from YouTube.
@@ -207,8 +207,9 @@ WHERE url = 'https://lattice.com/articles/how-to-have-meaningful-career-conversa
 
 -- ── PODCASTS ─────────────────────────────────────────────────────────────────
 
--- Coaching for Leaders Episode 477: old URL uses episode title slug, new format is numeric
-UPDATE resources SET url = 'https://coachingforleaders.com/podcast/477/'
+-- Coaching for Leaders Episode 477: episode-specific URL can't be found (slug and numeric both 404).
+-- Falling back to the podcast archive page.
+UPDATE resources SET url = 'https://coachingforleaders.com/podcast/'
 WHERE url = 'https://coachingforleaders.com/podcast/build-stakeholder-trust-marie-mcintyre/';
 
 -- Manager Tools Podcast Basics: typo in URL ("manage-tools" → "manager-tools").
