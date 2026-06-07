@@ -26,7 +26,7 @@ export function ResourceTypePills() {
               isActive
                 ? {
                     background: 'var(--color-accent)',
-                    color: '#fff',
+                    color: 'var(--color-accent-fg)',
                     border: '1px solid var(--color-accent)',
                     borderRadius: 20,
                     padding: '5px 14px',
