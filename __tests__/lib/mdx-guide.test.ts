@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { extractSkills, computeReadingTime } from '@/lib/mdx'
+import { SKILLS } from '@/lib/skills'
 
 describe('extractSkills', () => {
   it('returns empty array when no summary tags present', () => {
@@ -27,6 +28,27 @@ describe('extractSkills', () => {
     const skills = extractSkills(source)
     expect(skills).toHaveLength(1)
     expect(skills[0].text).toBe('Real Skill')
+  })
+})
+
+describe('extractSkills — skill key matching', () => {
+  it('resolves skillKey for a skill matched via & → and normalisation', () => {
+    // SKILLS has label "Time & Task Management"; MDX has "Time and Task Management"
+    const source = '  <summary>Time and Task Management</summary>'
+    const skills = extractSkills(source)
+    expect(skills[0].skillKey).toBe('self-time-task-management')
+  })
+
+  it('resolves skillKey for an exact label match', () => {
+    const source = '  <summary>Growth Mindset</summary>'
+    const skills = extractSkills(source)
+    expect(skills[0].skillKey).toBe('self-growth-mindset')
+  })
+
+  it('leaves skillKey undefined when no SKILLS label matches', () => {
+    const source = '  <summary>Unknown Skill XYZ</summary>'
+    const skills = extractSkills(source)
+    expect(skills[0].skillKey).toBeUndefined()
   })
 })
 

@@ -5,6 +5,7 @@ import remarkGfm from 'remark-gfm'
 import rehypeSlug from 'rehype-slug'
 import { visit } from 'unist-util-visit'
 import { toSlug } from '@/lib/slug'
+import { SKILLS } from '@/lib/skills'
 
 export interface TocItem {
   id: string
@@ -15,9 +16,14 @@ export interface TocItem {
 export interface SkillItem {
   id: string
   text: string
+  skillKey?: string
 }
 
 export { toSlug } from '@/lib/slug'
+
+function normaliseLabel(s: string): string {
+  return s.toLowerCase().replace(/&/g, 'and').replace(/\s+/g, ' ').trim()
+}
 
 export function extractSkills(source: string): SkillItem[] {
   const skills: SkillItem[] = []
@@ -25,7 +31,11 @@ export function extractSkills(source: string): SkillItem[] {
     const m = line.match(/^\s*<summary>(.+?)<\/summary>\s*$/)
     if (m) {
       const text = m[1].trim().replace(/<[^>]+>/g, '')
-      skills.push({ id: toSlug(text), text })
+      const id = toSlug(text)
+      const match = SKILLS.find(
+        (s) => normaliseLabel(s.label) === normaliseLabel(text)
+      )
+      skills.push({ id, text, skillKey: match?.key })
     }
   }
   return skills
