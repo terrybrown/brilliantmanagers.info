@@ -11,12 +11,38 @@ export interface TocItem {
   level: 2 | 3
 }
 
-function toSlug(text: string): string {
+export interface SkillItem {
+  id: string
+  text: string
+}
+
+export function toSlug(text: string): string {
   return text
     .toLowerCase()
     .replace(/[^\w\s-]/g, '')
     .trim()
     .replace(/[\s_]+/g, '-')
+}
+
+export function extractSkills(source: string): SkillItem[] {
+  const skills: SkillItem[] = []
+  for (const line of source.split('\n')) {
+    const m = line.match(/^\s*<summary>(.+?)<\/summary>\s*$/)
+    if (m) {
+      const text = m[1].trim().replace(/<[^>]+>/g, '')
+      skills.push({ id: toSlug(text), text })
+    }
+  }
+  return skills
+}
+
+export function computeReadingTime(source: string): number {
+  const stripped = source
+    .replace(/^---[\s\S]*?---/, '')     // frontmatter
+    .replace(/<[^>]+>/g, ' ')           // HTML/JSX tags
+    .replace(/[`#*_~|>]/g, ' ')         // markdown syntax chars
+  const words = stripped.trim().split(/\s+/).filter(Boolean).length
+  return Math.max(1, Math.round(words / 200))
 }
 
 export function extractHeadings(source: string): TocItem[] {
@@ -113,11 +139,19 @@ async function readMdx(filePath: string) {
 export async function getGuideChapter(
   slug: string[],
   components: MdxComponents = {}
-): Promise<{ content: React.ReactElement; frontmatter: GuideFrontmatter; headings: TocItem[] }> {
+): Promise<{
+  content: React.ReactElement
+  frontmatter: GuideFrontmatter
+  headings: TocItem[]
+  skills: SkillItem[]
+  readingTimeMinutes: number
+}> {
   const filePath = path.join(contentDir, 'guide', `${slug.join('/')}.mdx`)
   const source = await readMdx(filePath)
 
   const headings = extractHeadings(source)
+  const skills = extractSkills(source)
+  const readingTimeMinutes = computeReadingTime(source)
 
   const { content, frontmatter } = await compileMDX<GuideFrontmatter>({
     source,
@@ -131,7 +165,7 @@ export async function getGuideChapter(
     },
   })
 
-  return { content, frontmatter, headings }
+  return { content, frontmatter, headings, skills, readingTimeMinutes }
 }
 
 export async function getGuideIndex(
