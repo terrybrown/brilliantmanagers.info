@@ -75,7 +75,7 @@ export default function ToolPage() {
           >
             The Manager Scorecard
           </p>
-          <span className="amber-rule" />
+          <span className="accent-rule" />
           <h1
             className="mb-4 leading-tight"
             style={{
@@ -87,7 +87,7 @@ export default function ToolPage() {
             }}
           >
             Score yourself.{' '}
-            <em style={{ color: '#f59e0b' }}>Know where to grow.</em>
+            <em style={{ color: 'var(--color-accent)' }}>Know where to grow.</em>
           </h1>
           <p
             className="text-base leading-relaxed"
@@ -105,8 +105,8 @@ export default function ToolPage() {
           className="rounded-xl p-6"
           style={{
             background: 'rgba(254,252,247,0.04)',
-            border: '1px solid rgba(245,158,11,0.30)',
-            borderTop: '3px solid #f59e0b',
+            border: '1px solid rgba(14,124,107,0.30)',
+            borderTop: '3px solid var(--color-accent)',
           }}
         >
           <p
@@ -139,7 +139,7 @@ export default function ToolPage() {
           href={GOOGLE_SHEET_URL}
           target="_blank"
           rel="noopener noreferrer"
-          style={{ color: '#f59e0b' }}
+          style={{ color: 'var(--color-accent)' }}
           className="hover:underline"
         >
           Use the self-reflection spreadsheet instead →
@@ -221,7 +221,7 @@ export default function ToolPage() {
                       className="flex items-start gap-2 text-sm"
                       style={{ color: 'rgba(254,252,247,0.5)' }}
                     >
-                      <span style={{ color: '#f59e0b', flexShrink: 0, marginTop: 2 }}>→</span>
+                      <span style={{ color: 'var(--color-accent)', flexShrink: 0, marginTop: 2 }}>→</span>
                       {bullet}
                     </li>
                   ))}

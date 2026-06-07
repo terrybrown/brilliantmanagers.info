@@ -41,7 +41,7 @@ export default async function GoalDetailPage({ params }: GoalDetailPageProps) {
         <div>
           <div className="flex items-center gap-2 flex-wrap">
             <h1 className="text-2xl font-bold text-white">{skill?.label ?? plan.skill_key}</h1>
-            <span className="rounded-full bg-amber-500/20 px-2 py-0.5 text-xs font-semibold text-amber-400">
+            <span className="rounded-full px-2 py-0.5 text-xs font-semibold" style={{ background: 'var(--color-accent-wash2)', color: 'var(--color-accent)' }}>
               {PILLAR_LABELS[plan.pillar as Pillar] ?? plan.pillar}
             </span>
             <span
@@ -49,7 +49,7 @@ export default async function GoalDetailPage({ params }: GoalDetailPageProps) {
               style={
                 plan.status === 'completed'
                   ? { background: 'rgba(74,222,128,0.15)', color: '#4ade80' }
-                  : { background: 'rgba(245,158,11,0.15)', color: '#f59e0b' }
+                  : { background: 'var(--color-accent-wash2)', color: 'var(--color-accent)' }
               }
             >
               {plan.status === 'completed' ? '✓ Complete' : '🎯 Active'}
@@ -99,7 +99,7 @@ export default async function GoalDetailPage({ params }: GoalDetailPageProps) {
                     href={gr.resource.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-sm font-medium text-white hover:text-amber-300"
+                    className="text-sm font-medium text-white hover:opacity-80"
                   >
                     {gr.resource.title} ↗
                   </a>

@@ -54,11 +54,11 @@ export function GoalCompleteOverlay({
       </div>
 
       <div className="relative z-10 flex max-w-md flex-col items-center gap-4">
-        <p className="text-xs font-semibold uppercase tracking-widest text-amber-400">
+        <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: 'var(--color-accent)' }}>
           Goal complete
         </p>
         <h2 className="text-3xl font-bold text-white">
-          {skillLabel} — <span className="text-amber-400">achieved.</span>
+          {skillLabel} — <span style={{ color: 'var(--color-accent)' }}>achieved.</span>
         </h2>
         <p className="text-sm text-slate-300">{affirmation}</p>
         <p className="text-xs text-slate-500">
@@ -72,7 +72,7 @@ export function GoalCompleteOverlay({
           <Link
             href="/growth"
             onClick={onDismiss}
-            className="rounded-lg bg-amber-500 px-5 py-2 text-sm font-semibold text-white hover:bg-amber-400"
+            className="rounded-lg px-5 py-2 text-sm font-semibold" style={{ background: 'var(--btn-primary-bg)', color: 'var(--btn-primary-fg)' }}
           >
             View completed goals →
           </Link>

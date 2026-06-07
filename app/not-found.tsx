@@ -12,7 +12,7 @@ export default function NotFound() {
       >
         404
       </p>
-      <span className="amber-rule mx-auto" />
+      <span className="accent-rule mx-auto" />
       <h1
         className="mb-4 italic"
         style={{

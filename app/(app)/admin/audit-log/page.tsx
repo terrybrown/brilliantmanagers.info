@@ -60,7 +60,7 @@ export default async function AdminAuditLogPage() {
                 <td className="px-3 py-2 text-slate-400">
                   {entry.actor_id ? (emailById[entry.actor_id] ?? entry.actor_id.slice(0, 8)) : '—'}
                 </td>
-                <td className="px-3 py-2 font-mono text-amber-400">{entry.action}</td>
+                <td className="px-3 py-2 font-mono" style={{ color: 'var(--color-text-primary)' }}>{entry.action}</td>
                 <td className="px-3 py-2 text-slate-400">{entry.entity_type}</td>
                 <td className="px-3 py-2 font-mono text-slate-500">
                   {entry.entity_id ? entry.entity_id.slice(0, 8) : '—'}
