@@ -39,12 +39,24 @@ export default function LoginPage() {
     }
   }
 
+  const cardStyle: React.CSSProperties = {
+    background: 'var(--color-surface)',
+    border: '1px solid var(--color-border)',
+    boxShadow: '0 1px 2px rgba(40,60,45,.04), 0 2px 5px rgba(40,60,45,.03)',
+    borderRadius: 12,
+    padding: 32,
+    width: '100%',
+    maxWidth: 400,
+  }
+
   if (sent) {
     return (
-      <div className="flex min-h-screen items-center justify-center px-4">
-        <div className="max-w-sm text-center">
-          <h1 className="mb-2 text-2xl font-bold">Check your email</h1>
-          <p className="text-slate-500">
+      <div style={{ display: 'flex', minHeight: '100vh', alignItems: 'center', justifyContent: 'center', padding: '0 16px' }}>
+        <div style={{ ...cardStyle, textAlign: 'center' }}>
+          <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 700, color: 'var(--color-text-primary)', marginBottom: 8 }}>
+            Check your email
+          </h1>
+          <p style={{ fontSize: 13.5, color: 'var(--color-text-muted)', margin: 0 }}>
             We sent a magic link to <strong>{email}</strong>. Click it to sign in.
           </p>
         </div>
@@ -53,19 +65,38 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center px-4">
-      <div className="w-full max-w-sm">
-        <h1 className="mb-6 text-2xl font-bold">Sign in</h1>
-        <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+    <div style={{ display: 'flex', minHeight: '100vh', alignItems: 'center', justifyContent: 'center', padding: '0 16px' }}>
+      <div style={cardStyle}>
+        <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 700, color: 'var(--color-text-primary)', margin: '0 0 6px' }}>
+          Sign in
+        </h1>
+        <p style={{ fontSize: 13.5, color: 'var(--color-text-muted)', margin: '0 0 20px' }}>
+          Enter your email and we&apos;ll send you a magic link.
+        </p>
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           <input
             type="email"
             value={email}
             onChange={e => setEmail(e.target.value)}
             placeholder="your@email.com"
             required
-            className="rounded-lg border border-slate-200 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400"
+            style={{
+              background: 'var(--color-bg-base)',
+              border: '1px solid var(--color-border)',
+              borderRadius: 8,
+              padding: '10px 14px',
+              fontSize: 14,
+              color: 'var(--color-text-primary)',
+              outline: 'none',
+              width: '100%',
+              boxSizing: 'border-box',
+            }}
+            onFocus={e => { e.currentTarget.style.borderColor = 'var(--color-accent)' }}
+            onBlur={e => { e.currentTarget.style.borderColor = 'var(--color-border)' }}
           />
-          {error && <p className="text-sm text-red-500">{error}</p>}
+          {error && (
+            <p style={{ fontSize: 13, color: 'var(--color-negative)', margin: 0 }}>{error}</p>
+          )}
           <Turnstile
             siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
             onSuccess={token => setCaptchaToken(token)}
@@ -76,17 +107,27 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading || !captchaToken}
-            className="rounded-lg bg-amber-500 px-4 py-3 text-sm font-semibold text-white hover:bg-amber-400 disabled:opacity-50 disabled:cursor-not-allowed"
+            style={{
+              background: 'var(--btn-primary-bg)',
+              color: 'var(--btn-primary-fg)',
+              border: 'none',
+              borderRadius: 8,
+              padding: '11px 16px',
+              fontSize: 14,
+              fontWeight: 600,
+              cursor: loading || !captchaToken ? 'not-allowed' : 'pointer',
+              opacity: loading || !captchaToken ? 0.5 : 1,
+              transition: 'opacity 0.15s',
+            }}
           >
-            Send magic link
+            {loading ? 'Sending…' : 'Send magic link'}
           </button>
         </form>
-        <p className="mt-5 text-center text-sm text-slate-400">
+        <p style={{ marginTop: 20, textAlign: 'center', fontSize: 13.5, color: 'var(--color-text-faint)' }}>
           New here?{' '}
           <Link
             href="/the-tool#beta-signup"
-            className="font-medium underline"
-            style={{ color: '#f59e0b' }}
+            style={{ color: 'var(--color-accent)', fontWeight: 500, textDecoration: 'underline' }}
           >
             Sign up for the beta →
           </Link>
