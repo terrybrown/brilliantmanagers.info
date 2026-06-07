@@ -9,7 +9,7 @@ export const siteConfig = {
     { label: 'Read the Guide', href: '/the-guide' },
     { label: 'Blog', href: '/blog' },
     { label: 'Resources', href: '/resources' },
-    { label: 'FAQ', href: '/the-guide/faq' },
+    { label: 'FAQ', href: '/faq' },
   ],
   social: {
     linkedin: 'https://www.linkedin.com/in/terrybrownuk/',
