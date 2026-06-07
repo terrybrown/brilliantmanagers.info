@@ -39,7 +39,7 @@ export default async function BlogPostPage({ params }: Props) {
         <header className="mb-10">
           <time
             className="mb-3 block text-xs uppercase tracking-widest"
-            style={{ color: 'var(--color-text-muted)', opacity: 0.6 }}
+            style={{ color: 'var(--color-text-faint)' }}
             dateTime={post.frontmatter.date}
           >
             {new Date(post.frontmatter.date).toLocaleDateString('en-GB', {
