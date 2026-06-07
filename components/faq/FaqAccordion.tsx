@@ -125,7 +125,7 @@ export function FaqAccordion({ sections }: Props) {
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        color: isOpen ? '#fff' : 'var(--color-text-muted)',
+                        color: isOpen ? 'var(--color-accent-fg)' : 'var(--color-text-muted)',
       }}
                     >
                       {isOpen ? <Check size={14} /> : <Plus size={14} />}

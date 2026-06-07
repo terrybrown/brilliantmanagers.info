@@ -1,5 +1,6 @@
 import { FAQ_SECTIONS } from '@/lib/faq'
 import { FaqAccordion } from '@/components/faq/FaqAccordion'
+import { FaqSidebarNav } from '@/components/faq/FaqSidebarNav'
 import Link from 'next/link'
 
 export const metadata = { title: 'FAQs' }
@@ -74,33 +75,7 @@ export default function FaqPage() {
               >
                 On this page
               </p>
-              <nav style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                {FAQ_SECTIONS.map(section => (
-                  <a
-                    key={section.id}
-                    href={`#${section.id}`}
-                    style={{
-                      display: 'block',
-                      padding: '5px 10px',
-                      fontSize: 13.5,
-                      color: 'var(--color-text-muted)',
-                      textDecoration: 'none',
-                      borderLeft: '3px solid transparent',
-                      borderRadius: '0 4px 4px 0',
-                    }}
-                    onMouseEnter={e => {
-                      e.currentTarget.style.borderLeftColor = 'var(--color-accent)'
-                      e.currentTarget.style.color = 'var(--color-text-primary)'
-                    }}
-                    onMouseLeave={e => {
-                      e.currentTarget.style.borderLeftColor = 'transparent'
-                      e.currentTarget.style.color = 'var(--color-text-muted)'
-                    }}
-                  >
-                    {section.label}
-                  </a>
-                ))}
-              </nav>
+              <FaqSidebarNav sections={FAQ_SECTIONS} />
             </div>
 
             {/* Still stuck? card */}
