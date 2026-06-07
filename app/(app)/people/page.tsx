@@ -29,6 +29,10 @@ export default async function PeoplePage() {
     .filter(c => c.status === 'active')
     .map(c => c.direct_report_id)
 
+  const userManagerId =
+    (connections.asDirectReport as EnrichedConnection[])
+      .find(c => c.status === 'active')?.manager_id ?? null
+
   const selectedOrg = orgs[0] ?? null
 
   const [roundSummaries, nodes, orgRole] = await Promise.all([
@@ -59,6 +63,9 @@ export default async function PeoplePage() {
         orgs={orgs}
         nodes={nodes}
         orgRole={orgRole}
+        currentUserId={user.id}
+        userManagerId={userManagerId}
+        userDirectReportIds={directReportIds}
       />
     </div>
   )
