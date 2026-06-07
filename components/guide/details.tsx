@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react'
 import { ChevronRight, ChevronDown, Sparkles } from 'lucide-react'
-import { toSlug } from '@/lib/mdx'
+import { toSlug } from '@/lib/slug'
 
 function extractText(node: React.ReactNode): string {
   if (typeof node === 'string') return node

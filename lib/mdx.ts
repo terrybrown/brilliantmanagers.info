@@ -4,6 +4,7 @@ import path from 'path'
 import remarkGfm from 'remark-gfm'
 import rehypeSlug from 'rehype-slug'
 import { visit } from 'unist-util-visit'
+import { toSlug } from '@/lib/slug'
 
 export interface TocItem {
   id: string
@@ -16,13 +17,7 @@ export interface SkillItem {
   text: string
 }
 
-export function toSlug(text: string): string {
-  return text
-    .toLowerCase()
-    .replace(/[^\w\s-]/g, '')
-    .trim()
-    .replace(/[\s_]+/g, '-')
-}
+export { toSlug } from '@/lib/slug'
 
 export function extractSkills(source: string): SkillItem[] {
   const skills: SkillItem[] = []
