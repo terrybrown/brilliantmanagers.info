@@ -17,13 +17,9 @@ export const GUIDE_SECTION_LABELS: Record<GuideSection, string> = {
   'domain-expertise': 'Domain Expertise',
 }
 
-export const GUIDE_SECTION_ORDINALS: Record<GuideSection, number> = {
-  self: 1,
-  team: 2,
-  strategy: 3,
-  communications: 4,
-  'domain-expertise': 5,
-}
+export const GUIDE_SECTION_ORDINALS = Object.fromEntries(
+  GUIDE_SECTIONS.map((s, i) => [s, i + 1])
+) as Record<GuideSection, number>
 
 export function getPrevNextChapters(slug: string[]): {
   prev: { label: string; slug: string[] } | null

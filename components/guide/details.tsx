@@ -2,14 +2,7 @@
 
 import React, { useState } from 'react'
 import { ChevronRight, ChevronDown, Sparkles } from 'lucide-react'
-
-function toSlug(text: string): string {
-  return text
-    .toLowerCase()
-    .replace(/[^\w\s-]/g, '')
-    .trim()
-    .replace(/[\s_]+/g, '-')
-}
+import { toSlug } from '@/lib/mdx'
 
 function extractText(node: React.ReactNode): string {
   if (typeof node === 'string') return node
@@ -26,7 +19,6 @@ function extractText(node: React.ReactNode): string {
 interface GuideDetailsProps {
   children: React.ReactNode
   id?: string
-  [key: string]: unknown
 }
 
 export function GuideDetails({ children, id: propsId }: GuideDetailsProps) {
@@ -61,6 +53,7 @@ export function GuideDetails({ children, id: propsId }: GuideDetailsProps) {
     >
       {/* Accordion header */}
       <button
+        type="button"
         onClick={() => setIsOpen((prev) => !prev)}
         aria-expanded={isOpen}
         style={{

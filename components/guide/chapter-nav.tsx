@@ -126,6 +126,7 @@ export function ChapterNav({ activeSlug, skills }: ChapterNavProps) {
                     return (
                       <button
                         key={skill.id}
+                        type="button"
                         onClick={() => {
                           const el = document.getElementById(skill.id)
                           if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
@@ -158,7 +159,7 @@ export function ChapterNav({ activeSlug, skills }: ChapterNavProps) {
                         <span
                           style={{
                             fontSize: 12,
-                            fontWeight: isSkillActive ? 650 : 500,
+                            fontWeight: isSkillActive ? 600 : 500,
                             color: isSkillActive
                               ? 'var(--color-text-primary)'
                               : 'var(--color-text-muted)',

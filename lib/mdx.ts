@@ -16,7 +16,7 @@ export interface SkillItem {
   text: string
 }
 
-function toSlug(text: string): string {
+export function toSlug(text: string): string {
   return text
     .toLowerCase()
     .replace(/[^\w\s-]/g, '')
@@ -29,7 +29,7 @@ export function extractSkills(source: string): SkillItem[] {
   for (const line of source.split('\n')) {
     const m = line.match(/^\s*<summary>(.+?)<\/summary>\s*$/)
     if (m) {
-      const text = m[1].trim()
+      const text = m[1].trim().replace(/<[^>]+>/g, '')
       skills.push({ id: toSlug(text), text })
     }
   }
@@ -37,7 +37,11 @@ export function extractSkills(source: string): SkillItem[] {
 }
 
 export function computeReadingTime(source: string): number {
-  const words = source.trim().split(/\s+/).length
+  const stripped = source
+    .replace(/^---[\s\S]*?---/, '')     // frontmatter
+    .replace(/<[^>]+>/g, ' ')           // HTML/JSX tags
+    .replace(/[`#*_~|>]/g, ' ')         // markdown syntax chars
+  const words = stripped.trim().split(/\s+/).filter(Boolean).length
   return Math.max(1, Math.round(words / 200))
 }
 

@@ -40,6 +40,10 @@ export default async function GuideChapterPage({ params }: Props) {
   const { prev, next } = getPrevNextChapters(slug)
   const activeSlug = slug[0] as GuideSection
 
+  if (!GUIDE_SECTIONS.includes(activeSlug as GuideSection)) {
+    notFound()
+  }
+
   const pillarLabel = GUIDE_SECTION_LABELS[activeSlug]
   const pillarOrdinal = GUIDE_SECTION_ORDINALS[activeSlug]
 

@@ -402,13 +402,6 @@ svg.recharts-surface:focus {
   line-height: 1.7;
 }
 
-.guide-prose > p:first-of-type {
-  font-size: 21px;
-  line-height: 1.55;
-  color: var(--color-text-primary);
-  font-weight: 500;
-}
-
 .guide-prose blockquote p {
   font-family: var(--font-reading), Georgia, serif;
   font-size: 24px;
