@@ -72,12 +72,13 @@ WHERE url = 'https://www.hbs.edu/faculty/Pages/item.aspx?num=24095';
 UPDATE resources SET url = 'https://www.guilford.com/books/The-Lost-Art-of-Listening/Nichols-Straus/9781462542741'
 WHERE url = 'https://www.guilford.com/books/The-Lost-Art-of-Listening/Michael-Nichols/9781462527717';
 
--- Time to Think (two dead paths → canonical book page)
+-- Time to Think (two dead paths, both map to same canonical URL — update one, delete the other)
 UPDATE resources SET url = 'https://www.timetothink.com/books/time-to-think/'
 WHERE url = 'https://www.timetothink.com/about-us/our-books/';
 
-UPDATE resources SET url = 'https://www.timetothink.com/books/time-to-think/'
-WHERE url = 'https://www.timetothink.com/reading/books/time-to-think/';
+DELETE FROM skill_resources
+WHERE resource_id = (SELECT id FROM resources WHERE url = 'https://www.timetothink.com/reading/books/time-to-think/');
+DELETE FROM resources WHERE url = 'https://www.timetothink.com/reading/books/time-to-think/';
 
 -- Help Them Grow or Watch Them Go: bkconnection.com /books/title/ path is 404 — using Penguin Random House
 UPDATE resources SET url = 'https://www.penguinrandomhouse.com/books/768123/help-them-grow-or-watch-them-go-third-edition-by-beverly-kaye-and-julie-winkle-giulioni/'
@@ -219,29 +220,34 @@ WHERE resource_id = (SELECT id FROM resources WHERE url = 'https://www.manager-t
 
 DELETE FROM resources WHERE url = 'https://www.manager-tools.com/manage-tools-basics';
 
--- The Looking Glass with Julie Diamond: /podcast/ path removed from diamondleadership.com
-UPDATE resources SET url = 'https://diamondleadership.com/about/'
-WHERE url = 'https://diamondleadership.com/podcast/';
+-- The Looking Glass with Julie Diamond: target URL already exists as separate row — delete the broken duplicate
+DELETE FROM skill_resources
+WHERE resource_id = (SELECT id FROM resources WHERE url = 'https://diamondleadership.com/podcast/');
+DELETE FROM resources WHERE url = 'https://diamondleadership.com/podcast/';
 
 -- ── PEOPLE ───────────────────────────────────────────────────────────────────
 
--- Edgar Schein (MIT Sloan): /faculty/directory/ path removed; linking to MIT Sloan article on his ideas
-UPDATE resources SET url = 'https://mitsloan.mit.edu/ideas-made-to-matter/5-enduring-management-ideas-mit-sloans-edgar-schein'
-WHERE url = 'https://mitsloan.mit.edu/faculty/directory/edgar-h-schein';
+-- Edgar Schein (MIT Sloan): target URL already exists as separate row — delete the broken duplicate
+DELETE FROM skill_resources
+WHERE resource_id = (SELECT id FROM resources WHERE url = 'https://mitsloan.mit.edu/faculty/directory/edgar-h-schein');
+DELETE FROM resources WHERE url = 'https://mitsloan.mit.edu/faculty/directory/edgar-h-schein';
 
--- Shawn Callahan (Anecdote): /about/ path removed; speaker profile page is current
-UPDATE resources SET url = 'https://www.anecdote.com/shawn-callahan-speaker-profile/'
-WHERE url = 'https://www.anecdote.com/about/shawn-callahan/';
+-- Shawn Callahan (Anecdote): target URL already exists as separate row — delete the broken duplicate
+DELETE FROM skill_resources
+WHERE resource_id = (SELECT id FROM resources WHERE url = 'https://www.anecdote.com/about/shawn-callahan/');
+DELETE FROM resources WHERE url = 'https://www.anecdote.com/about/shawn-callahan/';
 
 -- ── TOOLS ────────────────────────────────────────────────────────────────────
 
--- Individual Development Plan Template (15Five): blog post removed; help center article is current
-UPDATE resources SET url = 'https://success.15five.com/hc/en-us/articles/49418549339035-Create-an-Individual-Development-Plan'
-WHERE url = 'https://www.15five.com/blog/individual-development-plan-template/';
+-- Individual Development Plan Template (15Five): target URL already exists as separate row — delete the broken duplicate
+DELETE FROM skill_resources
+WHERE resource_id = (SELECT id FROM resources WHERE url = 'https://www.15five.com/blog/individual-development-plan-template/');
+DELETE FROM resources WHERE url = 'https://www.15five.com/blog/individual-development-plan-template/';
 
--- SBI Feedback Model (CCL): article renamed from "intent-and-impact-feedback" to "intent-vs-impact-sbii"
-UPDATE resources SET url = 'https://www.ccl.org/articles/leading-effectively-articles/closing-the-gap-between-intent-vs-impact-sbii/'
-WHERE url LIKE '%ccl.org%closing-the-gap-between-intent%feedback%';
+-- SBI Feedback Model (CCL): target URL already exists as separate row — delete the broken duplicate
+DELETE FROM skill_resources
+WHERE resource_id = (SELECT id FROM resources WHERE url LIKE '%ccl.org%closing-the-gap-between-intent%feedback%');
+DELETE FROM resources WHERE url LIKE '%ccl.org%closing-the-gap-between-intent%feedback%';
 
 -- Notion Onboarding Templates: category slug renamed from "onboarding" to "new-hire-onboarding"
 UPDATE resources SET url = 'https://www.notion.com/templates/category/new-hire-onboarding'
