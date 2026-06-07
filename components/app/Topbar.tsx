@@ -142,7 +142,7 @@ export function Topbar({ user, showBeta }: { user?: UserInfo; showBeta: boolean 
           </button>
         )}
 
-        {pathname === '/people' && (
+        {pathname.startsWith('/people') && (
           <InviteModal />
         )}
 

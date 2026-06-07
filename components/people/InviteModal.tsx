@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { toast } from 'sonner'
 import { inviteConnection } from '@/app/(app)/connections/actions'
 import { useMutation } from '@/hooks/use-mutation'
 import { Button } from '@/components/ui/button'
@@ -12,7 +13,10 @@ interface Props {
 export function InviteModal({ trigger }: Props) {
   const [open, setOpen] = useState(false)
   const { mutate, isPending } = useMutation({
-    onSuccess: () => setOpen(false),
+    onSuccess: () => {
+      toast.success('Invite sent!')
+      setOpen(false)
+    },
   })
 
   return (
