@@ -5,6 +5,9 @@ import Link from 'next/link'
 import { ChevronRight } from 'lucide-react'
 import { GUIDE_SECTIONS, GUIDE_SECTION_LABELS, GUIDE_SECTION_ORDINALS } from '@/lib/guide'
 import type { SkillItem } from '@/lib/mdx'
+import { useGuideData } from '@/components/guide/guide-data-context'
+import { SCORING_LEVEL_COLORS } from '@/config/scoring'
+import type { ScoringLevel } from '@/config/scoring'
 
 interface ChapterNavProps {
   activeSlug: string
@@ -13,6 +16,7 @@ interface ChapterNavProps {
 
 export function ChapterNav({ activeSlug, skills }: ChapterNavProps) {
   const [activeSkillId, setActiveSkillId] = useState<string>('')
+  const guideData = useGuideData()
 
   useEffect(() => {
     if (!skills.length) return
@@ -144,15 +148,16 @@ export function ChapterNav({ activeSlug, skills }: ChapterNavProps) {
                           width: '100%',
                         }}
                       >
-                        {/* TODO: replace background with SCORING_LEVEL_COLORS[skill.level].color once score data is wired */}
                         <span
                           style={{
                             width: 6,
                             height: 6,
                             borderRadius: '50%',
-                            background: isSkillActive
-                              ? 'var(--color-accent)'
-                              : 'var(--color-track)',
+                            background: (() => {
+                              const level = guideData?.skillDataBySlug[skill.id]?.level
+                              if (level) return SCORING_LEVEL_COLORS[level as ScoringLevel].color
+                              return isSkillActive ? 'var(--color-accent)' : 'var(--color-track)'
+                            })(),
                             flexShrink: 0,
                           }}
                         />

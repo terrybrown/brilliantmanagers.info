@@ -2,6 +2,20 @@ import { render, screen } from '@testing-library/react'
 import { describe, it, expect, vi } from 'vitest'
 import { ChapterNav } from '@/components/guide/chapter-nav'
 
+vi.mock('@/components/guide/guide-data-context', () => ({
+  useGuideData: vi.fn(() => null),
+}))
+
+vi.mock('@/config/scoring', () => ({
+  SCORING_LEVEL_COLORS: {
+    Developing: { color: '#C0552F', bg: 'rgba(192,85,47,0.12)', border: 'rgba(192,85,47,0.30)' },
+    Basic: { color: '#CC8A1A', bg: 'rgba(204,138,26,0.12)', border: 'rgba(204,138,26,0.30)' },
+    Proficient: { color: '#7A9A3C', bg: 'rgba(122,154,60,0.12)', border: 'rgba(122,154,60,0.30)' },
+    Advanced: { color: '#0E7C6B', bg: 'rgba(14,124,107,0.12)', border: 'rgba(14,124,107,0.30)' },
+    Expert: { color: '#0B5448', bg: 'rgba(11,84,72,0.12)', border: 'rgba(11,84,72,0.30)' },
+  },
+}))
+
 vi.mock('next/link', () => ({
   default: ({ children, href }: { children: React.ReactNode; href: string }) => (
     <a href={href}>{children}</a>
