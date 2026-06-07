@@ -95,7 +95,7 @@ export function JoinNowForm() {
           type="submit"
           disabled={!captchaToken}
           className="w-full rounded-md py-2.5 text-sm font-bold disabled:opacity-50 disabled:cursor-not-allowed"
-          style={{ background: '#f59e0b', color: '#1a3a5c' }}
+          style={{ background: 'var(--btn-primary-bg)', color: 'var(--btn-primary-fg)' }}
         >
           Join now →
         </button>

@@ -27,13 +27,13 @@ export default async function AuthConfirmPage({ searchParams }: Props) {
       <div className="flex min-h-screen items-center justify-center px-4">
         <div className="max-w-sm text-center">
           <h1 className="mb-2 text-2xl font-bold">Link expired</h1>
-          <p className="mb-6 text-slate-500">
+          <p className="mb-6" style={{ color: 'var(--color-text-muted)' }}>
             {error_description ??
               'This sign-in link has expired or already been used.'}
           </p>
           <Link
             href="/login"
-            className="text-sm font-semibold text-amber-500 hover:text-amber-400"
+            style={{ color: 'var(--color-accent)', fontSize: 14, fontWeight: 600, textDecoration: 'none' }}
           >
             ← Back to sign in
           </Link>
@@ -50,7 +50,7 @@ export default async function AuthConfirmPage({ searchParams }: Props) {
     <div className="flex min-h-screen items-center justify-center px-4">
       <div className="w-full max-w-sm text-center">
         <h1 className="mb-2 text-2xl font-bold">Complete your sign-in</h1>
-        <p className="mb-6 text-slate-500">Click below to sign in to Brilliant Managers.</p>
+        <p className="mb-6" style={{ color: 'var(--color-text-muted)' }}>Click below to sign in to Brilliant Managers.</p>
         <form action={confirmLogin}>
           <input type="hidden" name="token_hash" value={token_hash} />
           <input type="hidden" name="type" value={type ?? 'email'} />
