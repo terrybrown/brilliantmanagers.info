@@ -44,7 +44,7 @@ export function OrgNodePanel({
 }: Props) {
   const isAdmin = orgRole === 'org_admin'
   const [showSubgroupForm, setShowSubgroupForm] = useState(false)
-  const [, startTransition] = useTransition()
+  const [isCreatingSubgroup, startTransition] = useTransition()
 
   const { mutate: addMember, isPending: addingMember } = useMutation({ onSuccess: 'Member added' })
   const { mutate: removeMember } = useMutation({ onSuccess: 'Member removed' })
@@ -233,8 +233,8 @@ export function OrgNodePanel({
                 autoFocus
                 style={{ flex: 1, border: '1px solid var(--color-accent-border)', borderRadius: 6, padding: '5px 10px', fontSize: 12, background: 'var(--color-surface)', color: 'var(--color-text-primary)', minWidth: 0 }}
               />
-              <button type="submit" style={{ background: 'var(--color-accent)', color: '#fff', border: 'none', borderRadius: 6, padding: '5px 12px', fontSize: 12, fontWeight: 700, cursor: 'pointer', flexShrink: 0 }}>Create</button>
-              <button type="button" onClick={() => setShowSubgroupForm(false)} style={{ background: 'none', border: '1px solid var(--color-border)', borderRadius: 6, padding: '5px 9px', fontSize: 12, cursor: 'pointer', color: 'var(--color-text-faint)', flexShrink: 0 }}>✕</button>
+              <button type="submit" disabled={isCreatingSubgroup} style={{ background: 'var(--color-accent)', color: '#fff', border: 'none', borderRadius: 6, padding: '5px 12px', fontSize: 12, fontWeight: 700, cursor: isCreatingSubgroup ? 'default' : 'pointer', flexShrink: 0, opacity: isCreatingSubgroup ? 0.6 : 1 }}>{isCreatingSubgroup ? '…' : 'Create'}</button>
+              <button type="button" disabled={isCreatingSubgroup} onClick={() => setShowSubgroupForm(false)} style={{ background: 'none', border: '1px solid var(--color-border)', borderRadius: 6, padding: '5px 9px', fontSize: 12, cursor: isCreatingSubgroup ? 'default' : 'pointer', color: 'var(--color-text-faint)', flexShrink: 0 }}>✕</button>
             </form>
           ) : (
             <button

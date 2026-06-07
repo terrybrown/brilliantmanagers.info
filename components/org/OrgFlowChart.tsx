@@ -32,7 +32,7 @@ export function OrgFlowChart({
 }: Props) {
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null)
   const [showAddTopLevel, setShowAddTopLevel] = useState(false)
-  const [, startTransition] = useTransition()
+  const [isCreatingGroup, startTransition] = useTransition()
   const isAdmin = orgRole === 'org_admin'
 
   const { rfNodes, rfEdges } = useMemo(() => buildOrgLayout(nodes), [nodes])
@@ -87,14 +87,16 @@ export function OrgFlowChart({
                 />
                 <button
                   type="submit"
-                  style={{ background: 'var(--color-accent)', color: '#fff', border: 'none', borderRadius: 6, padding: '5px 12px', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}
+                  disabled={isCreatingGroup}
+                  style={{ background: 'var(--color-accent)', color: '#fff', border: 'none', borderRadius: 6, padding: '5px 12px', fontSize: 12, fontWeight: 700, cursor: isCreatingGroup ? 'default' : 'pointer', opacity: isCreatingGroup ? 0.6 : 1 }}
                 >
-                  Create
+                  {isCreatingGroup ? '…' : 'Create'}
                 </button>
                 <button
                   type="button"
+                  disabled={isCreatingGroup}
                   onClick={() => setShowAddTopLevel(false)}
-                  style={{ background: 'none', border: '1px solid var(--color-border)', borderRadius: 6, padding: '5px 9px', fontSize: 12, cursor: 'pointer', color: 'var(--color-text-faint)' }}
+                  style={{ background: 'none', border: '1px solid var(--color-border)', borderRadius: 6, padding: '5px 9px', fontSize: 12, cursor: isCreatingGroup ? 'default' : 'pointer', color: 'var(--color-text-faint)' }}
                 >
                   ✕
                 </button>
