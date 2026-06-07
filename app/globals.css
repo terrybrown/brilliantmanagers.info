@@ -90,8 +90,8 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* ── Amber rule utility ── */
-.amber-rule {
+/* ── Accent rule utility ── */
+.accent-rule {
   display: block;
   width: 40px;
   height: 2px;
@@ -340,14 +340,14 @@ body {
 .bm-tour-popover .driver-popover-progress-text {
   font-size: 10px !important;
   font-weight: 700 !important;
-  color: #f59e0b !important;
+  color: var(--color-accent) !important;
   letter-spacing: 0.1em;
   text-transform: uppercase;
 }
 
 .bm-tour-popover button.driver-popover-next-btn {
-  background: #f59e0b !important;
-  color: #1a2a3a !important;
+  background: var(--color-accent) !important;
+  color: #fff !important;
   border: none !important;
   font-size: 12px !important;
   font-weight: 600 !important;
