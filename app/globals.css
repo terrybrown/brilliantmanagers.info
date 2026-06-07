@@ -468,3 +468,35 @@ svg.recharts-surface:focus {
 .guide-prose > div + div {
   margin-top: 12px;
 }
+
+/* ── Guide page: responsive 2-column layout ── */
+.guide-layout {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 40px 40px 80px;
+  display: grid;
+  grid-template-columns: 244px minmax(0, 1fr);
+  gap: 56px;
+}
+
+.guide-layout-nav {
+  display: block;
+}
+
+@media (max-width: 1023px) {
+  .guide-layout {
+    grid-template-columns: 1fr;
+    padding: 24px 24px 60px;
+    gap: 0;
+  }
+
+  .guide-layout-nav {
+    display: none;
+  }
+}
+
+@media (max-width: 639px) {
+  .guide-layout {
+    padding: 20px 16px 48px;
+  }
+}

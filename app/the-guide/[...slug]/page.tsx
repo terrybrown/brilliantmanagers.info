@@ -51,18 +51,9 @@ export default async function GuideChapterPage({ params }: Props) {
     <div style={{ background: 'var(--color-bg-base)', minHeight: '100vh' }}>
       <ReadingProgressBar />
 
-      <div
-        style={{
-          maxWidth: 1120,
-          margin: '0 auto',
-          padding: '40px 40px 80px',
-          display: 'grid',
-          gridTemplateColumns: '244px minmax(0, 1fr)',
-          gap: 56,
-        }}
-      >
+      <div className="guide-layout">
         {/* Left: sticky chapter nav */}
-        <aside>
+        <aside className="guide-layout-nav">
           <ChapterNav activeSlug={activeSlug} skills={chapter.skills} />
         </aside>
 
@@ -114,7 +105,7 @@ export default async function GuideChapterPage({ params }: Props) {
           <h1
             style={{
               fontFamily: 'var(--font-display)',
-              fontSize: 46,
+              fontSize: 'clamp(28px, 5vw, 46px)',
               fontWeight: 700,
               color: 'var(--color-text-primary)',
               letterSpacing: '-0.025em',
