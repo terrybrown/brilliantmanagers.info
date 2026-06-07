@@ -5,7 +5,7 @@ import { Nav } from '@/components/layout/nav'
 import { Footer } from '@/components/layout/footer'
 import { siteConfig } from '@/config/site'
 import { createClient } from '@/lib/supabase/server'
-import { bricolage, hanken } from './fonts'
+import { bricolage, hanken, newsreader } from './fonts'
 import './globals.css'
 
 const jakartaSans = Plus_Jakarta_Sans({
@@ -37,7 +37,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   if (authError) console.error('[layout] auth error:', authError.message)
 
   return (
-    <html lang="en" className={`${jakartaSans.variable} ${inter.variable} ${bricolage.variable} ${hanken.variable}`}>
+    <html lang="en" className={`${jakartaSans.variable} ${inter.variable} ${bricolage.variable} ${hanken.variable} ${newsreader.variable}`}>
       <body>
         <div className="flex min-h-screen flex-col">
           <Nav isAuthenticated={!!user} />

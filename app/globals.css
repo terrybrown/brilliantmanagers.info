@@ -4,6 +4,7 @@
   /* ── Fonts ── */
   --font-display: var(--font-bricolage), system-ui, sans-serif;
   --font-body:    var(--font-hanken), system-ui, sans-serif;
+  --font-reading: var(--font-newsreader), Georgia, 'Times New Roman', serif;
 
   /* ── Surfaces & text (LIGHT) ── */
   --color-bg-base:      #F1F3EF;
