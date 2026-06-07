@@ -59,7 +59,7 @@ export function AdminUsersTable({ users, currentUserId }: Props) {
               <td className="px-4 py-3 text-slate-400">{u.email ?? '—'}</td>
               <td className="px-4 py-3">
                 {u.is_super_admin ? (
-                  <span className="rounded-full bg-amber-500/20 px-2 py-0.5 text-xs font-semibold text-amber-400">
+                  <span className="rounded-full px-2 py-0.5 text-xs font-semibold" style={{ background: 'var(--color-accent-wash2)', color: 'var(--color-accent)' }}>
                     SuperAdmin
                   </span>
                 ) : (
