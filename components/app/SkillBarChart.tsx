@@ -50,9 +50,9 @@ export function SkillBarChart({ skills, showManager }: Props) {
         {showManager && (
           <Legend wrapperStyle={{ fontSize: '10px', color: '#94a3b8', paddingTop: '8px' }} />
         )}
-        <Bar dataKey="Self" fill="#f59e0b" radius={[2, 2, 0, 0]} maxBarSize={12} />
+        <Bar dataKey="Self" fill="#0E7C6B" radius={[2, 2, 0, 0]} maxBarSize={12} />
         {showManager && (
-          <Bar dataKey="Manager" fill="#3b82f6" radius={[2, 2, 0, 0]} maxBarSize={12} />
+          <Bar dataKey="Manager" fill="#CC7A1A" radius={[2, 2, 0, 0]} maxBarSize={12} />
         )}
       </BarChart>
     </ResponsiveContainer>
