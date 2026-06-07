@@ -2,6 +2,7 @@
 import { usePathname } from 'next/navigation'
 import { MANAGER_TOUR_EVENT } from '@/components/dashboard/DashboardManagerTour'
 import { AvatarDropdown } from './AvatarDropdown'
+import { InviteModal } from '@/components/people/InviteModal'
 
 const PAGE_TITLES: Record<string, string> = {
   '/dashboard': 'Dashboard',
@@ -139,6 +140,10 @@ export function Topbar({ user, showBeta }: { user?: UserInfo; showBeta: boolean 
           >
             Tour
           </button>
+        )}
+
+        {pathname.startsWith('/people') && (
+          <InviteModal />
         )}
 
         {showBeta && (
