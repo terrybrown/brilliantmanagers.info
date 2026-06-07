@@ -10,6 +10,7 @@ export default function LoginPage() {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const [captchaToken, setCaptchaToken] = useState<string | null>(null)
+  const [inputFocused, setInputFocused] = useState(false)
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -43,7 +44,7 @@ export default function LoginPage() {
     background: 'var(--color-surface)',
     border: '1px solid var(--color-border)',
     boxShadow: '0 1px 2px rgba(40,60,45,.04), 0 2px 5px rgba(40,60,45,.03)',
-    borderRadius: 12,
+    borderRadius: 'var(--radius-lg)',
     padding: 32,
     width: '100%',
     maxWidth: 400,
@@ -82,17 +83,18 @@ export default function LoginPage() {
             required
             style={{
               background: 'var(--color-bg-base)',
-              border: '1px solid var(--color-border)',
-              borderRadius: 8,
+              border: `1px solid ${inputFocused ? 'var(--color-accent)' : 'var(--color-border)'}`,
+              borderRadius: 'var(--radius)',
               padding: '10px 14px',
               fontSize: 14,
               color: 'var(--color-text-primary)',
-              outline: 'none',
+              outline: inputFocused ? '2px solid var(--color-accent-wash2)' : 'none',
+              outlineOffset: 2,
               width: '100%',
               boxSizing: 'border-box',
             }}
-            onFocus={e => { e.currentTarget.style.borderColor = 'var(--color-accent)' }}
-            onBlur={e => { e.currentTarget.style.borderColor = 'var(--color-border)' }}
+            onFocus={() => setInputFocused(true)}
+            onBlur={() => setInputFocused(false)}
           />
           {error && (
             <p style={{ fontSize: 13, color: 'var(--color-negative)', margin: 0 }}>{error}</p>
@@ -111,7 +113,7 @@ export default function LoginPage() {
               background: 'var(--btn-primary-bg)',
               color: 'var(--btn-primary-fg)',
               border: 'none',
-              borderRadius: 8,
+              borderRadius: 'var(--radius)',
               padding: '11px 16px',
               fontSize: 14,
               fontWeight: 600,
