@@ -33,9 +33,9 @@ WHERE url = 'https://www.berrett-koehler.com/book/humble-inquiry-second-edition/
 UPDATE resources SET url = 'https://www.insight-book.com/'
 WHERE url = 'https://www.tashaeurich.com/insight-book/';
 
--- Leading Change (Kotter): harvardbusiness.org product page gone, Kotter Inc page
-UPDATE resources SET url = 'https://www.kotterinc.com/bookshelf/leading-change/'
-WHERE url = 'https://www.harvardbusiness.org/product/leading-change-with-a-new-preface-by-theauthor/an/12784-HBK-ENG';
+-- Leading Change (Kotter): harvardbusiness.org gone; kotterinc.com blocks bots (403), use HBR Store
+UPDATE resources SET url = 'https://store.hbr.org/product/leading-change-with-a-new-preface-by-the-author/11116'
+WHERE url = 'https://www.harvardbusiness.org/product/leading-change-with-a-new-preface-by-the-author/an/12784-HBK-ENG';
 
 -- Making Things Happen (Berkun): O'Reilly page removed, author's own site
 UPDATE resources SET url = 'https://scottberkun.com/making-things-happen/'
