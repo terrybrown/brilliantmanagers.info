@@ -48,7 +48,7 @@ export default async function DrViewPage({
   if (allRoundsWithScores.length === 0) {
     return (
       <div className="p-6">
-        <Link href="/dashboard" className="mb-4 block text-sm text-amber-400 hover:text-amber-300">
+        <Link href="/dashboard" className="mb-4 block text-sm" style={{ color: 'var(--color-accent)' }}>
           ← Dashboard
         </Link>
         <p className="text-slate-400">{drName} hasn&apos;t completed a round yet.</p>
@@ -168,7 +168,7 @@ export default async function DrViewPage({
 
   return (
     <div className="p-6">
-      <Link href="/dashboard" className="mb-4 block text-sm text-amber-400 hover:text-amber-300">
+      <Link href="/dashboard" className="mb-4 block text-sm" style={{ color: 'var(--color-accent)' }}>
         ← Dashboard
       </Link>
       <h1 className="mb-4 text-xl font-bold text-white">{drName}</h1>
