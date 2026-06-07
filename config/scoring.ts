@@ -23,26 +23,31 @@ export const SCORING_LEVEL_DESCRIPTIONS: Record<ScoringLevel, string> = {
 
 export const SCORING_LEVEL_COLORS: Record<
   ScoringLevel,
-  { bg: string; text: string }
+  { color: string; bg: string; border: string }
 > = {
   Developing: {
-    bg: 'bg-rose-950/40',
-    text: 'text-rose-400',
+    color: '#C0552F',
+    bg: 'rgba(192,85,47,0.12)',
+    border: 'rgba(192,85,47,0.30)',
   },
   Basic: {
-    bg: 'bg-orange-950/40',
-    text: 'text-orange-400',
+    color: '#CC8A1A',
+    bg: 'rgba(204,138,26,0.12)',
+    border: 'rgba(204,138,26,0.30)',
   },
   Proficient: {
-    bg: 'bg-amber-950/40',
-    text: 'text-amber-400',
+    color: '#7A9A3C',
+    bg: 'rgba(122,154,60,0.12)',
+    border: 'rgba(122,154,60,0.30)',
   },
   Advanced: {
-    bg: 'bg-emerald-950/40',
-    text: 'text-emerald-400',
+    color: '#0E7C6B',
+    bg: 'rgba(14,124,107,0.12)',
+    border: 'rgba(14,124,107,0.30)',
   },
   Expert: {
-    bg: 'bg-violet-950/40',
-    text: 'text-violet-400',
+    color: '#0B5448',
+    bg: 'rgba(11,84,72,0.12)',
+    border: 'rgba(11,84,72,0.30)',
   },
 }

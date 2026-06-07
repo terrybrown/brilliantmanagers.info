@@ -13,10 +13,11 @@ describe('scoring config', () => {
     })
   })
 
-  it('has colour classes for every level', () => {
+  it('has colour tokens for every level', () => {
     SCORING_LEVELS.forEach((level) => {
+      expect(SCORING_LEVEL_COLORS[level].color).toBeTruthy()
       expect(SCORING_LEVEL_COLORS[level].bg).toBeTruthy()
-      expect(SCORING_LEVEL_COLORS[level].text).toBeTruthy()
+      expect(SCORING_LEVEL_COLORS[level].border).toBeTruthy()
     })
   })
 
