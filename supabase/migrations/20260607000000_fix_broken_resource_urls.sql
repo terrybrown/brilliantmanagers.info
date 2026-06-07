@@ -41,12 +41,15 @@ WHERE url = 'https://www.harvardbusiness.org/product/leading-change-with-a-new-p
 UPDATE resources SET url = 'https://scottberkun.com/making-things-happen/'
 WHERE url = 'https://www.oreilly.com/library/view/making-things-happen/0596517718/';
 
--- Nonviolent Communication (Rosenberg): two dead CNVC links → canonical store page
+-- Nonviolent Communication (Rosenberg): two dead CNVC links both pointed to the same book.
+-- Update the first to the canonical URL; delete the duplicate row (and its skill links) entirely.
 UPDATE resources SET url = 'https://www.cnvc.org/store/nonviolent-communication-a-language-of-life'
 WHERE url = 'https://www.cnvc.org/online-learning/nvc-resources';
 
-UPDATE resources SET url = 'https://www.cnvc.org/store/nonviolent-communication-a-language-of-life'
-WHERE url = 'https://www.cnvc.org/store/nonviolent-communication-language-life-3rd-edition';
+DELETE FROM skill_resources
+WHERE resource_id = (SELECT id FROM resources WHERE url = 'https://www.cnvc.org/store/nonviolent-communication-language-life-3rd-edition');
+
+DELETE FROM resources WHERE url = 'https://www.cnvc.org/store/nonviolent-communication-language-life-3rd-edition';
 
 -- Testing Business Ideas: Strategyzer reorganised library URLs
 UPDATE resources SET url = 'https://www.strategyzer.com/library/testing-business-ideas-book'
