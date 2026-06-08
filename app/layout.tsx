@@ -21,11 +21,24 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
+  metadataBase: new URL(siteConfig.url),
   title: {
     default: siteConfig.title,
     template: `%s — ${siteConfig.title}`,
   },
   description: siteConfig.description,
+  openGraph: {
+    type: 'website',
+    url: siteConfig.url,
+    siteName: siteConfig.title,
+    title: siteConfig.title,
+    description: siteConfig.description,
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: siteConfig.title,
+    description: siteConfig.description,
+  },
 }
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
