@@ -69,6 +69,8 @@
   --btn-danger-bg:     rgba(180,52,31,0.10);
   --btn-danger-border: rgba(180,52,31,0.28);
   --btn-danger-fg:     #B4341F;
+
+  --color-accent-fg-muted: rgba(255,255,255,0.82);
 }
 
 /* ── Button loading dots animation ── */

@@ -1,12 +1,19 @@
 'use client'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import Link from 'next/link'
 import { Turnstile } from '@marsidev/react-turnstile'
+import type { TurnstileInstance } from '@marsidev/react-turnstile'
 import { createClient } from '@/lib/supabase/client'
 
 const supabase = createClient()
 
-export function JoinNowForm() {
+interface Props {
+  showSignIn?: boolean
+  inputId?: string
+}
+
+export function JoinNowForm({ showSignIn = false, inputId = 'join-email' }: Props) {
+  const turnstileRef = useRef<TurnstileInstance>(null)
   const [email, setEmail] = useState('')
   const [sent, setSent] = useState(false)
   const [error, setError] = useState('')
@@ -28,12 +35,14 @@ export function JoinNowForm() {
       })
       if (err) {
         setError(err.message)
+        turnstileRef.current?.reset()
         setCaptchaToken(null)
       } else {
         setSent(true)
       }
     } catch {
       setError('Something went wrong. Please try again.')
+      turnstileRef.current?.reset()
       setCaptchaToken(null)
     } finally {
       setLoading(false)
@@ -43,10 +52,10 @@ export function JoinNowForm() {
   if (sent) {
     return (
       <div>
-        <p style={{ color: '#fefcf7', fontWeight: 600, marginBottom: 4 }}>
+        <p style={{ color: 'var(--color-text-primary)', fontWeight: 600, marginBottom: 4 }}>
           Check your email
         </p>
-        <p style={{ color: 'rgba(254,252,247,0.55)', fontSize: '0.875rem' }}>
+        <p style={{ color: 'var(--color-text-muted)', fontSize: '0.875rem' }}>
           We sent a magic link to <strong>{email}</strong>. Click it to get started.
         </p>
       </div>
@@ -54,68 +63,85 @@ export function JoinNowForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-      <input
-        type="email"
-        required
-        placeholder="your@email.com"
-        value={email}
-        onChange={e => { setEmail(e.target.value); if (error) setError('') }}
-        className="w-full rounded-md px-3.5 py-2.5 text-sm"
-        style={{
-          background: 'rgba(254,252,247,0.07)',
-          border: '1px solid rgba(254,252,247,0.14)',
-          color: '#fefcf7',
-        }}
-      />
+    <form onSubmit={handleSubmit}>
+      <label htmlFor={inputId} className="sr-only">Email address</label>
+      <div style={{ display: 'flex', gap: 8, maxWidth: 440 }}>
+        <input
+          id={inputId}
+          type="email"
+          required
+          placeholder="your@email.com"
+          value={email}
+          onChange={e => { setEmail(e.target.value); if (error) setError('') }}
+          style={{
+            flex: 1,
+            height: 46,
+            padding: '0 16px',
+            background: 'var(--color-surface)',
+            border: '1px solid var(--color-border)',
+            borderRadius: 11,
+            color: 'var(--color-text-primary)',
+            fontSize: 14.5,
+            fontFamily: 'var(--font-body)',
+            outline: 'none',
+          }}
+        />
+        <Turnstile
+          ref={turnstileRef}
+          siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
+          onSuccess={token => setCaptchaToken(token)}
+          onExpire={() => setCaptchaToken(null)}
+          onError={() => setCaptchaToken(null)}
+          options={{ size: 'invisible' }}
+        />
+        {loading ? (
+          <div
+            className="flex items-end justify-center gap-1"
+            style={{ width: 120, height: 46 }}
+            aria-label="Sending…"
+          >
+            <span className="loading-dot" />
+            <span className="loading-dot" style={{ animationDelay: '0.15s' }} />
+            <span className="loading-dot" style={{ animationDelay: '0.3s' }} />
+          </div>
+        ) : (
+          <button
+            type="submit"
+            disabled={!captchaToken}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              height: 46,
+              padding: '0 22px',
+              background: 'var(--btn-primary-bg)',
+              color: 'var(--btn-primary-fg)',
+              border: 'none',
+              borderRadius: 11,
+              fontSize: 14.5,
+              fontWeight: 700,
+              fontFamily: 'var(--font-body)',
+              cursor: captchaToken ? 'pointer' : 'not-allowed',
+              whiteSpace: 'nowrap',
+              opacity: captchaToken ? 1 : 0.5,
+            }}
+          >
+            Join now →
+          </button>
+        )}
+      </div>
       {error && (
-        <p className="text-xs" style={{ color: '#f87171' }}>
+        <p role="alert" className="mt-2 text-xs" style={{ color: 'var(--color-negative)' }}>
           {error}
         </p>
       )}
-      <Turnstile
-        siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
-        onSuccess={token => setCaptchaToken(token)}
-        onExpire={() => setCaptchaToken(null)}
-        onError={() => setCaptchaToken(null)}
-        options={{ size: 'invisible' }}
-      />
-      {loading ? (
-        <div
-          className="flex items-end justify-center gap-1"
-          style={{ height: 42 }}
-          aria-label="Sending…"
-        >
-          <span className="loading-dot" />
-          <span className="loading-dot" style={{ animationDelay: '0.15s' }} />
-          <span className="loading-dot" style={{ animationDelay: '0.3s' }} />
-        </div>
-      ) : (
-        <button
-          type="submit"
-          disabled={!captchaToken}
-          className="w-full rounded-md py-2.5 text-sm font-bold disabled:opacity-50 disabled:cursor-not-allowed"
-          style={{ background: 'var(--btn-primary-bg)', color: 'var(--btn-primary-fg)' }}
-        >
-          Join now →
-        </button>
+      {showSignIn && (
+        <p className="mt-3 text-center text-xs" style={{ color: 'var(--color-text-faint)' }}>
+          Already have an account?{' '}
+          <Link href="/login" style={{ color: 'var(--color-accent)', fontWeight: 600, textDecoration: 'none' }}>
+            Sign in
+          </Link>
+        </p>
       )}
-      <p
-        className="mt-1 text-center text-xs"
-        style={{
-          paddingTop: 12,
-          borderTop: '1px solid rgba(254,252,247,0.08)',
-          color: 'rgba(254,252,247,0.35)',
-        }}
-      >
-        Already have an account?{' '}
-        <Link
-          href="/login"
-          style={{ color: 'rgba(254,252,247,0.6)', textDecoration: 'underline' }}
-        >
-          Sign in
-        </Link>
-      </p>
     </form>
   )
 }
