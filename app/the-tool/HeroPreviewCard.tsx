@@ -29,7 +29,7 @@ function toPolygonPoints(values: number[]): string {
 
 const LABEL_OFFSETS: { dx: number; dy: number; anchor: 'middle' | 'start' | 'end' }[] = [
   { dx: 0,   dy: -12, anchor: 'middle' }, // Self     (top)
-  { dx: 12,  dy: -4,  anchor: 'start'  }, // Team     (upper-right)
+  { dx: 6,   dy: -4,  anchor: 'start'  }, // Team     (upper-right)
   { dx: 10,  dy: 11,  anchor: 'start'  }, // Strategy (lower-right)
   { dx: -10, dy: 11,  anchor: 'end'    }, // Comms    (lower-left)
   { dx: -12, dy: -4,  anchor: 'end'    }, // Domain   (upper-left)
@@ -45,6 +45,9 @@ export function HeroPreviewCard() {
       return `${x.toFixed(2)},${y.toFixed(2)}`
     }).join(' ')
   )
+
+  const selfAvg = (HERO_DATA.reduce((s, d) => s + d.self, 0) / HERO_DATA.length).toFixed(1)
+  const mgrAvg  = (HERO_DATA.reduce((s, d) => s + d.mgr,  0) / HERO_DATA.length).toFixed(1)
 
   return (
     <div
@@ -156,11 +159,11 @@ export function HeroPreviewCard() {
       {/* Stat tiles */}
       <div style={{ display: 'flex', gap: 12 }}>
         <div style={{ flex: 1, background: 'var(--color-bg-base)', borderRadius: 12, padding: '12px 14px' }}>
-          <div style={{ fontSize: 26, fontWeight: 750, color: 'var(--color-text-primary)', fontFamily: 'var(--font-display)', lineHeight: 1 }}>3.3</div>
+          <div style={{ fontSize: 26, fontWeight: 800, color: 'var(--color-text-primary)', fontFamily: 'var(--font-display)', lineHeight: 1 }}>{selfAvg}</div>
           <div style={{ fontSize: 11, color: 'var(--color-text-faint)', fontFamily: 'var(--font-body)', marginTop: 4 }}>Overall · Self</div>
         </div>
         <div style={{ flex: 1, background: 'var(--color-bg-base)', borderRadius: 12, padding: '12px 14px' }}>
-          <div style={{ fontSize: 26, fontWeight: 750, color: 'var(--color-manager)', fontFamily: 'var(--font-display)', lineHeight: 1 }}>2.9</div>
+          <div style={{ fontSize: 26, fontWeight: 800, color: 'var(--color-manager)', fontFamily: 'var(--font-display)', lineHeight: 1 }}>{mgrAvg}</div>
           <div style={{ fontSize: 11, color: 'var(--color-text-faint)', fontFamily: 'var(--font-body)', marginTop: 4 }}>Manager view</div>
         </div>
       </div>
@@ -176,7 +179,7 @@ export function HeroPreviewCard() {
         }}
       >
         <Target size={14} style={{ color: 'var(--color-accent)', flexShrink: 0 }} />
-        <span style={{ fontSize: 12.5, fontWeight: 650, color: 'var(--color-text-primary)', fontFamily: 'var(--font-body)', whiteSpace: 'nowrap' }}>
+        <span style={{ fontSize: 12.5, fontWeight: 700, color: 'var(--color-text-primary)', fontFamily: 'var(--font-body)', whiteSpace: 'nowrap' }}>
           Focus: Communications
         </span>
         <div style={{ flex: 1 }} />
