@@ -1,7 +1,8 @@
 'use client'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import Link from 'next/link'
 import { Turnstile } from '@marsidev/react-turnstile'
+import type { TurnstileInstance } from '@marsidev/react-turnstile'
 import { createClient } from '@/lib/supabase/client'
 
 const supabase = createClient()
@@ -11,6 +12,7 @@ interface Props {
 }
 
 export function JoinNowForm({ showSignIn = false }: Props) {
+  const turnstileRef = useRef<TurnstileInstance>(null)
   const [email, setEmail] = useState('')
   const [sent, setSent] = useState(false)
   const [error, setError] = useState('')
@@ -32,12 +34,14 @@ export function JoinNowForm({ showSignIn = false }: Props) {
       })
       if (err) {
         setError(err.message)
+        turnstileRef.current?.reset()
         setCaptchaToken(null)
       } else {
         setSent(true)
       }
     } catch {
       setError('Something went wrong. Please try again.')
+      turnstileRef.current?.reset()
       setCaptchaToken(null)
     } finally {
       setLoading(false)
@@ -59,8 +63,10 @@ export function JoinNowForm({ showSignIn = false }: Props) {
 
   return (
     <form onSubmit={handleSubmit}>
+      <label htmlFor="join-email" className="sr-only">Email address</label>
       <div style={{ display: 'flex', gap: 8, maxWidth: 440 }}>
         <input
+          id="join-email"
           type="email"
           required
           placeholder="your@email.com"
@@ -80,6 +86,7 @@ export function JoinNowForm({ showSignIn = false }: Props) {
           }}
         />
         <Turnstile
+          ref={turnstileRef}
           siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
           onSuccess={token => setCaptchaToken(token)}
           onExpire={() => setCaptchaToken(null)}
@@ -122,7 +129,7 @@ export function JoinNowForm({ showSignIn = false }: Props) {
         )}
       </div>
       {error && (
-        <p className="mt-2 text-xs" style={{ color: 'var(--color-negative)' }}>
+        <p role="alert" className="mt-2 text-xs" style={{ color: 'var(--color-negative)' }}>
           {error}
         </p>
       )}
