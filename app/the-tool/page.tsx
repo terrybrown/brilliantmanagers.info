@@ -219,7 +219,7 @@ export default function ToolPage() {
 
             {/* Inline form + trust row */}
             <div style={{ marginTop: 28 }}>
-              <JoinNowForm />
+              <JoinNowForm inputId="hero-email" />
               <div
                 className="flex flex-wrap items-center gap-x-4 gap-y-2"
                 style={{ marginTop: 14 }}
@@ -418,7 +418,7 @@ export default function ToolPage() {
               </h2>
               <p
                 className="mt-2.5 text-base leading-relaxed"
-                style={{ color: 'rgba(255,255,255,0.82)', maxWidth: 440 }}
+                style={{ color: 'var(--color-accent-fg-muted)', maxWidth: 440 }}
               >
                 Ten honest minutes is all it takes to turn a vague sense of &ldquo;am I
                 doing OK?&rdquo; into a clear plan.
@@ -430,7 +430,8 @@ export default function ToolPage() {
               className="rounded-2xl p-7"
               style={{
                 background: 'var(--color-surface)',
-                width: 420,
+                width: '100%',
+                maxWidth: 420,
                 boxShadow: '0 18px 40px rgba(0,0,0,0.18)',
               }}
             >
@@ -452,7 +453,7 @@ export default function ToolPage() {
               >
                 We&apos;ll send you a magic link — no password.
               </div>
-              <JoinNowForm showSignIn />
+              <JoinNowForm showSignIn inputId="cta-email" />
             </div>
           </div>
         </div>

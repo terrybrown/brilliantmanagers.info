@@ -9,9 +9,10 @@ const supabase = createClient()
 
 interface Props {
   showSignIn?: boolean
+  inputId?: string
 }
 
-export function JoinNowForm({ showSignIn = false }: Props) {
+export function JoinNowForm({ showSignIn = false, inputId = 'join-email' }: Props) {
   const turnstileRef = useRef<TurnstileInstance>(null)
   const [email, setEmail] = useState('')
   const [sent, setSent] = useState(false)
@@ -63,10 +64,10 @@ export function JoinNowForm({ showSignIn = false }: Props) {
 
   return (
     <form onSubmit={handleSubmit}>
-      <label htmlFor="join-email" className="sr-only">Email address</label>
+      <label htmlFor={inputId} className="sr-only">Email address</label>
       <div style={{ display: 'flex', gap: 8, maxWidth: 440 }}>
         <input
-          id="join-email"
+          id={inputId}
           type="email"
           required
           placeholder="your@email.com"
