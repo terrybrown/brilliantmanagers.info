@@ -105,7 +105,7 @@ export function HeroPreviewCard() {
         {/* Manager polygon (behind self) */}
         <polygon
           points={mgrPoints}
-          fill="rgba(204,122,26,0.10)"
+          style={{ fill: 'var(--color-manager-wash)' }}
           stroke="var(--color-manager)"
           strokeWidth={1.5}
           strokeDasharray="4 2"
@@ -113,7 +113,7 @@ export function HeroPreviewCard() {
         {/* Self polygon */}
         <polygon
           points={selfPoints}
-          fill="rgba(14,124,107,0.18)"
+          style={{ fill: 'var(--color-accent-wash2)' }}
           stroke="var(--color-accent)"
           strokeWidth={2}
         />
